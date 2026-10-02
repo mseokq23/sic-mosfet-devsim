@@ -4,9 +4,10 @@ name: doe-batch
 on:
   workflow_dispatch:
     inputs:
-      design: { description: "design CSV", required: true, default: "configs/design_stage_a.csv" }
-      out:    { description: "output folder", required: true, default: "results/stage_a" }
-      shards: { description: "number of matrix shards", required: true, default: "4" }
+      design: { description: "design CSV", required: true, default: "configs/design_pool.csv" }
+      out:    { description: "output folder", required: true, default: "results/pool" }
+      shards: { description: "number of matrix shards", required: true, default: "16" }
+      commit_results: { description: "merge shards and commit results to the repo", required: true, default: "true" }
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -31,3 +32,22 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: "runs-${{ matrix.shard }}", path: "${{ inputs.out }}/runs/" }
+  merge:
+    needs: run
+    if: always() && inputs.commit_results == 'true'
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy pandas pyyaml pydantic
+      - uses: actions/download-artifact@v4
+        with: { pattern: "runs-*", merge-multiple: true, path: "${{ inputs.out }}/runs" }
+      - run: python scripts/merge_runs.py "${{ inputs.out }}"
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${{ inputs.out }}"
+          git commit -m "results: ${{ inputs.out }} (doe-batch run ${{ github.run_id }})" || echo "nothing to commit"
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 10; done

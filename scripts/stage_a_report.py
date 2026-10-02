@@ -11,14 +11,17 @@ F = ["vth_V", "ss_mV_dec", "gm_max_S_per_cm", "ion_A_per_cm", "ron_mohm_cm2", "i
 # expected sign of d(feature)/d(+20% change) written before the runs (0 = ~no effect expected)
 EXPECT = {"wjfet": dict(vth_V=0, ss_mV_dec=0, ion_A_per_cm=+1, ron_mohm_cm2=-1, id_vds_req_A_per_cm=+1),
           "npwell": dict(vth_V=+1, ss_mV_dec=+1, ion_A_per_cm=-1),
-          "qit": dict(vth_V=+1, ss_mV_dec=0, ion_A_per_cm=-1)}      # +20% = more negative charge
+          "qit": dict(vth_V=+1, ss_mV_dec=0, ion_A_per_cm=-1),      # +20% = more negative charge
+          # v1.0 (written before the v1.0 runs): higher channel mobility -> constant-current Vth slightly lower
+          "mu": dict(vth_V=-1, ss_mV_dec=0, gm_max_S_per_cm=+1, ion_A_per_cm=+1, ron_mohm_cm2=-1, id_vds_req_A_per_cm=+1)}
 gate3 = json.load(open(ROOT / "results" / "pretest" / "gate3_summary.json"))
 mesh_err = {k: abs(v) for k, v in gate3["medium_vs_fine"].items()}   # Vth absolute (V), others relative
 rows, ok = [], df[df["converged"].astype(str).str.lower() == "true"]
+VARS_PRESENT = [t for t in ("wjfet", "npwell", "qit", "mu") if f"A_{t}_+20pct" in set(ok.candidate_id)]
 for T in (300, 423):
     sub = ok[np.isclose(ok.temperature_K, T)].set_index("candidate_id")
     base = sub.loc["A_base"]
-    for var in ("wjfet", "npwell", "qit"):
+    for var in VARS_PRESENT:
         for lv in ("-20pct", "+20pct"):
             cid = f"A_{var}_{lv}"
             if cid not in sub.index: continue
@@ -47,11 +50,11 @@ json.dump(dict(checks=C.to_dict("records"), dvth_T=dv, n_runs=int(len(df)), n_co
 fig, ax = plt.subplots(1, 2, figsize=(11, 3.8), sharey=True)
 for a, T in zip(ax, (300, 423)):
     g = S[(S["T"] == T) & (S.level == "+20pct")].set_index("var")
-    x = np.arange(len(F)); w = 0.27
-    for i, var in enumerate(("wjfet", "npwell", "qit")):
+    x = np.arange(len(F)); w = 0.8 / len(VARS_PRESENT)
+    for i, var in enumerate(VARS_PRESENT):
         if var in g.index:
             vals = [g.loc[var, f] * (10 if f == "vth_V" else 1) for f in F]
-            a.bar(x + (i - 1) * w, vals, w, label=f"{var} +20%")
+            a.bar(x + (i - (len(VARS_PRESENT) - 1) / 2) * w, vals, w, label=f"{var} +20%")
     a.set_xticks(x); a.set_xticklabels(["Vth×10 (V)", "SS", "gm,max", "Ion", "Ron,sp", "ID@2V"], rotation=20)
     a.axhline(0, color="k", lw=0.6); a.set_title(f"{T} K: change vs baseline (relative)"); a.grid(alpha=0.3)
-ax[0].legend(fontsize=8); fig.tight_layout(); fig.savefig(out.parent / "fig_stage_a.png", dpi=130)
+ax[0].legend(fontsize=8); fig.tight_layout(); fig.savefig(out / "fig_stage_a.png", dpi=130)

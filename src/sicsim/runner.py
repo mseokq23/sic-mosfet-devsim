@@ -108,7 +108,9 @@ def run_batch(jobs: list[dict], out, n_workers=1, extra=None, verbose=True, budg
                               flush=True)
     if todo and verbose:
         print(f"budget reached: {len(todo)} runs left (re-run the same command to resume)")
-    df = pd.DataFrame(rows).sort_values("run_id") if rows else pd.DataFrame(columns=RUN_COLUMNS)
+    # runs.csv always reflects EVERY run in the folder (resumed batches, extensions, merged shards)
+    allr = [flatten(json.load(open(p))) for p in sorted((out / "runs").glob("*.json")) if not p.name.endswith(".job.json")]
+    df = pd.DataFrame(allr).sort_values("run_id") if allr else pd.DataFrame(columns=RUN_COLUMNS)
     df.to_csv(out / "runs.csv", index=False)
     return df
 
@@ -125,6 +127,7 @@ def main(argv=None):
     ap.add_argument("--round", type=int, default=0)
     ap.add_argument("--shard", default=None, help="i/N")
     ap.add_argument("--budget-s", type=float, default=None, help="stop launching new runs after N s")
+    ap.add_argument("--config", default=None, help="alternative config YAML (model-assumption variants)")
     a = ap.parse_args(argv)
     jobs = expand(pd.read_csv(a.design), a.temps, a.policy, a.round)
     if a.shard:
@@ -135,6 +138,8 @@ def main(argv=None):
         extra["mesh_scale"] = a.mesh_scale
     if a.extended:
         extra["extended"] = True
+    if a.config:
+        extra["config"] = str(Path(a.config).resolve())
     run_batch(jobs, a.out, a.jobs, extra, budget_s=a.budget_s)
 
 

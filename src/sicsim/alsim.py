@@ -14,13 +14,19 @@ from sklearn.model_selection import GroupKFold
 
 from . import llm as llm_mod
 from .analysis import feature_set, fit_predict, metrics
-from .design import VARS, load_bounds
+from .design import NUISANCE, VARS, _spec, load_bounds
 
 
-def _norm_proc(df, bounds):
-    lo = np.array([bounds["variables"][v]["low"] for v in VARS])
-    hi = np.array([bounds["variables"][v]["high"] for v in VARS])
-    return (df[VARS].values - lo) / (hi - lo)
+def _proc_cols(df):
+    """Design (simulation-input) columns: targets + nuisance variables present in the pool."""
+    return VARS + [c for c in NUISANCE if c in df.columns]
+
+
+def _norm_proc(df, bounds, cols=None):
+    cols = cols or _proc_cols(df)
+    lo = np.array([_spec(bounds, v)["low"] for v in cols])
+    hi = np.array([_spec(bounds, v)["high"] for v in cols])
+    return (df[cols].values - lo) / (hi - lo)
 
 
 def forward_uncertainty(Ptr, Ftr, Pc, seed=0):
@@ -57,7 +63,8 @@ def run_policy(pool: pd.DataFrame, test: pd.DataFrame, policy: str, seed=0, n_in
     bounds = load_bounds()
     rng = np.random.default_rng(seed)
     ids = list(pool.index)
-    Xpool, Ppool = feature_set(pool, set_name).values, _norm_proc(pool, bounds)
+    pcols = _proc_cols(pool)
+    Xpool, Ppool = feature_set(pool, set_name).values, _norm_proc(pool, bounds, pcols)
     Xte, Yte = feature_set(test, set_name).values, test[VARS].values
     n_temps = 1 if set_name == "S1" else 2
     pos = {c: i for i, c in enumerate(ids)}
@@ -96,7 +103,7 @@ def run_policy(pool: pd.DataFrame, test: pd.DataFrame, policy: str, seed=0, n_in
                                model_summary=dict(n_train=len(idx), cv_mae_norm={v: round(cvm[v]["mae_norm"], 4) for v in VARS},
                                                   worst_target=max(VARS, key=lambda v: cvm[v]["mae_norm"])),
                                candidates=[dict(candidate_id=rest[j],
-                                                **{v: round(float(Ppool[ridx][j][q]), 3) for q, v in enumerate(VARS)},
+                                                **{v: round(float(Ppool[ridx][j][q]), 3) for q, v in enumerate(pcols)},
                                                 predictive_uncertainty=round(float(unc[j]), 4),
                                                 distance_to_train=round(float(dist[i]), 4))
                                            for i, j in enumerate(top)])

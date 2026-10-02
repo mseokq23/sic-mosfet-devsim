@@ -11,7 +11,7 @@ from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .design import VARS, load_bounds
+from .design import NUISANCE, VARS, load_bounds
 
 SCALAR = ["vth_V", "ss_mV_dec", "gm_max_S_per_cm", "ion_A_per_cm", "ron_mohm_cm2", "id_vds_req_A_per_cm"]
 LOGT = {"gm_max_S_per_cm", "ion_A_per_cm", "ron_mohm_cm2", "id_vds_req_A_per_cm"}   # used as log10
@@ -35,7 +35,8 @@ def wide_table(runs: pd.DataFrame, temps=(300, 423)) -> pd.DataFrame:
         sub.columns = [f"{c}@{int(T)}" for c in sub.columns]
         parts.append(sub)
     X = pd.concat(parts, axis=1, join="inner")
-    meta = ok.drop_duplicates("candidate_id").set_index("candidate_id")[["process_group_id"] + VARS]
+    nuis = [c for c in NUISANCE if c in ok.columns]               # kept for the policies, never a model input
+    meta = ok.drop_duplicates("candidate_id").set_index("candidate_id")[["process_group_id"] + VARS + nuis]
     return meta.join(X, how="inner")
 
 
@@ -52,6 +53,33 @@ def feature_set(wide: pd.DataFrame, name: str, temps=(300, 423)) -> pd.DataFrame
             X[f"d_{b}"] = wide[f"{b}@{temps[1]}"] - wide[c]
         return X
     raise ValueError(name)
+
+
+def add_noise(wide: pd.DataFrame, noise_cfg: dict, level: float = 1.0, seed: int = 0) -> pd.DataFrame:
+    """Return a copy of a wide table with measurement-like noise on every '<feature>@<T>' column.
+    vth_V: absolute sigma; listed features: relative sigma (log10 columns get log10(1+eps));
+    logid_vg* samples: relative sigma in the log domain.  level=0 -> unchanged copy."""
+    out = wide.copy()
+    if level <= 0:
+        return out
+    rng = np.random.default_rng(seed)
+    for c in [c for c in wide.columns if "@" in str(c)]:
+        f = c.rsplit("@", 1)[0]
+        n = len(out)
+        if f in noise_cfg.get("absolute", {}):
+            out[c] = out[c] + rng.normal(0, noise_cfg["absolute"][f] * level, n)
+            continue
+        rel = noise_cfg.get("relative", {}).get(f)
+        if rel is None and f.startswith("logid_vg"):
+            rel = noise_cfg.get("logid_samples", 0.0)
+        if not rel:
+            continue
+        eps = np.clip(rng.normal(0, rel * level, n), -0.5, 0.5)
+        if f in LOGT or f.startswith("logid_vg"):
+            out[c] = out[c] + np.log10(1 + eps)
+        else:
+            out[c] = out[c] * (1 + eps)
+    return out
 
 
 def _lohi(bounds):

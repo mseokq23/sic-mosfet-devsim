@@ -1,5 +1,7 @@
 # 사전 테스트 결과 (pre-test)
 
+> 이 문서는 동결 전(v0.3) 사전 테스트 기록이다. v1.0에서 채널 이동도 온도지수=1, 채널 이동도 교란 변수 추가로 동결됨(docs/ROADMAP.md).
+
 실행: 2026-10-02, 샌드박스(Python 3.12.3, 1 CPU, 3 GB), devsim 2.11.0 + mkl 2026.1.0(PARDISO). 원자료: `results/pretest/` (run별 JSON에 곡선·수치 이력 포함). 이 문서는 `scripts/make_pretest_report.py`로 생성.
 
 ## 요약

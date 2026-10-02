@@ -8,7 +8,9 @@ from pathlib import Path
 import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src"))
 from sicsim.alsim import run_policy
-from sicsim.analysis import feature_set, fit_predict, metrics, wide_table
+import yaml
+from sicsim.analysis import add_noise, feature_set, fit_predict, metrics, wide_table
+from sicsim.config import _Loader
 from sicsim.design import VARS
 ap = argparse.ArgumentParser()
 ap.add_argument("--pool", required=True); ap.add_argument("--test", required=True)
@@ -18,10 +20,15 @@ ap.add_argument("--batch", type=int, default=10); ap.add_argument("--rounds", ty
 ap.add_argument("--set", default="S2"); ap.add_argument("--model", default="rf")
 ap.add_argument("--policies", nargs="+", default=["random", "sobol", "uncertainty", "llm"])
 ap.add_argument("--llm-live", action="store_true"); ap.add_argument("--llm-model", default="claude-sonnet-5-5")
+ap.add_argument("--noise", default="nominal", help="none|low|nominal|high (configs/noise_model.yaml)")
 a = ap.parse_args()
-out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+out = Path(a.out) / a.noise; out.mkdir(parents=True, exist_ok=True)
 pool = wide_table(pd.read_csv(Path(a.pool) / "runs.csv")).sort_index()     # C0000.. = Sobol order
 test = wide_table(pd.read_csv(Path(a.test) / "runs.csv"))
+nz = yaml.load(open(ROOT / "configs" / "noise_model.yaml"), Loader=_Loader)
+lv = nz["levels"][a.noise]
+pool = add_noise(pool, nz, lv, nz["seeds"]["pool"]); test = add_noise(test, nz, lv, nz["seeds"]["test"])
+print(f"noise={a.noise} (x{lv}, {nz['version']})")
 rq1 = {}
 for S in ("S1", "S2", "S3"):
     for kind in ("rf", "et", "gp"):

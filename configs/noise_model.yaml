@@ -1,0 +1,15 @@
+# Measurement-like noise added to SIMULATED features at analysis time (zero DEVSIM cost).
+# Independent per feature and per temperature. FROZEN v1.0 (2026-10-02) before any pool analysis.
+version: noise-v1.0
+absolute: {vth_V: 0.010}                       # V. Lower-end assumption: SiC Vth also drifts with gate-bias
+                                               # history (hysteresis/BTI) -> report the 'high' level (2x) too.
+relative:                                      # fraction (1-sigma)
+  ss_mV_dec: 0.02                              # extraction repeatability (source to be cited)
+  gm_max_S_per_cm: 0.02                        # (source to be cited)
+  ion_A_per_cm: 0.01                           # Rationale: SMU accuracy ~0.1-0.2% (Keysight B1505A/B1500A data
+  ron_mohm_cm2: 0.01                           #   sheet) is dominated by probe-pad contact-resistance variation and
+  id_vds_req_A_per_cm: 0.01                    #   self-heating -> ~1% reproducibility (cite a specific measurement-
+                                               #   uncertainty paper in the manuscript).
+logid_samples: 0.02                            # relative sigma of transfer-curve samples
+levels: {none: 0.0, low: 0.5, nominal: 1.0, high: 2.0}
+seeds: {pool: 101, test: 202}                  # one fixed noise realisation per set, shared by all policies

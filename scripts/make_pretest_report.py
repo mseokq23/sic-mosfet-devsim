@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src"))
 from sicsim.params import parameter_table
+from sicsim.config import load_config, material_from
 P = ROOT / "results" / "pretest"
 g3 = json.load(open(P / "gate3_summary.json"))
 sa = pd.read_csv(P / "stage_a" / "stage_a_deltas.csv")
@@ -14,6 +15,7 @@ cox = 3.9 * 8.8541878128e-14 / 50e-7; theo = 1.602176634e-19 * 0.2e12 / cox
 m, t = g3["mesh"], g3["temperature_300_to_423"]
 L = []; w = L.append
 w("# 사전 테스트 결과 (pre-test)\n")
+w("> 이 문서는 동결 전(v0.3) 사전 테스트 기록이다. v1.0에서 채널 이동도 온도지수=1, 채널 이동도 교란 변수 추가로 동결됨(docs/ROADMAP.md).\n")
 w("실행: 2026-10-02, 샌드박스(Python 3.12.3, 1 CPU, 3 GB), devsim 2.11.0 + mkl 2026.1.0(PARDISO). "
   "원자료: `results/pretest/` (run별 JSON에 곡선·수치 이력 포함). 이 문서는 `scripts/make_pretest_report.py`로 생성.\n")
 w("## 요약\n")
@@ -80,9 +82,9 @@ for s in [
 ]:
     w(f"- {s}")
 (ROOT / "docs" / "PRETEST.md").write_text("\n".join(L) + "\n")
-rows = parameter_table()
+rows = parameter_table(material_from(load_config()))
 cols = list(rows[0].keys())
-pt = ["# 4H-SiC 모델 파라미터 (src/sicsim/params.py에서 생성)\n", "| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)]
+pt = ["# 4H-SiC 모델 파라미터 (configs/baseline.yaml 적용값, " + str(load_config().get("version")) + ")\n", "| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)]
 pt += ["| " + " | ".join(str(r.get(c, "")) for c in cols) + " |" for r in rows]
 pt.append("\n출처는 TCAD Parameters for 4H-SiC: A Review(arXiv:2410.06798)에 정리된 원문헌. 리뷰는 단일 권장 세트를 제시하지 않으므로 핵심 값은 민감도로 보고한다.")
 (ROOT / "docs" / "PARAMETERS.md").write_text("\n".join(pt) + "\n")

@@ -1,4 +1,4 @@
-# 4H-SiC 모델 파라미터 (src/sicsim/params.py에서 생성)
+# 4H-SiC 모델 파라미터 (configs/baseline.yaml 적용값, v1.0-frozen)
 
 | name | value |
 |---|---|
@@ -32,7 +32,7 @@
 | taun | 1e-07 |
 | taup | 1e-07 |
 | mu_surf300 | 20.0 |
-| mu_surf_gamma | 0.0 |
+| mu_surf_gamma | 1.0 |
 | surf_lambda_um | 0.003 |
 
 출처는 TCAD Parameters for 4H-SiC: A Review(arXiv:2410.06798)에 정리된 원문헌. 리뷰는 단일 권장 세트를 제시하지 않으므로 핵심 값은 민감도로 보고한다.
