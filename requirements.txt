@@ -1,0 +1,13 @@
+# Versions verified in the pre-test sandbox (Python 3.12, Linux x86_64). mkl is REQUIRED:
+# devsim wheels need a BLAS/LAPACK at import time ('Error loading math libraries' without it).
+devsim==2.11.0
+mkl==2026.1.0
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.6
+matplotlib==3.11.2
+scikit-learn==1.9.1
+pydantic==2.13.5
+PyYAML==6.0.3
+pytest==9.1.1
+anthropic==1.11.0

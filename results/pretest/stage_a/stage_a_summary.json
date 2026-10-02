@@ -1,0 +1,213 @@
+{
+ "checks": [
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "vth_V",
+   "delta": 0.478145018521142,
+   "expected": 1,
+   "ratio_to_mesh_err": 6594.32998802992,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "ss_mV_dec",
+   "delta": 0.03654888785784787,
+   "expected": 1,
+   "ratio_to_mesh_err": 36.46567583360721,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "ion_A_per_cm",
+   "delta": -0.029548026775371796,
+   "expected": -1,
+   "ratio_to_mesh_err": 3.4688645058682193,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "vth_V",
+   "delta": 0.46147854097604624,
+   "expected": 1,
+   "ratio_to_mesh_err": 6364.474508179108,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "ss_mV_dec",
+   "delta": 0.004113780469567699,
+   "expected": 0,
+   "ratio_to_mesh_err": 4.104414493741407,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "ion_A_per_cm",
+   "delta": -0.012778090545743824,
+   "expected": -1,
+   "ratio_to_mesh_err": 1.5001158989014511,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "vth_V",
+   "delta": -2.338954284342165e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.3225765359968214,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ss_mV_dec",
+   "delta": 1.8327760390246576e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.018286032990830158,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ion_A_per_cm",
+   "delta": 0.043135481696000635,
+   "expected": 1,
+   "ratio_to_mesh_err": 5.063997759860635,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ron_mohm_cm2",
+   "delta": 0.024516159983879293,
+   "expected": -1,
+   "ratio_to_mesh_err": 2.8052757505858548,
+   "pass_": false
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.042335303563940725,
+   "expected": 1,
+   "ratio_to_mesh_err": 4.515468892609913,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "vth_V",
+   "delta": 0.47159510035759267,
+   "expected": 1,
+   "ratio_to_mesh_err": 6503.996888045683,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "ss_mV_dec",
+   "delta": 0.03821555119771474,
+   "expected": 1,
+   "ratio_to_mesh_err": 38.12854462763789,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "ion_A_per_cm",
+   "delta": -0.02049586188546052,
+   "expected": -1,
+   "ratio_to_mesh_err": 2.4061629682463517,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "vth_V",
+   "delta": 0.45727284350479414,
+   "expected": 1,
+   "ratio_to_mesh_err": 6306.471693382381,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "ss_mV_dec",
+   "delta": 0.0010398039228328815,
+   "expected": 0,
+   "ratio_to_mesh_err": 1.037436567919954,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "ion_A_per_cm",
+   "delta": -0.007708920989425474,
+   "expected": -1,
+   "ratio_to_mesh_err": 0.90500806033685,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "vth_V",
+   "delta": -6.437943538406543e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.8878880358905286,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ss_mV_dec",
+   "delta": -0.0005503817231535335,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.549128651446761,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ion_A_per_cm",
+   "delta": 0.06260368730640184,
+   "expected": 1,
+   "ratio_to_mesh_err": 7.3495164494251615,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ron_mohm_cm2",
+   "delta": 0.005561437765411312,
+   "expected": -1,
+   "ratio_to_mesh_err": 0.6363707249405895,
+   "pass_": false
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.06292943678072692,
+   "expected": 1,
+   "ratio_to_mesh_err": 6.7120320463431264,
+   "pass_": true
+  }
+ ],
+ "dvth_T": {
+  "A_base": -0.2013744558894155,
+  "A_npwell_+20pct": -0.20792437405296482,
+  "A_npwell_-20pct": -0.2030705738812748,
+  "A_qit_+20pct": -0.2055801533606676,
+  "A_qit_-20pct": -0.21086220525122412,
+  "A_wjfet_+20pct": -0.20141544578195614,
+  "A_wjfet_-20pct": -0.2013176700410062
+ },
+ "n_runs": 14,
+ "n_converged": 14
+}

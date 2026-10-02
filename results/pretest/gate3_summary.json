@@ -1,0 +1,121 @@
+{
+  "mesh": {
+    "coarse": {
+      "nodes": 6269,
+      "runtime_s": 84.755,
+      "n_solves": 93,
+      "n_fail": 12,
+      "output_truncated_at_V": 3.25677490234375,
+      "vth_V": 3.7696862668739133,
+      "ss_mV_dec": 112.58531355869383,
+      "gm_max_S_per_cm": 0.0037427223586102044,
+      "ion_A_per_cm": 0.01748756614288623,
+      "ron_mohm_cm2": 2.0167866777282284,
+      "id_vds_req_A_per_cm": 0.3342756063939449
+    },
+    "medium": {
+      "nodes": 10964,
+      "runtime_s": 82.201,
+      "n_solves": 81,
+      "n_fail": 0,
+      "output_truncated_at_V": null,
+      "vth_V": 3.7717905653890846,
+      "ss_mV_dec": 112.39220787823656,
+      "gm_max_S_per_cm": 0.0038616437548674733,
+      "ion_A_per_cm": 0.01762818389124896,
+      "ron_mohm_cm2": 2.000349545504276,
+      "id_vds_req_A_per_cm": 0.3372555963460616
+    },
+    "fine": {
+      "nodes": 23633,
+      "runtime_s": 180.359,
+      "n_solves": 81,
+      "n_fail": 0,
+      "output_truncated_at_V": null,
+      "vth_V": 3.771718056882627,
+      "ss_mV_dec": 112.27967199218625,
+      "gm_max_S_per_cm": 0.00396707005395066,
+      "ion_A_per_cm": 0.01777963202136032,
+      "ron_mohm_cm2": 1.983019335004314,
+      "id_vds_req_A_per_cm": 0.34044750147603864
+    }
+  },
+  "medium_vs_fine": {
+    "vth_V": 7.250850645768026e-05,
+    "ss_mV_dec": 0.0010022819273834485,
+    "gm_max_S_per_cm": -0.0265753560308815,
+    "ion_A_per_cm": -0.008518068873945898,
+    "ron_mohm_cm2": 0.008739304853991388,
+    "id_vds_req_A_per_cm": -0.00937561625841944
+  },
+  "coarse_vs_fine": {
+    "vth_V": -0.002031790008713674,
+    "ss_mV_dec": 0.0027221451673713907,
+    "gm_max_S_per_cm": -0.05655249145828324,
+    "ion_A_per_cm": -0.016426992309132374,
+    "ron_mohm_cm2": 0.01702824683947976,
+    "id_vds_req_A_per_cm": -0.018128771852737913
+  },
+  "medium_pass": {
+    "vth_V": true,
+    "ss_mV_dec": true,
+    "ron_mohm_cm2": true,
+    "gm_max_S_per_cm": true,
+    "ion_A_per_cm": true
+  },
+  "medium_accepted": true,
+  "precision_dp_vs_xp": {
+    "vth_V": -1.7991386158655587e-11,
+    "ss_mV_dec": -0.0003576419714870747,
+    "gm_max_S_per_cm": 1.344074269341138e-11,
+    "ion_A_per_cm": -3.4717725098625806e-13
+  },
+  "kcl_floor": {
+    "double": 1.284126795169211e-12,
+    "extended": 3.890123803663811e-26
+  },
+  "runtime_dp_vs_xp_transfer_only_s": {
+    "extended": 163.89,
+    "extended_solves": 64
+  },
+  "repeatability_bitwise_identical": true,
+  "temperature_300_to_423": {
+    "vth_V": {
+      "T300": 3.7717905653890846,
+      "T423": 3.570416109499669
+    },
+    "ss_mV_dec": {
+      "T300": 112.39220787823656,
+      "T423": 156.35204988314987
+    },
+    "gm_max_S_per_cm": {
+      "T300": 0.0038616437548674733,
+      "T423": 0.0036223203280210843
+    },
+    "ion_A_per_cm": {
+      "T300": 0.01762818389124896,
+      "T423": 0.011311138576463537
+    },
+    "ron_mohm_cm2": {
+      "T300": 2.000349545504276,
+      "T423": 3.107264071262797
+    },
+    "id_vds_req_A_per_cm": {
+      "T300": 0.3372555963460616,
+      "T423": 0.22066589730988698
+    }
+  },
+  "env": {
+    "devsim": "2.11.0",
+    "solver": [
+      "mkl_pardiso"
+    ],
+    "math": [
+      "libmkl_rt.so.3"
+    ],
+    "extended": true,
+    "python": "3.12.3",
+    "platform": "Linux-6.18.44-fc-v51-x86_64-with-glibc2.39",
+    "commit": null
+  }
+}

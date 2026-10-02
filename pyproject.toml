@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sicsim"
+version = "0.2.0"
+description = "DEVSIM-based 4H-SiC planar MOSFET multi-temperature process-variation study with LLM-assisted adaptive DOE"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]

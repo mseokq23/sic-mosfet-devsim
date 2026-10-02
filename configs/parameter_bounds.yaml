@@ -1,0 +1,11 @@
+# DOE variable bounds (latent process variables). Changing bounds after the DOE freeze = new version.
+version: bounds-v0.1-pretest
+variables:
+  wjfet_scale:  {low: 0.8, high: 1.2, nominal: 1.0, unit: "-",      desc: "JFET width scale (full width 2.4 um nominal)"}
+  npwell_scale: {low: 0.8, high: 1.2, nominal: 1.0, unit: "-",      desc: "P-well peak doping scale (1e17 cm^-3 nominal)"}
+  qit_eff_cm2:  {low: -1.5e12, high: -0.5e12, nominal: -1.0e12, unit: "cm^-2",
+                 desc: "signed EFFECTIVE static interface charge (negative = trapped electrons). Not Dit."}
+optional:
+  mu_channel_scale: {low: 0.8, high: 1.2, nominal: 1.0, unit: "-", desc: "channel (surface) mobility scale"}
+temperatures_K: [300, 423]
+classes: {n_bins: 3}   # tertile classes per variable for macro-F1

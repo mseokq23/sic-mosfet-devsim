@@ -1,0 +1,15 @@
+# Pre-registered protocol (written BEFORE looking at Gate-3 / DOE results).
+mesh_study:
+  levels: {coarse: 2.0, medium: 1.5, fine: 1.0}     # mesh_scale multiplies every mesh spacing
+  temperature_K: 300
+  # medium is accepted for production if |medium - fine| is within these tolerances:
+  tolerance: {vth_V: 0.02, ss_rel: 0.05, ron_rel: 0.02, gm_rel: 0.03, ion_rel: 0.02}
+precision_check:
+  # double vs extended (128-bit) precision at the production mesh
+  tolerance: {vth_V: 0.005, ss_rel: 0.02, ron_rel: 0.005}
+repeatability: {require_identical: true}
+retry_rule: "halve bias step on failure down to 1e-3 V; then mark run converged=False (same for all policies)"
+stage_a:
+  levels: [-0.2, -0.1, 0.1, 0.2]          # relative change of one variable at a time
+  variables: [wjfet_scale, npwell_scale, qit_eff_cm2]
+  temperatures_K: [300, 423]

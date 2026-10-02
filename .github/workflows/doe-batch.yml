@@ -1,0 +1,33 @@
+# Manually triggered DOE batch on GitHub-hosted runners (sharded matrix). Download the artifacts,
+# copy all runs/*.json into one folder and run `python scripts/merge_runs.py <out>`.
+name: doe-batch
+on:
+  workflow_dispatch:
+    inputs:
+      design: { description: "design CSV", required: true, default: "configs/design_stage_a.csv" }
+      out:    { description: "output folder", required: true, default: "results/stage_a" }
+      shards: { description: "number of matrix shards", required: true, default: "4" }
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs: { matrix: "${{ steps.m.outputs.matrix }}" }
+    steps:
+      - id: m
+        run: python3 -c "import json; n=int('${{ inputs.shards }}'); print('matrix='+json.dumps({'shard':list(range(n))}))" >> "$GITHUB_OUTPUT"
+  run:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    env: { MKL_NUM_THREADS: "1", OMP_NUM_THREADS: "1" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt && pip install -e .
+      - run: python -m sicsim.runner "${{ inputs.design }}" --out "${{ inputs.out }}" --jobs "$(nproc)" --shard "${{ matrix.shard }}/${{ inputs.shards }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "runs-${{ matrix.shard }}", path: "${{ inputs.out }}/runs/" }
