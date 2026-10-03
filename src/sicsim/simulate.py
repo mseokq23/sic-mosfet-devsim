@@ -28,6 +28,9 @@ def protocol_hashes(cfg, extended, holes) -> dict:
     physics = dict(material=cfg.get("material"), gate=cfg.get("gate"), qf=cfg["interface"]["qf_cm2"],
                    numerics={k: v for k, v in cfg["numerics"].items() if k != "tol"},
                    doping=cfg["mosfet"]["doping"], geometry=cfg["mosfet"]["geometry"], holes=holes)
+    qT = float(cfg["interface"].get("qit_T_reduction_423", 0.0) or 0.0)
+    if qT:                                   # robustness variant only; baseline hash unchanged
+        physics["qit_T_reduction_423"] = qT
     solv = dict(tol=cfg["numerics"]["tol"], extended=extended, bias=cfg["bias"])
     return dict(physics_hash=_hash(physics), solver_hash=_hash(solv))
 
@@ -44,6 +47,10 @@ def run_mosfet(cfg, T, wjfet_scale=1.0, npwell_scale=1.0, qit_eff_cm2=None, mu_c
     intf = dict(cfg["interface"])
     if qit_eff_cm2 is not None:
         intf["qit_eff_cm2"] = float(qit_eff_cm2)
+    qit_nominal = float(intf["qit_eff_cm2"])            # DOE label (defined at 300 K)
+    qT = float(intf.get("qit_T_reduction_423", 0.0) or 0.0)
+    if qT:   # robustness variant: |Qit_eff| decreases linearly with T, by the fraction qT at 423 K (none at 300 K)
+        intf["qit_eff_cm2"] = qit_nominal * (1.0 - qT * (float(T) - 300.0) / 123.0)
     mat = material_from(cfg)
     mat.mu_surf300 *= float(mu_channel_scale)
     gate = gate_from(cfg)
@@ -53,7 +60,7 @@ def run_mosfet(cfg, T, wjfet_scale=1.0, npwell_scale=1.0, qit_eff_cm2=None, mu_c
     ph.set_extended_precision(ext)
     t0 = time.time()
     rec = dict(temperature_K=float(T), wjfet_scale=float(wjfet_scale), npwell_scale=float(npwell_scale),
-               qit_eff_cm2=float(intf["qit_eff_cm2"]), mu_channel_scale=float(mu_channel_scale),
+               qit_eff_cm2=qit_nominal, qit_eff_at_T_cm2=float(intf["qit_eff_cm2"]), mu_channel_scale=float(mu_channel_scale),
                mesh_scale=ms, extended=ext, holes=holes, converged=False, error_code=None, stage=None)
     tr = dict(vgs=[], id=[], is_=[])
     out = dict(vgs=float(b["vgs_on"]), vds=[], id=[])
