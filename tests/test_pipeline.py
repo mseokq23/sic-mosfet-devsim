@@ -102,3 +102,11 @@ def test_identifiability_with_nuisance():
     res = analyse(pd.DataFrame(rows), 0.1, "nominal")
     assert res["parameters"][-1] == "mu_channel_scale"
     assert all(np.isfinite(v) for v in res["S2"]["crb_rel"].values())
+
+
+def test_censor_floor_only_touches_transfer_samples():
+    from sicsim.analysis import censor_floor
+    w = pd.DataFrame({"logid_vg4@300": [-13.1, -9.0], "vth_V@300": [5.3, 2.2], "ss_mV_dec@300": [112.0, 110.0]})
+    c = censor_floor(w, 1e-11)
+    assert c["logid_vg4@300"].tolist() == [-11.0, -9.0]
+    assert c["vth_V@300"].equals(w["vth_V@300"]) and censor_floor(w, None).equals(w)

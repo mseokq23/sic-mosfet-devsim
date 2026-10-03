@@ -9,7 +9,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src"))
 from sicsim.alsim import run_policy
 import yaml
-from sicsim.analysis import add_noise, feature_set, fit_predict, metrics, wide_table
+from sicsim.analysis import add_noise, censor_floor, feature_set, fit_predict, metrics, wide_table
 from sicsim.config import _Loader
 from sicsim.design import VARS
 ap = argparse.ArgumentParser()
@@ -28,7 +28,9 @@ test = wide_table(pd.read_csv(Path(a.test) / "runs.csv"))
 nz = yaml.load(open(ROOT / "configs" / "noise_model.yaml"), Loader=_Loader)
 lv = nz["levels"][a.noise]
 pool = add_noise(pool, nz, lv, nz["seeds"]["pool"]); test = add_noise(test, nz, lv, nz["seeds"]["test"])
-print(f"noise={a.noise} (x{lv}, {nz['version']})")
+fl = nz.get("current_floor_A_per_cm")
+pool, test = censor_floor(pool, fl), censor_floor(test, fl)
+print(f"noise={a.noise} (x{lv}, {nz['version']}, floor={fl} A/cm)")
 rq1 = {}
 for S in ("S1", "S2", "S3"):
     for kind in ("rf", "et", "gp"):

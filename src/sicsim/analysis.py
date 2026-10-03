@@ -82,6 +82,18 @@ def add_noise(wide: pd.DataFrame, noise_cfg: dict, level: float = 1.0, seed: int
     return out
 
 
+def censor_floor(wide: pd.DataFrame, floor_A_per_cm=None) -> pd.DataFrame:
+    """Clip transfer-curve samples (logid_vg*@T, log10 A/cm) at a measurement floor: values below the
+    numerical/instrument floor carry solver noise, not device information."""
+    out = wide.copy()
+    if not floor_A_per_cm:
+        return out
+    lf = float(np.log10(floor_A_per_cm))
+    for c in [c for c in out.columns if str(c).startswith("logid_vg")]:
+        out[c] = np.maximum(out[c], lf)
+    return out
+
+
 def _lohi(bounds):
     lo = np.array([bounds["variables"][v]["low"] for v in VARS])
     hi = np.array([bounds["variables"][v]["high"] for v in VARS])

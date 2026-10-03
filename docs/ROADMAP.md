@@ -123,3 +123,10 @@ python scripts/identifiability.py results/stage_a_v11
 git add results && git commit -m "Stage A v1.1" && git push
 ```
 이후 풀·테스트(doe-batch), RQ1~3, 온도지수 0 한계 분석은 v1.0 절 3~5번과 같다(5번의 `results/stage_a_v1`은 `results/stage_a_v11`로).
+
+
+### 분석 규칙 추가 (noise-v1.1, 풀 결과의 RQ 분석 전에 결정)
+- 풀 감사: 1,280 run 전부 수렴, NaN 없음, 재시도 발생 10%(모두 수렴), 출력곡선 2~5 V 사이 조기 종료 7%(규칙상 허용, ID@2V 유효).
+- 300 K의 `logid_vg4`(VGS 4 V 전류)가 고 Vth 소자에서 최소 8e-14 A/cm로 수치 바닥(최대 3.2e-12) 아래 → 잡음값.
+- 규칙: 전달곡선 샘플은 `current_floor_A_per_cm`(1e-11 A/cm)에서 절단(잡음 추가 뒤, 모든 잡음 수준에 동일 적용).
+- 결과 감사(docs/AUDIT.md): 무결성·재현성·해석해 일치 확인. 300 K Vth(≤3 mV)와 gm,max(약 1.3%)의 수치 정밀도 한계는 문서화하고 v1.1 데이터로 진행.

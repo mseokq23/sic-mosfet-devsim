@@ -1,6 +1,6 @@
 # Measurement-like noise added to SIMULATED features at analysis time (zero DEVSIM cost).
 # Independent per feature and per temperature. FROZEN v1.0 (2026-10-02) before any pool analysis.
-version: noise-v1.0
+version: noise-v1.1                            # v1.1: + current floor (decided before any RQ analysis)
 absolute: {vth_V: 0.010}                       # V. Lower-end assumption: SiC Vth also drifts with gate-bias
                                                # history (hysteresis/BTI) -> report the 'high' level (2x) too.
 relative:                                      # fraction (1-sigma)
@@ -11,5 +11,8 @@ relative:                                      # fraction (1-sigma)
   id_vds_req_A_per_cm: 0.01                    #   self-heating -> ~1% reproducibility (cite a specific measurement-
                                                #   uncertainty paper in the manuscript).
 logid_samples: 0.02                            # relative sigma of transfer-curve samples
+current_floor_A_per_cm: 1.0e-11               # transfer samples below are CENSORED at this floor (10x the max
+                                              # numerical KCL floor 3.2e-12 seen in the pool; also a realistic
+                                              # instrument/leakage floor). Applied after noise, at every level.
 levels: {none: 0.0, low: 0.5, nominal: 1.0, high: 2.0}
 seeds: {pool: 101, test: 202}                  # one fixed noise realisation per set, shared by all policies
