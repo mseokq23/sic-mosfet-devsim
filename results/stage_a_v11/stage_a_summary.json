@@ -1,0 +1,331 @@
+{
+ "checks": [
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "vth_V",
+   "delta": -0.012827486636550756,
+   "expected": -1,
+   "ratio_to_mesh_err": 176.91009321833909,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "ss_mV_dec",
+   "delta": -0.0016277156038410376,
+   "expected": 0,
+   "ratio_to_mesh_err": 1.6240097315635957,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "gm_max_S_per_cm",
+   "delta": 0.16177444177275005,
+   "expected": 1,
+   "ratio_to_mesh_err": 6.08738568110856,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "ion_A_per_cm",
+   "delta": 0.0781855163251564,
+   "expected": 1,
+   "ratio_to_mesh_err": 9.178784238796352,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "ron_mohm_cm2",
+   "delta": -0.07326672418046833,
+   "expected": -1,
+   "ratio_to_mesh_err": 8.383587185084426,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "mu",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.08332176484644996,
+   "expected": 1,
+   "ratio_to_mesh_err": 8.887070732190622,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "vth_V",
+   "delta": 0.48532949887848753,
+   "expected": 1,
+   "ratio_to_mesh_err": 6693.414643173641,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "ss_mV_dec",
+   "delta": 0.03375040458588404,
+   "expected": 1,
+   "ratio_to_mesh_err": 33.67356395818954,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "npwell",
+   "feature": "ion_A_per_cm",
+   "delta": -0.029548026775371796,
+   "expected": -1,
+   "ratio_to_mesh_err": 3.4688645058682193,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "vth_V",
+   "delta": 0.4639239977270635,
+   "expected": 1,
+   "ratio_to_mesh_err": 6398.200988980979,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "ss_mV_dec",
+   "delta": 0.00013265600019583457,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.1323539780290617,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "qit",
+   "feature": "ion_A_per_cm",
+   "delta": -0.012778090545743824,
+   "expected": -1,
+   "ratio_to_mesh_err": 1.5001158989014511,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "vth_V",
+   "delta": -1.3838819401090774e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.19085787416084526,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ss_mV_dec",
+   "delta": -4.320413972091387e-06,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.004310577547148071,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ion_A_per_cm",
+   "delta": 0.0314355637362505,
+   "expected": 1,
+   "ratio_to_mesh_err": 3.690456628309502,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "ron_mohm_cm2",
+   "delta": -0.030663553174004626,
+   "expected": -1,
+   "ratio_to_mesh_err": 3.508694763062312,
+   "pass_": true
+  },
+  {
+   "T": 300,
+   "var": "wjfet",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.03253106235788699,
+   "expected": 1,
+   "ratio_to_mesh_err": 3.4697519033667383,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "vth_V",
+   "delta": -0.013234735377324114,
+   "expected": -1,
+   "ratio_to_mesh_err": 182.52665823490096,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "ss_mV_dec",
+   "delta": -0.0011716691409164918,
+   "expected": 0,
+   "ratio_to_mesh_err": 1.169001564235768,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "gm_max_S_per_cm",
+   "delta": 0.11785259375648895,
+   "expected": 1,
+   "ratio_to_mesh_err": 4.434657192157278,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "ion_A_per_cm",
+   "delta": 0.035679273912163925,
+   "expected": 1,
+   "ratio_to_mesh_err": 4.188657598354908,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "ron_mohm_cm2",
+   "delta": -0.034753141851356764,
+   "expected": -1,
+   "ratio_to_mesh_err": 3.9766483069284875,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "mu",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.03762242279079599,
+   "expected": 1,
+   "ratio_to_mesh_err": 4.012794653045927,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "vth_V",
+   "delta": 0.4744240852533861,
+   "expected": 1,
+   "ratio_to_mesh_err": 6543.012791613419,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "ss_mV_dec",
+   "delta": 0.037946540642711475,
+   "expected": 1,
+   "ratio_to_mesh_err": 37.86014653758598,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "npwell",
+   "feature": "ion_A_per_cm",
+   "delta": -0.0168166654235958,
+   "expected": -1,
+   "ratio_to_mesh_err": 1.9742344975670136,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "vth_V",
+   "delta": 0.4638935356559828,
+   "expected": 1,
+   "ratio_to_mesh_err": 6397.780871775855,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "ss_mV_dec",
+   "delta": -0.00011219838831927998,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.11194294265305617,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "qit",
+   "feature": "ion_A_per_cm",
+   "delta": -0.006470609227192928,
+   "expected": -1,
+   "ratio_to_mesh_err": 0.7596333538678576,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "vth_V",
+   "delta": -2.1424759484300893e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.2954792552071873,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ss_mV_dec",
+   "delta": 1.1003689466596602e-05,
+   "expected": 0,
+   "ratio_to_mesh_err": 0.010978637014161047,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ion_A_per_cm",
+   "delta": 0.04490559590776786,
+   "expected": 1,
+   "ratio_to_mesh_err": 5.271804744983925,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "ron_mohm_cm2",
+   "delta": -0.04330443067238066,
+   "expected": -1,
+   "ratio_to_mesh_err": 4.955134463881621,
+   "pass_": true
+  },
+  {
+   "T": 423,
+   "var": "wjfet",
+   "feature": "id_vds_req_A_per_cm",
+   "delta": 0.0469805625793172,
+   "expected": 1,
+   "ratio_to_mesh_err": 5.010930618787642,
+   "pass_": true
+  }
+ ],
+ "dvth_T": {
+  "A_base": -0.23415894098700107,
+  "A_mu_+10pct": -0.23437733456453147,
+  "A_mu_+20pct": -0.23456618972777443,
+  "A_mu_-10pct": -0.23391092890008203,
+  "A_mu_-20pct": -0.23304604628194614,
+  "A_npwell_+10pct": -0.23990763405318827,
+  "A_npwell_+20pct": -0.24506435461210252,
+  "A_npwell_-10pct": -0.22784815329798036,
+  "A_npwell_-20pct": -0.22094670693514828,
+  "A_qit_+10pct": -0.2341589702043918,
+  "A_qit_+20pct": -0.23418940305808178,
+  "A_qit_-10pct": -0.23351397042324828,
+  "A_qit_-20pct": -0.23323917489451595,
+  "A_wjfet_+10pct": -0.2341632801003084,
+  "A_wjfet_+20pct": -0.23416652692708428,
+  "A_wjfet_-10pct": -0.2341533818833228,
+  "A_wjfet_-20pct": -0.23414614374470055
+ },
+ "n_runs": 34,
+ "n_converged": 34
+}
