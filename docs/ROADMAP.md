@@ -130,3 +130,20 @@ git add results && git commit -m "Stage A v1.1" && git push
 - 300 K의 `logid_vg4`(VGS 4 V 전류)가 고 Vth 소자에서 최소 8e-14 A/cm로 수치 바닥(최대 3.2e-12) 아래 → 잡음값.
 - 규칙: 전달곡선 샘플은 `current_floor_A_per_cm`(1e-11 A/cm)에서 절단(잡음 추가 뒤, 모든 잡음 수준에 동일 적용).
 - 결과 감사(docs/AUDIT.md): 무결성·재현성·해석해 일치 확인. 300 K Vth(≤3 mV)와 gm,max(약 1.3%)의 수치 정밀도 한계는 문서화하고 v1.1 데이터로 진행.
+
+
+### v1.1c (2026-10-03) — LLM 실호출 수정 + 결과 요약
+- 버그: `--llm-live`가 `ANTHROPIC_API_KEY`만 확인해, Codespaces 시크릿 `MSEOKQ_CLAUDE`가 있어도 dry-run으로 **조용히 대체**됨
+  → 이전 `results/al_live`(60회)는 전부 dry-run이며 RQ3 근거로 쓰지 않는다.
+- 수정: 키를 `ANTHROPIC_API_KEY` → `MSEOKQ_CLAUDE` 순으로 탐색(`--api-key-env`로 지정 가능). 키가 없거나 API가 재시도
+  후에도 실패하면 실행을 중단(대체 금지). 로그에 mode·키 변수명 기록(키 값은 기록하지 않음), 실행마다 `meta.json` 저장.
+- 결과 요약: `python scripts/summarize_results.py` → `results/summary/`(rq1/rq1_equal_budget/rq2/rq3.md, 그림 2개).
+
+```bash
+python -c "import os; print('MSEOKQ_CLAUDE' in os.environ)"     # True 여야 함(키 값은 출력되지 않음)
+python scripts/llm_check.py                                       # API 1회 점검 → validator: ACCEPTED
+rm -rf results/al_live
+python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --noise nominal --policies llm --llm-live --out results/al_live
+python scripts/summarize_results.py
+git add -A && git commit -m "RQ3 live LLM + summary" && git push
+```
