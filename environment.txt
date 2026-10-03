@@ -1,7 +1,7 @@
 Python 3.12.14
 Linux-6.8.0-1064-azure-x86_64-with-glibc2.41
 devsim 2.11.0 ('mkl_pardiso',) ('libmkl_rt.so.3',)
-0e4f306fad0f055e99aadd1ea82f4d907e5d36d2
+faf8b02775dabc182daf7bc8465a56b2d31fdcbc
 annotated-types==0.8.0
 anthropic==1.11.0
 anyio==4.15.1
@@ -42,7 +42,7 @@ PyYAML==6.0.3
 scikit-learn==1.9.1
 scipy==1.18.1
 setuptools==82.0.1
--e git+https://github.com/mseokq23/sic-mosfet-devsim@0e4f306fad0f055e99aadd1ea82f4d907e5d36d2#egg=sicsim
+-e git+https://github.com/mseokq23/sic-mosfet-devsim@faf8b02775dabc182daf7bc8465a56b2d31fdcbc#egg=sicsim
 six==1.17.0
 smmap==5.0.3
 sniffio==1.3.1
