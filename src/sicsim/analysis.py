@@ -108,6 +108,9 @@ def make_model(kind="rf", seed=0):
     if kind == "gp":
         k = ConstantKernel(1.0) * RBF(1.0) + WhiteKernel(1e-3)
         return make_pipeline(StandardScaler(), GaussianProcessRegressor(k, normalize_y=True, random_state=seed))
+    if kind == "ridge":                                   # simple linear inverse baseline
+        from sklearn.linear_model import RidgeCV
+        return make_pipeline(StandardScaler(), RidgeCV(alphas=np.logspace(-4, 3, 15)))
     if kind == "xgb":
         from sklearn.multioutput import MultiOutputRegressor
         from xgboost import XGBRegressor

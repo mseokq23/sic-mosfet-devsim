@@ -1,0 +1,75 @@
+# Robustness study v1.3 (docs/ROBUSTNESS.md): re-simulate the frozen pool/test designs at 423 K under
+# model-assumption variants (configs/variants/<name>.yaml); 300 K runs are reused from results/pool, results/test.
+# One dispatch runs every listed variant: matrix = variants x (pool_shards + test_shards) jobs (<= 256).
+# Concurrency is capped by the account plan (standard runners: Free 20, Pro 40); extra jobs queue automatically.
+name: robustness-batch
+on:
+  workflow_dispatch:
+    inputs:
+      variants:    { description: "space-separated names in configs/variants/", required: true, default: "gamma_m1 gamma0 qitT10 qitT30" }
+      pool_shards: { description: "shards per pool design (512 points)", required: true, default: "16" }
+      test_shards: { description: "shards per test design (128 points)", required: true, default: "4" }
+      analyze:     { description: "run scripts/robustness.py after merging", required: true, default: "true" }
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs: { matrix: "${{ steps.m.outputs.matrix }}" }
+    steps:
+      - id: m
+        env: { VARIANTS: "${{ inputs.variants }}", NP: "${{ inputs.pool_shards }}", NT: "${{ inputs.test_shards }}" }
+        run: |
+          python3 - >> "$GITHUB_OUTPUT" <<'PY'
+          import json, os
+          vs, P, T = os.environ["VARIANTS"].split(), int(os.environ["NP"]), int(os.environ["NT"])
+          inc = [dict(variant=v, design="pool", shard=i, n=P) for v in vs for i in range(P)]
+          inc += [dict(variant=v, design="test", shard=i, n=T) for v in vs for i in range(T)]
+          assert 0 < len(inc) <= 256, "GitHub matrix limit is 256 jobs"
+          print("matrix=" + json.dumps({"include": inc}))
+          PY
+  run:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    env: { MKL_NUM_THREADS: "1", OMP_NUM_THREADS: "1" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt && pip install -e .
+      - name: simulate 423 K
+        run: >
+          python -m sicsim.runner "configs/design_${{ matrix.design }}.csv"
+          --out "results/${{ matrix.design }}_${{ matrix.variant }}" --temps 423
+          --config "configs/variants/${{ matrix.variant }}.yaml"
+          --jobs "$(nproc)" --shard "${{ matrix.shard }}/${{ matrix.n }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: "rob-${{ matrix.variant }}-${{ matrix.design }}-${{ matrix.shard }}"
+          path: "results/${{ matrix.design }}_${{ matrix.variant }}/runs/"
+          retention-days: 14
+          overwrite: true          # allows "Re-run failed jobs" to replace a partial artifact
+  merge:
+    needs: run
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt && pip install -e .
+      - uses: actions/download-artifact@v4
+        with: { pattern: "rob-*", path: artifacts }
+      - run: python scripts/collect_variant_artifacts.py artifacts
+      - if: inputs.analyze == 'true'
+        run: python scripts/robustness.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/pool_* results/test_* results/summary/robustness* 2>/dev/null || true
+          git commit -m "results: robustness variants (${{ inputs.variants }}; run ${{ github.run_id }})" || echo "nothing to commit"
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 10; done
