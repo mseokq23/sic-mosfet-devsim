@@ -89,9 +89,28 @@ def build_moscap(dev, cfg):
 
 # ------------------------------------------------------ 2D half-cell DMOSFET
 def dmosfet_geometry(cfg, wjfet_scale=1.0):
+    """Half-cell geometry.  wjfet_mode (geometry key):
+    fixed_pitch   (v1.1 default): the mask pitch is fixed; a JFET-width variation moves the self-aligned
+                  P-well / n+ source edge by -dW/2, so the channel length and the half-cell width (and the
+                  Ron,sp area normalisation) stay constant  -> physical PROCESS variation.
+    pitch_scaling (v1.0): the half-cell grows with the JFET width (design-dimension study)."""
     g = dict(cfg["mosfet"]["geometry"])
-    g["wjfet_um"] = g["wjfet_um"] * wjfet_scale
-    g["x_half_um"] = g["x_pw_um"] + 0.5 * g["wjfet_um"]
+    mode = g.get("wjfet_mode", "pitch_scaling")
+    w0 = g["wjfet_um"]
+    g["wjfet_um"] = w0 * wjfet_scale
+    if mode == "fixed_pitch":
+        shift = 0.5 * (g["wjfet_um"] - w0)                  # > 0: wider JFET, narrower P-well
+        g["x_half_um"] = g["x_pw_um"] + 0.5 * w0             # fixed half-pitch
+        g["x_pw_um"] -= shift
+        g["x_ns1_um"] -= shift
+        g["wjfet_shift_um"] = shift
+    elif mode == "pitch_scaling":
+        g["x_half_um"] = g["x_pw_um"] + 0.5 * g["wjfet_um"]
+    else:
+        raise ValueError(f"unknown wjfet_mode {mode!r}")
+    if not (g["x_ox_start_um"] < g["x_ns1_um"] < g["x_pw_um"] < g["x_half_um"]
+            and g["x_src_contact_um"] < g["x_ns1_um"]):
+        raise ValueError(f"invalid half-cell geometry for wjfet_scale={wjfet_scale}: {g}")
     g["y_sub_um"] = g["t_drift_um"]
     g["y_max_um"] = g["t_drift_um"] + g["t_sub_um"]
     return g

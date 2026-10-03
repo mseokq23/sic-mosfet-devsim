@@ -9,6 +9,8 @@ out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results" / "pretest" /
 df = pd.read_csv(out / "runs.csv")
 F = ["vth_V", "ss_mV_dec", "gm_max_S_per_cm", "ion_A_per_cm", "ron_mohm_cm2", "id_vds_req_A_per_cm"]
 # expected sign of d(feature)/d(+20% change) written before the runs (0 = ~no effect expected)
+# wjfet Ron,sp: -1 was the original expectation; it failed under v1.0 pitch scaling (cell-area effect) and is
+# expected to hold with the v1.1 fixed-pitch definition.
 EXPECT = {"wjfet": dict(vth_V=0, ss_mV_dec=0, ion_A_per_cm=+1, ron_mohm_cm2=-1, id_vds_req_A_per_cm=+1),
           "npwell": dict(vth_V=+1, ss_mV_dec=+1, ion_A_per_cm=-1),
           "qit": dict(vth_V=+1, ss_mV_dec=0, ion_A_per_cm=-1),      # +20% = more negative charge

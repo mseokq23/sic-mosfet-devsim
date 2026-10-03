@@ -1,5 +1,5 @@
 # Baseline configuration (protocol is FROZEN after DOE freeze day; change -> new version tag)
-version: variant-musurf-gamma0 (v1.0-frozen with the pre-test assumption mu_surf_gamma=0)
+version: variant-musurf-gamma0 (v1.1-frozen with the pre-test assumption mu_surf_gamma=0)
 
 numerics:
   extended_precision: false     # Gate 3: double == 128-bit features (dVth ~1e-11 V), 3x faster; gates 1-2 force 128-bit
@@ -11,7 +11,7 @@ numerics:
 material:                        # overrides of src/sicsim/params.py defaults (SiC4H)
   surf_lambda_um: 0.003
   mu_surf300: 20.0
-  mu_surf_gamma: 0.0               # SENSITIVITY VARIANT (limitation analysis); 300 K identical to v1.0
+  mu_surf_gamma: 0.0               # SENSITIVITY VARIANT (limitation analysis); 300 K identical to v1.1
 
 gate: {phi_m: 4.1}               # n+ poly-Si
 
@@ -36,6 +36,7 @@ mosfet:
     x_pw_um: 2.3           # P-well edge = channel end  (L_ch = 0.5 um)
     d_pw_um: 0.7
     wjfet_um: 2.4          # FULL JFET width (half-cell uses wjfet/2); DOE variable via wjfet_scale
+    wjfet_mode: fixed_pitch  # v1.1: pitch fixed, self-aligned P-well/n+ edge moves (channel length kept)
     d_jfet_um: 1.0
     t_drift_um: 10.0
     t_sub_um: 1.0

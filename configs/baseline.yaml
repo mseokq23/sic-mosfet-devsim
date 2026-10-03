@@ -1,5 +1,5 @@
 # Baseline configuration (protocol is FROZEN after DOE freeze day; change -> new version tag)
-version: v1.0-frozen               # frozen 2026-10-02 (1.2 kV-class reference, decisions in docs/ROADMAP.md)
+version: v1.1-frozen               # v1.0 + fixed-pitch JFET-width variation (docs/ROADMAP.md)
 
 numerics:
   extended_precision: false     # Gate 3: double == 128-bit features (dVth ~1e-11 V), 3x faster; gates 1-2 force 128-bit
@@ -36,6 +36,7 @@ mosfet:
     x_pw_um: 2.3           # P-well edge = channel end  (L_ch = 0.5 um)
     d_pw_um: 0.7
     wjfet_um: 2.4          # FULL JFET width (half-cell uses wjfet/2); DOE variable via wjfet_scale
+    wjfet_mode: fixed_pitch  # v1.1: pitch fixed, self-aligned P-well/n+ edge moves (channel length kept)
     d_jfet_um: 1.0
     t_drift_um: 10.0
     t_sub_um: 1.0

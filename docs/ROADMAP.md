@@ -67,7 +67,7 @@ gh run download <run-id> -D artifacts && mkdir -p results/pool/runs && cp artifa
 ```
 
 
-## v1.0 동결 (2026-10-02) — 이 절이 현재 기준
+## v1.0 동결 (2026-10-02) — v1.1로 대체됨(Wjfet 정의 외 동일)
 결정: ① 기준 소자 1.2 kV급 유지 ② 잡음 모델 nominal 유지(Ion·Ron 1%: B1505A/B1500A SMU 정확도 0.1~0.2%에
 접촉 저항 변동·발열 재현 오차가 더해진 값; 원고에는 구체적 측정 불확실도 문헌 인용 필요, Vth·SS·gm 근거도 보완)
 ③ 채널 이동도 `mu_channel_scale`(0.8~1.2)를 교란 변수로 모든 설계에 포함(시뮬레이터 입력, 추정 대상 아님)
@@ -101,3 +101,25 @@ python scripts/identifiability.py results/stage_a_g0
 ```
 RQ3 실제 LLM 호출: 저장소 Settings > Secrets and variables > Codespaces 에 `ANTHROPIC_API_KEY` 등록 후
 `run_al.py ... --llm-live` (없으면 dry-run으로 동일 파이프라인만 검증).
+
+
+## v1.1 동결 (2026-10-03) — 이 절이 현재 기준
+- 변경: JFET 폭 공정편차를 **고정 피치**로 정의(`configs/baseline.yaml` → `geometry.wjfet_mode: fixed_pitch`).
+  마스크 피치(half-cell 3.5 µm)는 고정, 자기정렬된 P-well/n+ 소스 경계가 −ΔW/2 이동, 채널 길이 0.5 µm 유지
+  → Ron,sp 면적 정규화가 일정. (v1.0은 JFET 폭과 함께 셀 피치가 커져 Ron,sp에 비물리적 면적 효과가 섞였음)
+- 검증(샌드박스): 기준점 전달곡선이 v1.0(Codespace 실행)과 비트 단위 동일 · Wjfet ±20% × 300/423 K 4 run 재시도 없이 수렴 ·
+  Ron,sp가 Wjfet +20%에서 −3.1%(300 K)/−4.3%(423 K)로 감소(v1.0: +2.5%/−0.03%) · pytest 29개 통과.
+- CRB 미리보기(v1.0 자코비안 + v1.1 Wjfet 열, nominal 잡음): Wjfet 300 K만 17.9% → 300+423 K 6.9% (비율 0.38, 단순 반복 0.71).
+  Npwell 28.4 → 16.7%, Qit_eff 12.6 → 7.4%. v1.0의 피치 효과가 300 K Wjfet 식별성을 과대평가하고 있었음.
+
+```bash
+git pull
+unzip -o sicsim_patch_v1.1.zip && rm sicsim_patch_v1.1.zip && pytest -q
+git mv results/stage_a_v1 results/archive/stage_a_v1.0
+git add -A && git commit -m "freeze v1.1: fixed-pitch JFET width" && git tag v1.1-frozen && git push && git push --tags
+python -m sicsim.runner configs/design_stage_a.csv --out results/stage_a_v11 --jobs 4   # 34 run, 약 30분
+python scripts/stage_a_report.py results/stage_a_v11
+python scripts/identifiability.py results/stage_a_v11
+git add results && git commit -m "Stage A v1.1" && git push
+```
+이후 풀·테스트(doe-batch), RQ1~3, 온도지수 0 한계 분석은 v1.0 절 3~5번과 같다(5번의 `results/stage_a_v1`은 `results/stage_a_v11`로).
