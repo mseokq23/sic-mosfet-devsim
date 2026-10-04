@@ -117,7 +117,7 @@ DEVSIM import에는 MKL이 필요합니다. 정확한 검증 환경과 설치 �
 
 ## 결과 재분석
 
-저장된 nominal pool/test에서 논문 결과 요약을 다시 생성합니다.
+저장된 nominal pool/test에서 결과 요약을 다시 생성합니다.
 
 ```bash
 python scripts/audit_results.py \
@@ -139,7 +139,7 @@ python scripts/robustness_mixed.py
 - `results/summary/robustness.md`
 
 > [!NOTE]
-> 재분석 명령은 제출용 release에서 검증된 명령을 기준으로 사용하십시오. 분석 스크립트가 기존 summary를 갱신할 수 있으므로, 원본 보존이 필요하면 별도 branch 또는 깨끗한 clone에서 실행하십시오.
+> 재분석 명령은 분석 스크립트가 기존 summary를 갱신할 수 있으므로, 원본 보존이 필요하면 별도 branch 또는 깨끗한 clone에서 실행하십시오.
 
 ## 부분 TCAD 재현
 
@@ -344,29 +344,6 @@ tests/                       # 단위·파이프라인 테스트
 
 계산시간은 실행 환경에 따라 달라집니다. 전체 nominal DOE와 robustness DOE는 quick verification보다 훨씬 많은 계산자원이 필요하므로, 논문 결과 확인만을 위해 전체 TCAD를 다시 실행할 필요는 없습니다.
 
-## 논문 그림 재생성
-
-```bash
-python scripts/make_paper_figures.py
-```
-
-생성 결과는 [`paper/figures/`](paper/figures/)에 저장됩니다. 그림에 사용된 정확한 숫자는 `results/summary/`와 `paper/figure_notes.json`을 함께 확인하십시오.
-
-## 인용
-
-최종 논문과 artifact release가 확정되면 아래 정보를 갱신합니다.
-
-```bibtex
-@software{sic_mosfet_devsim_2026,
-  author  = {Lee, Minseok},
-  title   = {Reproducibility Artifact for Multi-Temperature Inverse Estimation of 4H-SiC Planar MOSFET Parameters},
-  year    = {2026},
-  url     = {https://github.com/mseokq23/sic-mosfet-devsim},
-  version = {paper-v3.0}
-}
-```
-
-논문 제출 후 가능한 경우 GitHub Release를 Zenodo에 보존하여 DOI를 추가합니다.
 
 ## 라이선스
 
