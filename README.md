@@ -3,7 +3,7 @@
 > **Reproducibility artifact for an undergraduate research paper**  
 > *Multi-Temperature Inverse Estimation of Process-Outcome Parameters in 4H-SiC Planar MOSFETs under Physics-Model Mismatch*
 
-[![CI](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml/badge.svg)](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml).
+[![CI](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml/badge.svg)](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![DEVSIM](https://img.shields.io/badge/DEVSIM-2.11.0-blue.svg)](environment.txt)
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](environment.txt)
