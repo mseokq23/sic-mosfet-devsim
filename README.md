@@ -320,10 +320,9 @@ tests/               단위·파이프라인 시험
 - 모든 run은 `MKL_NUM_THREADS=1`, `OMP_NUM_THREADS=1`로 실행합니다. 같은 환경에서는 결과가 비트 단위로 같고, 다른 CPU에서는 곡선 일부 점에 10<sup>−13</sup> 수준의 반올림 차이가 생길 수 있습니다.
 - run당 계산 시간: GitHub Actions 중앙값 45–49 s, Codespaces 약 80 s(1코어). 명목 DOE는 약 16 코어·시간, 강건성 DOE는 약 33 코어·시간입니다.
 
-## 인용
+## 인용(수정 중)
 
-이 저장소를 인용하려면 GitHub의 **Cite this repository**(아래 [`CITATION.cff`](CITATION.cff) 기반)를 쓰거나 다음 BibTeX를 사용하십시오. 논문이 게재되면 학회명·권호·쪽수와 DOI를 추가합니다.
-
+이 저장소를 인용하려면 GitHub의 **Cite this repository**(아래 [`CITATION.cff`](CITATION.cff) 기반)를 쓰거나 다음 BibTeX를 사용하십시오. 
 ```bibtex
 @software{lee2026sicmosfetdevsim,
   author  = {Lee, Minseok},
@@ -338,11 +337,6 @@ tests/               단위·파이프라인 시험
 ## 라이선스
 
 코드는 [MIT License](LICENSE)를 따릅니다. DEVSIM 등 외부 소프트웨어와 데이터시트·문헌 자료는 각 저작권자의 조건을 따릅니다.
-
-## AI 도구 사용 고지
-
-<!-- 학회 규정에 맞게 수정하거나 삭제하십시오. -->
-코드 작성, 분석 스크립트 정리, 문서·원고 초안 작성에 대화형 AI 도구(Anthropic Claude)를 보조적으로 사용하였습니다. 연구 질문과 설계의 결정, 시뮬레이션 실행, 결과 확인은 저자가 수행하였습니다. RQ3에서 연구 대상으로 사용한 Claude API 호출은 위 [LLM 사용 범위](#llm-사용-범위)에 별도로 기록되어 있습니다.
 
 ## 문의
 
