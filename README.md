@@ -10,9 +10,6 @@
 
 이 저장소는 **DEVSIM 기반 4H-SiC 평판형 MOSFET의 다중 온도 공정 결과 파라미터 역추정**, **적응형 TCAD 표본선택**, **LLM 보조 후보 재순위화**, **물리모델 불일치 강건성 시험**을 재현하기 위한 코드·설정·원자료·분석 결과를 제공합니다.
 
-> [!IMPORTANT]
-> 이 저장소는 시뮬레이션 기반 **모델 내부 식별성 및 지정된 model mismatch**를 검증합니다. 실제 제작 소자의 정량적 공정 역추정이나 실측 보정 완료 모델을 주장하지 않습니다.
-
 ## Artifact 상태
 
 | 항목 | 값 |
@@ -20,7 +17,6 @@
 | 저장소 상태 | 논문 제출용 재현성 artifact |
 | 기준 소자·물리 설정 | [`v1.1-frozen`](https://github.com/mseokq23/sic-mosfet-devsim/releases/tag/v1.1-frozen) |
 | 현재 기준 브랜치 | `main` |
-| 권장 인용 단위 | 최종 paper release 및 해당 commit SHA |
 | Nominal dataset | 512 pool + 128 independent test points, 각 300/423 K |
 | Robustness dataset | 4개 변형 × (512 pool + 128 test), 423 K 재계산 |
 | 라이선스 | MIT |
@@ -38,7 +34,7 @@
 2. 채널 이동도 온도지수 \(\gamma\in\{+1,0,-1\}\)의 matched-physics 조건에서 다중 온도 이득은 유지됐습니다.
 3. Nominal physics로 학습한 다중 온도 모델은 고온 물리가 달라진 out-of-model 시험에서 큰 오차를 보여, 추가 정보와 model-form risk를 함께 평가해야 함을 확인했습니다.
 4. 실행 후 수행한 탐색적 혼합물리 학습은 검토한 시나리오에서 약 **22–29%**의 다중 온도 이득을 유지했습니다.
-5. LLM 후보 재순위화는 수치적 불확실도·다양성 정책 대비 유의한 정확도 향상을 보이지 않았습니다. 따라서 LLM은 성능 우위 기법이 아니라 **구조화되고 검증 가능한 보조 선택 인터페이스**로 해석합니다.
+5. LLM 후보 재순위화는 수치적 불확실도·다양성 정책 대비 유의한 정확도 향상을 보이지 않았습니다. 따라서 LLM은 성능 우위 기법이 아니라 **구조화되고 검증 가능한 보조 선택 인터페이스**로 선택 가능함을 확인했습니다.
 
 정확한 수치, 신뢰구간 및 조건은 아래 결과 문서를 기준으로 확인하십시오.
 
@@ -63,7 +59,7 @@
 | 검증 범위 | 동일 TCAD 모델 내 역식별성과 지정된 물리·기생성분 불일치 |
 | 미검증 | 항복전압 정량 검증, 실측 기반 parameter calibration, 실제 공정조건과 유효 파라미터의 일대일 대응 |
 
-`1.2 kV급`은 참고 구조의 등급을 의미하며, 본 연구에서 충돌 이온화를 사용해 항복전압을 검증했다는 의미가 아닙니다.
+`1.2 kV급`은 참고 구조의 등급을 의미하며, 본 연구에서 충돌 이온화를 사용해 항복전압을 검증하진 않았습니다.
 
 ## 논문–Artifact 대응표
 
@@ -180,7 +176,7 @@ python -m sicsim.runner configs/design_test.csv \
 - 총 nominal 계산: 1,280 runs
 - Runner는 run별 JSON을 즉시 저장하므로 같은 명령으로 중단 지점부터 재개할 수 있습니다.
 
-GitHub Actions의 DOE workflow를 사용하면 design CSV를 shard로 나눠 계산할 수 있습니다. 상세 명령과 예상 계산량은 [`docs/ROADMAP.md`](docs/ROADMAP.md)를 확인하십시오.
+GitHub Actions의 DOE workflow를 사용하면 design CSV를 shard로 나눠 계산할 수 있습니다. 상세 명령과 예상 계산량은 [`docs/ROADMAP.md`](docs/ROADMAP.md)를 확인하십시오(본 연구에서는 해당 workflow를 활용).
 
 ### Robustness DOE
 
@@ -220,7 +216,7 @@ GitHub에서 **Actions → robustness-batch → Run workflow**를 사용합니�
 
 자세한 결과와 실행 전 예측의 대응은 [`docs/ROBUSTNESS_RESULTS.md`](docs/ROBUSTNESS_RESULTS.md)를 확인하십시오.
 
-> 수렴성과 독립 재계산 일치는 계산 일관성의 증거이며, 제작 소자에 대한 실험 검증을 의미하지 않습니다.
+> 수렴성과 독립 재계산 일치는 계산 일관성의 증거이며, 제작 소자에 대한 실험 검증을 의미X.
 
 ## 분석 계획과 탐색적 분석
 
@@ -235,7 +231,7 @@ Git commit은 분석 계획과 결과의 시간 순서를 보여주지만, OSF �
 
 ## LLM 보조 표본선택
 
-LLM은 DEVSIM을 직접 제어하지 않습니다. 수치 정책이 사전 선별한 후보를 구조화된 정보에 따라 재순위화하며, 출력은 Pydantic 기반 결정론적 검증기를 통과해야만 사용됩니다.
+LLM은 DEVSIM을 직접 제어하지 않습니다. 수치 정책이 사전 선별한 후보를 구조화된 정보에 따라 재순위화하며, 출력은 Pydantic 기반 결정론적 검증기를 통과해야만 사용되도록 했습니다.
 
 논문에 사용된 live-API 기록은 [`results/al_live/nominal/`](results/al_live/nominal/)에 있습니다.
 
@@ -244,7 +240,7 @@ LLM은 DEVSIM을 직접 제어하지 않습니다. 수치 정책이 사전 선�
 - `al_curves.csv`: 정책별 학습곡선
 - `rq1_feature_sets.json`: 동일 실행에서 사용한 특징집합 결과
 
-외부 호스팅 LLM은 서비스 업데이트와 비결정성 때문에 동일 응답을 bitwise 재현하지 못할 수 있습니다. 따라서 논문 결과의 canonical record는 commit된 JSONL 로그입니다. API key 값은 기록하지 않으며, key가 없거나 호출이 실패한 경우 live 실행을 dry-run으로 조용히 대체하지 않고 중단합니다.
+외부 호스팅 LLM은 서비스 업데이트와 비결정성 때문에 동일 응답을 bitwise 재현하지 못할 수 있습니다. 따라서 논문 결과의 canonical record는 commit된 JSONL 로그입니다. API key 값은 기록하지 않으며, key가 없거나 호출이 실패한 경우 live 실행 중단합니다(과거 버전에서는 dry-run을 허용함).
 
 Live 호출 전 점검:
 
@@ -265,7 +261,7 @@ python scripts/run_al.py \
   --out results/al_live
 ```
 
-LLM 실호출에는 별도의 API key와 비용이 필요합니다. 논문의 성능 결과는 과거 dry-run이 아니라 `results/al_live/nominal/`의 live 기록만 사용합니다.
+LLM 실호출에는 별도의 API key와 비용이 필요합니다. 논문의 성능 결과는 `results/al_live/nominal/`의 live 기록을 사용.
 
 ## Provenance
 
@@ -312,8 +308,6 @@ paper/                       # 논문 초안, 캡션 및 그림
 docs/                        # 분석 계획, 감사, 강건성 결과, 로드맵
 tests/                       # 단위·파이프라인 테스트
 ```
-
-기존 코드·결과 디렉터리 구조는 논문 artifact와 개발 이력을 보존하기 위해 유지합니다.
 
 ## 알려진 수치 한계
 
