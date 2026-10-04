@@ -25,8 +25,6 @@
 | Robustness dataset | 4개 변형 × (512 pool + 128 test), 423 K 재계산 |
 | 라이선스 | MIT |
 
-논문 제출 시에는 변경 가능한 `main` URL보다 **최종 GitHub Release 또는 commit SHA**를 사용하십시오. 현재 개발 이력에는 `v1.0-frozen`, `v1.1-frozen` 태그가 있으며, 논문 V3 전체를 고정하는 별도 paper release를 생성할 예정입니다.
-
 ## 연구 질문
 
 - **RQ1 — 다중 온도 식별성:** 300 K와 423 K 특징을 결합하면 300 K 단독 특징보다 잠재 공정 결과 파라미터 역추정 오차가 감소하는가?
