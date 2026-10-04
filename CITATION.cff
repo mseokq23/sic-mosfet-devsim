@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite it using the metadata below."
+type: software
+title: "sic-mosfet-devsim: DEVSIM-based multi-temperature inverse estimation of process-outcome parameters in 4H-SiC planar MOSFETs"
+abstract: >-
+  Simulation code, frozen configurations, per-run raw data and analysis scripts for a study that
+  estimates the JFET width, P-well doping and effective interface charge of a 4H-SiC planar MOSFET
+  from DC characteristics simulated with DEVSIM at 300 K and 423 K, evaluates the robustness of the
+  multi-temperature gain to high-temperature physics assumptions, and compares adaptive and
+  LLM-assisted TCAD sample-selection policies.
+authors:
+  - family-names: Lee
+    given-names: Minseok
+    affiliation: "Department of Electronic Engineering, Kwangwoon University"
+    email: minseok1270@gmail.com
+version: "1.4a"
+date-released: 2026-10-04
+license: MIT
+repository-code: "https://github.com/mseokq23/sic-mosfet-devsim"
+url: "https://github.com/mseokq23/sic-mosfet-devsim"
+keywords:
+  - 4H-SiC MOSFET
+  - DEVSIM
+  - TCAD
+  - inverse estimation
+  - multi-temperature characterization
+  - model mismatch
+  - active learning
+  - large language model
+# TODO after a GitHub release with Zenodo archiving: add
+#   identifiers:
+#     - type: doi
+#       value: 10.5281/zenodo.XXXXXXX
+preferred-citation:
+  type: conference-paper
+  title: "Multi-Temperature Inverse Estimation of Process-Outcome Parameters and LLM-Assisted Adaptive Experiment Selection for 4H-SiC Planar MOSFETs Using DEVSIM"
+  authors:
+    - family-names: Lee
+      given-names: Minseok
+      affiliation: "Department of Electronic Engineering, Kwangwoon University"
+  year: 2026
+  status: in-preparation
+  languages:
+    - kor
+  # TODO after acceptance: change status, add collection-title (proceedings name), start/end pages and doi.
+references:
+  - type: article
+    authors:
+      - family-names: Sanchez
+        given-names: Juan E.
+    title: "DEVSIM: A TCAD Semiconductor Device Simulator"
+    journal: "Journal of Open Source Software"
+    volume: 7
+    issue: 70
+    start: 3898
+    year: 2022
+    doi: 10.21105/joss.03898
