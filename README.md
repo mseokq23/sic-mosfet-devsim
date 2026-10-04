@@ -320,10 +320,9 @@ tests/               단위·파이프라인 시험
 - 모든 run은 `MKL_NUM_THREADS=1`, `OMP_NUM_THREADS=1`로 실행합니다. 같은 환경에서는 결과가 비트 단위로 같고, 다른 CPU에서는 곡선 일부 점에 10<sup>−13</sup> 수준의 반올림 차이가 생길 수 있습니다.
 - run당 계산 시간: GitHub Actions 중앙값 45–49 s, Codespaces 약 80 s(1코어). 명목 DOE는 약 16 코어·시간, 강건성 DOE는 약 33 코어·시간입니다.
 
-## 인용
+## 인용(수정 중)
 
-이 저장소를 인용하려면 GitHub의 **Cite this repository**(아래 [`CITATION.cff`](CITATION.cff) 기반)를 쓰거나 다음 BibTeX를 사용하십시오. 논문이 게재되면 학회명·권호·쪽수와 DOI를 추가합니다.
-
+이 저장소를 인용하려면 GitHub의 **Cite this repository**(아래 [`CITATION.cff`](CITATION.cff) 기반)를 쓰거나 다음 BibTeX를 사용하십시오. 
 ```bibtex
 @software{lee2026sicmosfetdevsim,
   author  = {Lee, Minseok},
