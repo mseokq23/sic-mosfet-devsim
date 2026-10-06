@@ -70,7 +70,7 @@ def fig1():
     ax.text(1.75, 1.22, "n$^-$ drift (10 µm, 10$^{16}$ cm$^{-3}$)", **t); ax.text(1.75, 2.15, "n$^+$ substrate", color="white", **t)
     ax.text(1.75, Y(td + ts) + 0.2, "Drain", **t); ax.text(0.7, -0.065, "Source", fontsize=6, ha="center", va="center", zorder=9)
     ax.text(2.5, -tox - 0.065, "Gate", color="white", fontsize=6, ha="center", va="center", zorder=9)
-    ax.annotate("channel ($\\mu_{ch}$)", xy=(0.5 * (g["x_ns1_um"] + g["x_pw_um"]), 0.02), xytext=(2.02, 0.34),
+    ax.annotate("channel ($s_{\\mu}$)", xy=(0.5 * (g["x_ns1_um"] + g["x_pw_um"]), 0.02), xytext=(2.02, 0.34),
                 fontsize=6, ha="center", zorder=9, arrowprops=dict(arrowstyle="->", lw=0.5, shrinkA=0, shrinkB=0))
     ax.annotate("$Q_{it,eff}$", xy=(3.15, 0.0), xytext=(3.12, 0.22), fontsize=6.5, color="#c00000", zorder=9,
                 arrowprops=dict(arrowstyle="-", lw=0.5, color="#c00000"))
@@ -95,7 +95,7 @@ def fig1():
             bx.text(*tx, text, fontsize=5.8, ha="center", va="center", color="#404040", style="italic")
     top, bot, w, h = 0.76, 0.24, 0.178, 0.34
     X = [0.095, 0.295, 0.495, 0.695, 0.900]
-    T = ["Process point\n$W_{JFET}$, $N_{pw}$, $Q_{it,eff}$\n+ nuisance $\\mu_{ch}$",
+    T = ["Process point\n$W_{JFET}$, $N_{pw}$, $Q_{it,eff}$\n+ nuisance $s_{\\mu}$",
          "DEVSIM 2-D\ndrift–diffusion\nhalf-cell\n300 K & 423 K",
          "Features\n$V_{th}$, SS, $g_{m,max}$,\n$I_{on}$, $R_{on,sp}$, $I_D$(2 V),\nlog $I_D(V_{GS})$",
          "Measurement\nnoise model\n+ current floor",
@@ -215,7 +215,7 @@ def fig3():
         m = np.array([e[0] for e in eb[S]]); s = np.array([e[1] for e in eb[S]])
         ax[1].errorbar(budgets, m, yerr=s, color=c, marker=mk, ms=3, capsize=1.5, lw=0.9, label=lab)
     ax[1].set_xscale("log", base=2); ax[1].set_xticks(budgets); ax[1].set_xticklabels([str(b) for b in budgets])
-    ax[1].set(xlabel="DEVSIM runs (training)", ylabel="mean MAE / range"); ax[1].legend(loc="upper right")
+    ax[1].set(xlabel="DEVSIM runs (training)", ylabel="mean MAE / range"); ax[1].legend(loc="center right")
     for a, s in zip(ax, "ab"):
         label(a, f"({s})", -0.15, 1.0); a.grid(alpha=0.25, lw=0.4, axis="y")
     fig.tight_layout(pad=0.3, h_pad=0.8)
@@ -269,7 +269,7 @@ def table1():
     dv = J(R / "stage_a_v11/stage_a_summary.json")["dvth_T"]
     feats = [("ΔV_th (mV)", "vth_V", 1e3), ("SS (%)", "ss_mV_dec", 100), ("g_m,max (%)", "gm_max_S_per_cm", 100),
              ("I_on (%)", "ion_A_per_cm", 100), ("R_on,sp (%)", "ron_mohm_cm2", 100), ("I_D @ V_DS=2 V (%)", "id_vds_req_A_per_cm", 100)]
-    varsx = [("wjfet", "W_JFET"), ("npwell", "N_pw"), ("qit", "Q_it,eff"), ("mu", "μ_ch (nuisance)")]
+    varsx = [("wjfet", "W_JFET"), ("npwell", "N_pw"), ("qit", "Q_it,eff"), ("mu", "s_μ (nuisance)")]
     fmt = lambda v: "0.0" if abs(v) < 0.05 else f"{v:+.1f}"
     rows = []
     for name, col, sc in feats:
