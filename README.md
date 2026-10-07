@@ -263,6 +263,17 @@ python -m sicsim.runner configs/design_test.csv --out results/test --jobs 4
 
 Git 커밋은 계획과 결과의 시간 순서를 보여 주지만, OSF 같은 독립 기관의 사전 등록과는 다릅니다. 이 저장소에서는 "실행 또는 분석 전에 커밋된 분석 계획"이라고 표현합니다.
 
+### v4.7 통제 실험 (브랜치 `exp/v4.7-controls`, 진행 중)
+
+원고 V4.6a 시점의 main은 태그 `v1.7-baseline`으로 고정했습니다. 이 브랜치는 새 DEVSIM 계산 없이 두 가지를 추가합니다.
+
+| 실험 | 질문 | 계획·예측 | 실행 |
+|---|---|---|---|
+| 반복 측정 통제 S1×2 | 423 K의 이득이 같은 소자를 300 K에서 두 번 측정한 효과보다 큰가? (잡음 상관 ρ 스윕 포함) | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §1 | `scripts/repeat_control.py` |
+| RQ3 절제 | LLM이 제공 정보를 실제로 쓰는가? 익명화(B)·정보 섞기(C)·상위 20 내 무작위(D)를 같은 환경에서 비교 | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §2 | `scripts/run_al.py --llm-variant`, `scripts/rq3_ablation.py` |
+
+실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
+
 ## 타당성에 대한 위협
 
 - **내적 타당성.** 300 K V<sub>th</sub> 추출의 할선 반복 오차가 최대 약 3 mV이고, 0.25 V 게이트 격자 때문에 g<sub>m,max</sub> 분해능은 약 1.3%입니다. 둘 다 가정한 측정 잡음보다 작습니다. 일부 고문턱 소자의 V<sub>GS</sub> = 4 V 전류는 수치 바닥 아래여서 1×10<sup>−11</sup> A/cm로 절단합니다.
