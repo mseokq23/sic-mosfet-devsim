@@ -1,13 +1,15 @@
 # v4.7 통제 실험 실행 절차 (Codespaces)
 
-분석 계획과 사전 예측: [`PREDICTIONS_V47.md`](PREDICTIONS_V47.md). 논문 V4.6a 시점의 main은 태그 `v1.7-baseline`으로
-고정되어 있으며, 이 브랜치(`exp/v4.7-controls`)는 main을 바꾸지 않는다. 새 DEVSIM 계산은 없다.
+분석 계획과 사전 예측: [`PREDICTIONS_V47.md`](PREDICTIONS_V47.md). 논문 V4.6a 시점의 main은 커밋 `a2837f9`이고,
+이 브랜치(`exp/v4.7-controls`)는 main을 바꾸지 않는다. 새 DEVSIM 계산은 없다.
 
 ## 0. 준비 (1분)
 ```bash
-git fetch origin --tags
+git fetch origin
 git checkout exp/v4.7-controls && git pull
 pip install -e .            # 새 모듈(sicsim.controls, sicsim.ablation) 반영
+# (선택, 1회) V4.6a 시점의 main을 태그로 고정
+git tag -a v1.7-baseline a2837f9 -m "main as used for manuscript V4.6a, before the v4.7 controls" && git push origin v1.7-baseline
 ```
 - `docs/PREDICTIONS_V47.md`를 읽고, 예측을 고치려면 **실행 전에** 고쳐서 커밋한다(실행 후에는 고치지 않는다).
 - Codespaces secret `MSEOKQ_CLAUDE`가 이 저장소에 연결되어 있어야 한다(`llm` 단계에서만 필요).
@@ -52,6 +54,6 @@ git push
 
 ## 4. 원본으로 돌아가기
 ```bash
-git checkout main            # 또는: git checkout v1.7-baseline
+git checkout main            # 또는: git checkout a2837f9 (태그를 만들었다면 v1.7-baseline)
 ```
 이 브랜치의 결과와 코드는 main에 합치기 전까지 main의 결과·그림·원고에 영향을 주지 않는다.
