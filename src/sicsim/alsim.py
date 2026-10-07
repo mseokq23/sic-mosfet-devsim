@@ -4,6 +4,8 @@ The candidate pool and an independent test set are simulated ONCE; each policy t
 (DEVSIM results) from the pool.  Same pool, same initial set and same budget for every policy and seed
 -> fair multi-seed comparison at a fraction of the DEVSIM cost (RQ2/RQ3).
 Policies: random | sobol (pool order) | uncertainty (forward-surrogate tree variance + diversity) | llm
+          | top20_random (v4.7 ablation D: 10 drawn uniformly from the uncertainty top-20, no LLM)
+LLM variants (llm_cfg['variant'], v4.7 ablation): named (A) | anon (B) | shuffled (C), see ablation.py.
 """
 from __future__ import annotations
 
@@ -13,6 +15,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GroupKFold
 
 from . import llm as llm_mod
+from .ablation import shuffle_rng, top_random, transform_payload
 from .analysis import feature_set, fit_predict, metrics
 from .design import NUISANCE, VARS, _spec, load_bounds
 
@@ -90,6 +93,9 @@ def run_policy(pool: pd.DataFrame, test: pd.DataFrame, policy: str, seed=0, n_in
             unc = forward_uncertainty(Ppool[idx], Xpool[idx], Ppool[ridx], seed)
             if policy == "uncertainty":
                 new = diverse_top(rest, unc, Ppool[ridx], Ppool[idx], batch)
+            elif policy == "top20_random":
+                top = np.argsort(-unc)[:top_n]
+                new = [rest[j] for j in top_random(top, batch, np.random.default_rng([seed, r, 2020]))]
             elif policy == "llm":
                 top = np.argsort(-unc)[:top_n]
                 dist = _min_dist(Ppool[ridx][top], Ppool[idx])
@@ -107,7 +113,10 @@ def run_policy(pool: pd.DataFrame, test: pd.DataFrame, policy: str, seed=0, n_in
                                                 predictive_uncertainty=round(float(unc[j]), 4),
                                                 distance_to_train=round(float(dist[i]), 4))
                                            for i, j in enumerate(top)])
-                new, _ = llm_mod.select(payload, sel, llm_cfg or {"dry_run": True}, llm_log)
+                cfg = llm_cfg or {"dry_run": True}
+                variant = cfg.get("variant", "named")
+                shown, truth = transform_payload(payload, variant, shuffle_rng(seed, r) if variant == "shuffled" else None)
+                new, _ = llm_mod.select(shown, sel, cfg, llm_log, truth=truth)
                 if new is None:                  # fixed fallback rule
                     new = diverse_top(rest, unc, Ppool[ridx], Ppool[idx], batch)
             else:
