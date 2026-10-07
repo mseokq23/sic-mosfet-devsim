@@ -1,0 +1,36 @@
+{
+ "noise": "nominal",
+ "noise_version": "noise-v1.1",
+ "current_floor": 1e-11,
+ "seeds": 10,
+ "n_init": 60,
+ "batch": 10,
+ "rounds": 6,
+ "feature_set": "S2",
+ "model": "rf",
+ "policies": [
+  "llm"
+ ],
+ "llm_mode": "live",
+ "llm_model": "claude-sonnet-5-5",
+ "llm_variant": "anon",
+ "replay_log": null,
+ "api_key_env": "MSEOKQ_CLAUDE",
+ "code_commit": "2b2a7ff",
+ "code_dirty": false,
+ "plan_commit": "cb3534b",
+ "env": {
+  "python": "3.12.14",
+  "numpy": "2.5.3",
+  "sklearn": "1.9.1",
+  "pandas": "3.0.6",
+  "platform": "Linux-6.8.0-1064-azure-x86_64-with-glibc2.41",
+  "cpu": "AMD EPYC 7763 64-Core Processor",
+  "numpy_simd": [
+   "SSE42",
+   "AVX2",
+   "FMA3"
+  ]
+ },
+ "created_at": "2026-10-07T14:41:43+00:00"
+}
