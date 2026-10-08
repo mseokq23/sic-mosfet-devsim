@@ -51,9 +51,9 @@ def panel_a(ax):
         if con["ci"][1] < 0:
             top = out["S1x2"]["hi"][j] + 0.012
             ax.plot([x[j], x[j], x[j] + wd, x[j] + wd], [top - 0.004, top, top, top - 0.004], color="k", lw=0.5)
-            ax.text(x[j] + wd / 2, top + 0.003, f"−{100 * (1 - con['ratio']):.0f}%", ha="center", va="bottom", fontsize=6)
+            ax.text(x[j] + wd / 2, top + 0.003, f"−{100 * (1 - con['ratio']):.0f}% vs S1×2", ha="center", va="bottom", fontsize=5.6)
     ax.axhline(0.25, color="k", lw=0.5, ls="--")
-    ax.text(2.55, 0.244, "no information (uniform guess)", fontsize=6, ha="right", va="top")
+    ax.text(2.42, 0.244, "no information (midpoint guess)", fontsize=6, ha="right", va="top")
     ax.set_xticks(x); ax.set_xticklabels([M.TAG[v] for v in VARS]); ax.set_ylabel("MAE / DOE range"); ax.set_ylim(0, 0.315)
     ax.legend(loc="upper center", ncol=3, fontsize=5.8, columnspacing=0.9, handlelength=1.4, borderaxespad=0.3)
     ax.grid(alpha=0.25, lw=0.4, axis="y")
@@ -95,8 +95,9 @@ def panel_c(ax):
     x = np.arange(len(keys)); wd = 0.26
 
     def bar(xx, v, color, hatch=None, w=wd):
-        ax.bar(xx, v, w, color=color, edgecolor="k", lw=0.3, hatch=hatch)
-        ax.text(xx, v * 1.07, f"{v:.3f}", ha="center", va="bottom", fontsize=4.8, rotation=90)
+        ax.bar(xx, v, w, color=color, edgecolor="k", lw=0.3, hatch=hatch, zorder=2)
+        ax.text(xx, v * 1.07, f"{v:.3f}", ha="center", va="bottom", fontsize=4.8, rotation=90, zorder=6,
+                bbox=dict(facecolor="white", edgecolor="none", pad=0.15, alpha=0.9))
 
     for i, (k, kin, kout) in enumerate(keys):
         bar(x[i] - wd, rb[kin]["S2"]["mean"], "#2f5597")
@@ -108,9 +109,10 @@ def panel_c(ax):
     for xx, v, c, h in ((xs - wd, sr["S1"]["mean"], C_S1, "////"), (xs, sr["S1x2"]["mean"], C_S1X2, "////"),
                         (xs + wd, sr["S2"]["mean"], "#c0392b", "////")):
         bar(xx, v, c, h)
-    ax.axhline(s1, color="k", lw=0.6, ls="--")
-    ax.axhline(s1x2, color=C_S1X2, lw=0.8, ls=(0, (4, 1.5, 1, 1.5)))
-    ax.set_yscale("log"); ax.set_ylim(0.02, 9.0)
+    ax.axhline(s1, color="k", lw=0.6, ls="--", zorder=1)
+    ax.axhline(s1x2, color=C_S1X2, lw=0.8, ls=(0, (4, 1.5, 1, 1.5)), zorder=1)
+    ax.axhline(0.25, color="0.45", lw=0.6, ls=":", zorder=1)
+    ax.set_yscale("log"); ax.set_ylim(0.02, 30.0)
     ax.set_xticks(list(x) + [xs]); ax.set_xticklabels(labels + ["Series $R$"], fontsize=6)
     ax.set_ylabel("mean MAE / range (log)"); ax.set_xlabel("423 K physics of the test data")
     ax.legend(handles=[Patch(fc="#2f5597", ec="k", lw=0.3, label="S2, matched training"),
@@ -118,7 +120,8 @@ def panel_c(ax):
                        Patch(fc="#2ca02c", ec="k", lw=0.3, label="S2, mixed physics (post hoc)"),
                        Patch(fc="white", ec="k", lw=0.3, hatch="////", label="with series $R$ (S1, S1×2, S2)"),
                        Line2D([0], [0], color="k", lw=0.6, ls="--", label=f"S1 = {s1:.3f}"),
-                       Line2D([0], [0], color=C_S1X2, lw=0.8, ls=(0, (4, 1.5, 1, 1.5)), label=f"S1×2 = {s1x2:.3f}")],
+                       Line2D([0], [0], color=C_S1X2, lw=0.8, ls=(0, (4, 1.5, 1, 1.5)), label=f"S1×2 = {s1x2:.3f}"),
+                       Line2D([0], [0], color="0.45", lw=0.6, ls=":", label="no information = 0.25")],
               loc="upper left", ncol=2, fontsize=5.2, columnspacing=0.9, handlelength=1.6)
     ax.grid(alpha=0.25, lw=0.4, axis="y", which="both")
     NOTES["fig3c"] = dict(S1=round(s1, 4), S1x2=round(s1x2, 4), series_r={k: round(v["mean"], 4) for k, v in sr.items()})
