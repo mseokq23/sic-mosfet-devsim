@@ -46,7 +46,7 @@ This repository accompanies a study that uses the open-source TCAD tool DEVSIM t
 | 분석 | 결과 | 근거 파일 |
 |---|---|---|
 | RQ1: 300 K(S1) 대 300+423 K(S2) | MAE<sub>norm</sub> 0.112 → 0.072 (−36%), S2−S1 [−0.049, −0.031]; W<sub>JFET</sub> −53%, N<sub>pw</sub> −28%, Q<sub>it,eff</sub> −27% | [`rq1.md`](results/summary/rq1.md), [`robustness.json`](results/summary/robustness.json) |
-| RQ1: 같은 DEVSIM 실행 수 | 120 run에서 S2(60점) 0.084, S1은 480 run에서도 0.113 | [`rq1_equal_budget.md`](results/summary/rq1_equal_budget.md) |
+| RQ1: 같은 DEVSIM 실행 수 | 120 run에서 S2(60점) 0.085, S1은 480 run에서도 0.113 | [`rq1_equal_budget.md`](results/summary/rq1_equal_budget.md) |
 | RQ1: 선형 Ridge | S1 0.117 → S2 0.073 | [`ridge_rq1.json`](results/summary/ridge_rq1.json) |
 | 같은 물리로 학습: 이동도 지수 γ = 0, −1 | S2 0.073, 0.076 (S1 대비 −35%, −32%, CI 모두 0 미만) | [`robustness.md`](results/summary/robustness.md) |
 | 같은 물리로 학습: 계면전하 감소 r = 0.1, 0.3 | S2 0.057, 0.033 (423 K V<sub>th</sub>가 Q<sub>it,eff</sub>에 비례해 추가 이동) | [`robustness.md`](results/summary/robustness.md) |
@@ -55,6 +55,8 @@ This repository accompanies a study that uses the open-source TCAD tool DEVSIM t
 | 기생 직렬저항 (탐색적, 시험 데이터에만 적용) | S1 0.378, S2 0.261 | [`robustness.md`](results/summary/robustness.md) |
 | RQ2: 불확실도 선택 | 무작위 대비 최종 −0.0025 [−0.0039, −0.0009], 약 12% 절감(초기 30점이면 약 20%), Sobol 순서(−0.0023)와 비슷 | [`rq2.md`](results/summary/rq2.md), [`al_ninit_summary.csv`](results/summary/al_ninit_summary.csv) |
 | RQ3: LLM 보조 선택 | 60회 중 59회 검증 통과, 최종 0.1250 대 불확실도 0.1238, 차이 +0.0012 [−0.0008, +0.0035] | [`rq3.md`](results/summary/rq3.md), [`llm_calls.jsonl`](results/al_live/nominal/llm_calls.jsonl) |
+| v4.7 반복 측정 통제 S1×2 | 300 K 두 번 측정 0.086(S1 대비 −23%). S2−S1×2 −0.0145 [−0.0237, −0.0060], 온도 고유 이득은 W<sub>JFET</sub>에 집중(0.079 → 0.050, [−0.040, −0.017]); 잡음 상관 ρ = 0.9에서 S1×2 0.110, S2 0.075 | [`v47_repeat_control.md`](results/summary/v47_repeat_control.md), [`V47_RESULTS.md`](docs/V47_RESULTS.md) |
+| v4.7 RQ3 절제 | 원본(A)·익명화(B)·정보 섞기(C)·상위 20 내 무작위(D) 모두 불확실도와 최종 오차 차이의 CI가 0 포함. C의 선택은 표시된 상위 10과 64% 겹침(실제 49%), 틀리게 표시한 최악 변수 방향 확대 51/59 | [`v47_rq3_ablation.md`](results/summary/v47_rq3_ablation.md), [`V47_RESULTS.md`](docs/V47_RESULTS.md) |
 
 <p align="center">
   <img src="paper/figures/fig3_rq1.png" width="520" alt="RQ1 results">
@@ -263,7 +265,7 @@ python -m sicsim.runner configs/design_test.csv --out results/test --jobs 4
 
 Git 커밋은 계획과 결과의 시간 순서를 보여 주지만, OSF 같은 독립 기관의 사전 등록과는 다릅니다. 이 저장소에서는 "실행 또는 분석 전에 커밋된 분석 계획"이라고 표현합니다.
 
-### v4.7 통제 실험 (브랜치 `exp/v4.7-controls`, 진행 중)
+### v4.7 통제 실험 (브랜치 `exp/v4.7-controls`, 실행·원고 반영 완료)
 
 원고 V4.6a 시점의 main은 커밋 `a2837f9`입니다(태그 `v1.7-baseline`으로 고정하는 명령은 실행 절차 0단계). 이 브랜치는 main을 바꾸지 않고, 새 DEVSIM 계산 없이 두 가지를 추가합니다.
 
@@ -272,7 +274,7 @@ Git 커밋은 계획과 결과의 시간 순서를 보여 주지만, OSF 같은 
 | 반복 측정 통제 S1×2 | 423 K의 이득이 같은 소자를 300 K에서 두 번 측정한 효과보다 큰가? (잡음 상관 ρ 스윕 포함) | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §1 | `scripts/repeat_control.py` |
 | RQ3 절제 | LLM이 제공 정보를 실제로 쓰는가? 익명화(B)·정보 섞기(C)·상위 20 내 무작위(D)를 같은 환경에서 비교 | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §2 | `scripts/run_al.py --llm-variant`, `scripts/rq3_ablation.py` |
 
-실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
+실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 결과(커밋 `486b38e`)와 사전 예측의 대조는 [`V47_RESULTS.md`](docs/V47_RESULTS.md)에 있으며, 예측 C1–C9·Q1–Q7 가운데 Q2만 부분 적중이었습니다. 원고는 `paper/final/build_v47.js`(`proc`/`review`), 그림은 `scripts/make_v47_figures.py`로 다시 만듭니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
 
 ## 타당성에 대한 위협
 

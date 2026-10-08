@@ -9,8 +9,8 @@
 | 5 | ~10/11 | Sobol 풀 512점 + 독립 테스트 128점 × 2온도(약 1,280 run) 사전 계산 | results/pool, results/test |
 | 6 | ~10/13 | RQ1(S1/S2/S3) + RQ2·RQ3(정책 4종 × 시드 10, 초기 60 + 10×6) | rq1_feature_sets.json, al_curves.csv, llm_calls.jsonl |
 | 7 | ~10/17 | 그림 4개+표 1, 원고 / 10/18~19 검토·제출 | 논문 |
-| 7a | 10/8~10 | v4.7 통제 실험(브랜치 `exp/v4.7-controls`): 반복 측정 통제 S1×2, RQ3 절제 B·C·D (`docs/V47_RUNBOOK.md`) | `results/summary/v47_*`, `results/al_v47/` |
-| 7b | 10/11~17 | 결과 반영 원고 V4.7 (`docs/V47_PAPER_PLAN.md`) | `paper/final/build_v47.js` |
+| 7a | 10/8~10 (완료) | v4.7 통제 실험(브랜치 `exp/v4.7-controls`): 반복 측정 통제 S1×2, RQ3 절제 B·C·D (`docs/V47_RUNBOOK.md`) | `results/summary/v47_*`, `results/al_v47/` |
+| 7b | 10/8 (완료) | 결과 반영 원고 V4.7 (`docs/V47_PAPER_PLAN.md`) | `paper/final/build_v47.js` |
 
 ## 명령
 ```bash
