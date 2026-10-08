@@ -57,6 +57,7 @@ This repository accompanies a study that uses the open-source TCAD tool DEVSIM t
 | RQ3: LLM 보조 선택 | 60회 중 59회 검증 통과, 최종 0.1250 대 불확실도 0.1238, 차이 +0.0012 [−0.0008, +0.0035] | [`rq3.md`](results/summary/rq3.md), [`llm_calls.jsonl`](results/al_live/nominal/llm_calls.jsonl) |
 | v4.7 반복 측정 통제 S1×2 | 300 K 두 번 측정 0.086(S1 대비 −23%). S2−S1×2 −0.0145 [−0.0237, −0.0060], 온도 고유 이득은 W<sub>JFET</sub>에 집중(0.079 → 0.050, [−0.040, −0.017]); 잡음 상관 ρ = 0.9에서 S1×2 0.110, S2 0.075 | [`v47_repeat_control.md`](results/summary/v47_repeat_control.md), [`V47_RESULTS.md`](docs/V47_RESULTS.md) |
 | v4.7 RQ3 절제 | 원본(A)·익명화(B)·정보 섞기(C)·상위 20 내 무작위(D) 모두 불확실도와 최종 오차 차이의 CI가 0 포함. C의 선택은 표시된 상위 10과 64% 겹침(실제 49%), 틀리게 표시한 최악 변수 방향 확대 51/59 | [`v47_rq3_ablation.md`](results/summary/v47_rq3_ablation.md), [`V47_RESULTS.md`](docs/V47_RESULTS.md) |
+| v4.8 시나리오별 S1×2 비교(사후) | 같은 물리로 학습하면 S2가 S1×2보다 12~62% 작음(CI 모두 0 미만). 다섯 가정을 섞어 학습하면 평균 오차는 S1×2와 구분되지 않음. 시드 10개의 검출 가능한 최소 차이 0.0025~0.0047 | [`v48_extra_stats.md`](results/summary/v48_extra_stats.md), [`V48_CHANGES.md`](docs/V48_CHANGES.md) |
 
 <p align="center">
   <img src="paper/figures/fig3_rq1.png" width="520" alt="RQ1 results">
@@ -231,10 +232,11 @@ python -m sicsim.runner configs/design_test.csv --out results/test --jobs 4
 | 표 1 (민감도), 국소 식별성 | `results/stage_a_v11/` | `scripts/stage_a_report.py`, `scripts/identifiability.py` | `stage_a_deltas.csv`, `identifiability_nominal.json`, `paper/tables/table1_*` |
 | 그림 3 (RQ1) | `results/pool/`, `results/test/` | `scripts/run_al.py`, `scripts/summarize_results.py` | `results/summary/rq1*.md`, `paper/figures/fig3_*` |
 | RQ1 Ridge 기준선 | 같은 원자료 | `scripts/ridge_rq1.py` | `results/summary/ridge_rq1.json` |
-| 표 2 (강건성) | `results/pool_*`, `results/test_*` | `scripts/robustness.py`, `scripts/robustness_mixed.py` | `results/summary/robustness*.{json,md}`, `paper/tables/table2_*` |
-| 그림 4 (RQ2·RQ3) | `results/al/`, `results/al_live/nominal/` | `scripts/run_al.py`, `scripts/al_ninit.py` | `results/summary/rq2.md`, `rq3.md`, `paper/figures/fig4_*` |
+| 표 2 (강건성) | `results/pool_*`, `results/test_*` | `scripts/robustness.py`, `scripts/robustness_mixed.py`, `scripts/v48_extra_stats.py` | `results/summary/robustness*.{json,md}`, `v48_extra_stats.md`, `paper/tables/table2_*` |
+| 그림 4 (RQ2·RQ3) | `results/al/`, `results/al_live/nominal/`, `results/al_v47/` | `scripts/run_al.py`, `scripts/al_ninit.py`, `scripts/make_v47_figures.py` | `results/summary/rq2.md`, `rq3.md`, `paper/figures/fig4_*` |
+| 표 3 (RQ3 절제) | `results/al_v47/` | `scripts/rq3_ablation.py`, `scripts/v48_extra_stats.py` | `results/summary/v47_rq3_ablation.md`, `v48_extra_stats.md` |
 | 결과 감사 | 명목 원자료, 설계 CSV | `scripts/audit_results.py` | `docs/AUDIT.md`, `results/pool/audit.json` |
-| 원고 | 위 결과 | `paper/final/build_final.js` | `paper/final/*.docx` |
+| 원고 (V4.8) | 위 결과 | `paper/final/build_v48.js` (`proc`/`review`) | `paper/final/proceedings_v48_5p.docx`, `review_v48_4p.docx` |
 
 ## 데이터 구조
 
@@ -274,12 +276,12 @@ Git 커밋은 계획과 결과의 시간 순서를 보여 주지만, OSF 같은 
 | 반복 측정 통제 S1×2 | 423 K의 이득이 같은 소자를 300 K에서 두 번 측정한 효과보다 큰가? (잡음 상관 ρ 스윕 포함) | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §1 | `scripts/repeat_control.py` |
 | RQ3 절제 | LLM이 제공 정보를 실제로 쓰는가? 익명화(B)·정보 섞기(C)·상위 20 내 무작위(D)를 같은 환경에서 비교 | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §2 | `scripts/run_al.py --llm-variant`, `scripts/rq3_ablation.py` |
 
-실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 결과(커밋 `486b38e`)와 사전 예측의 대조는 [`V47_RESULTS.md`](docs/V47_RESULTS.md)에 있으며, 예측 C1–C9·Q1–Q7 가운데 Q2만 부분 적중이었습니다. 원고는 `paper/final/build_v47.js`(`proc`/`review`), 그림은 `scripts/make_v47_figures.py`로 다시 만듭니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
+실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 결과(커밋 `486b38e`)와 사전 예측의 대조는 [`V47_RESULTS.md`](docs/V47_RESULTS.md)에 있으며, 예측 C1–C9·Q1–Q7 가운데 Q2만 부분 적중이었습니다. 원고는 `paper/final/build_v48.js`(`proc`/`review`, V4.8; V4.7은 `build_v47.js`로 보존), 그림은 `scripts/make_v47_figures.py`로 다시 만듭니다. V4.8에서 추가한 사후 비교(커밋 `90134a2`)와 정정 사항은 [`V48_CHANGES.md`](docs/V48_CHANGES.md)에 있습니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
 
 ## 타당성에 대한 위협
 
 - **내적 타당성.** 300 K V<sub>th</sub> 추출의 할선 반복 오차가 최대 약 3 mV이고, 0.25 V 게이트 격자 때문에 g<sub>m,max</sub> 분해능은 약 1.3%입니다. 둘 다 가정한 측정 잡음보다 작습니다. 일부 고문턱 소자의 V<sub>GS</sub> = 4 V 전류는 수치 바닥 아래여서 1×10<sup>−11</sup> A/cm로 절단합니다.
-- **통계적 결론 타당성.** 잡음은 집합마다 한 번만 실현했으므로 CI는 시험점 표본 변동만 반영합니다. 능동학습 정책 간 차이(10<sup>−3</sup> 수준)는 시드 간 변동과 비슷합니다.
+- **통계적 결론 타당성.** 잡음은 집합마다 한 번만 실현했으므로 CI는 시험점 표본 변동만 반영합니다. 능동학습 정책 간 차이(10<sup>−3</sup> 수준)는 시드 간 변동과 비슷하며, 시드 10개로 검출 가능한 최소 차이(검정력 0.8)는 0.0025~0.0047입니다. 같은 조건의 LLM 재실행 간 차이(0.0014)도 조건 간 차이와 같은 크기입니다.
 - **구성 타당성.** Q<sub>it,eff</sub>는 계면 트랩 밀도(D<sub>it</sub>)가 아닌 유효 정적 전하이고, 추정 대상은 공정 조건(주입량·마스크)이 아니라 공정 결과 파라미터입니다.
 - **외적 타당성.** 결과는 단극성 2차원 half-cell 한 구조와 두 온도, 가정한 잡음 모델에서 얻었고, 실측 곡선으로는 검증하지 않았습니다. 고온 물리가 학습과 다르면 오차가 크게 늘어나므로(위 표), 실측에 적용하려면 고온 물리 보정과 직렬저항 보정이 먼저 필요합니다. `1.2 kV급`은 참고 구조의 등급이며 항복전압은 계산하지 않았습니다.
 
