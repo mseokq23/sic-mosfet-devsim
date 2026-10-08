@@ -98,8 +98,8 @@ def fig1():
     T = ["Process point\n$W_{JFET}$, $N_{pw}$, $Q_{it,eff}$\n+ nuisance $s_{\\mu}$",
          "DEVSIM 2-D\ndrift–diffusion\nhalf-cell\n300 K & 423 K",
          "Features\n$V_{th}$, SS, $g_{m,max}$,\n$I_{on}$, $R_{on,sp}$, $I_D$(2 V),\nlog $I_D(V_{GS})$",
-         "Measurement\nnoise model\n+ current floor",
-         "Inverse model\n(GP / RF / ET)\nfeatures → $\\hat{x}$"]
+         "Measurement noise\n+ current floor\n(S1×2: second\n300 K draw)",
+         "Inverse model\n(GP / RF / Ridge)\nfeatures → $\\hat{x}$"]
     for x, s, fc in zip(X, T, ["#fff2cc", "#dae8fc", "#dae8fc", "#e1d5e7", "#d5e8d4"]):
         box(x, top, w, h, s, fc)
     for i in range(4):
