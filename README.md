@@ -1,6 +1,6 @@
-# DEVSIM 기반 4H-SiC 평판형 MOSFET 공정 결과 파라미터의 다중 온도 역추정과 LLM 보조 적응형 실험 선택
+# DEVSIM 기반 4H-SiC 평판형 MOSFET 공정 결과 파라미터의 다중 온도 역추정과 LLM 보조 TCAD 표본 선택 평가
 
-**Multi-Temperature Inverse Estimation of Process-Outcome Parameters and LLM-Assisted Adaptive Experiment Selection for 4H-SiC Planar MOSFETs Using DEVSIM**
+**Multi-Temperature Inverse Estimation of Process-Outcome Parameters and Evaluation of LLM-Assisted TCAD Sample Selection for 4H-SiC Planar MOSFETs Using DEVSIM**
 
 [![CI](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml/badge.svg)](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -16,11 +16,11 @@
 
 ## Abstract
 
-This repository accompanies a study that uses the open-source TCAD tool DEVSIM to estimate three latent process-outcome parameters of a 4H-SiC planar MOSFET (JFET width, P-well doping and effective interface charge) from DC characteristics simulated at 300 K and 423 K, with channel mobility varied as an unestimated nuisance parameter. With measurement noise added to the features, including the 423 K features lowered the normalized error of a Gaussian-process inverse model from 0.112 to 0.072 (36%), and a linear ridge model gave a similar reduction. When the 423 K data were re-simulated with channel-mobility temperature exponents of 0 and −1 and the model was trained with the same exponent, the reduction was 35% and 32%; a model trained with the nominal exponent, however, gave errors of 0.54 and 0.93 on these data. In a post-hoc analysis, training on randomly mixed physics assumptions kept a 22–29% reduction. Uncertainty sampling needed 12–20% fewer simulations than random sampling, similar to a Sobol sequence, and an LLM-assisted selector filtered by a deterministic validator was not better than uncertainty sampling.
+This repository accompanies the paper above (manuscript V4.9). Using DC characteristics of a 4H-SiC planar MOSFET simulated with DEVSIM at 300 K and 423 K, we estimate three latent process-outcome parameters (JFET width, P-well doping and effective interface charge) with a Gaussian-process model under assumed measurement noise. Adding the 423 K features lowered the normalized error from 0.112 to 0.072, but measuring the 300 K features twice already gave 0.086, so about two thirds of the gain came from the extra measurement. The temperature-specific remainder (−0.014 vs. the repeated measurement, 95% CI −0.024 to −0.006) was concentrated in the JFET width and persisted under correlated measurement noise and at an equal simulation budget. It was clear only when the high-temperature physics was known: a wrong channel-mobility temperature exponent raised the error to 0.54 and 0.93, above the no-information level of 0.25, and training that covered all five physics assumptions avoided this failure but showed no statistically established gain over the repeated measurement. In a retrospective pool-based evaluation, uncertainty sampling needed 12–20% fewer simulations than random sampling, but a Sobol sequence performed comparably. An LLM-assisted selector passed structured-output validation in 238 of 240 calls and followed the numbers it was given, as shuffled inputs redirected its choices; with 10 seeds, however, it showed no advantage over uncertainty sampling.
 
 ## 국문 요약
 
-공개형 TCAD인 DEVSIM으로 4H-SiC 평판형 MOSFET의 300 K·423 K DC 특성을 계산하고, 이 특성으로 JFET 폭, P-well 도핑, 유효 계면전하를 역추정하였다. 특징에 측정 잡음을 넣었을 때 423 K 특징을 함께 쓰면 가우시안 과정 역추정의 정규화 오차가 0.112에서 0.072로 줄었고, 선형 Ridge 모델에서도 비슷하게 줄었다. 423 K 데이터를 채널 이동도 온도지수 0과 −1로 다시 계산해 같은 지수로 학습·평가하면 오차 감소율은 35%와 32%였으나, 기준 지수(+1)로 학습한 모델을 이 데이터에 적용하면 오차가 0.537과 0.928로 300 K만 쓴 모델(0.112)보다 컸다. 다섯 가지 물리 가정을 섞어 학습한 사후 분석에서는 '22/~29%의 감소'가 유지되었다. 불확실도 기반 선택은 무작위보다 시뮬레이션을 '12/~20%' 줄였으나 Sobol 순서와 비슷하였고, 결정론적 검증기로 출력을 거른 LLM 보조 선택은 불확실도 선택보다 낫지 않았다.
+상기 논문(원고 V4.9)의 요약입니다. DEVSIM으로 계산한 4H-SiC 평판형 MOSFET의 300 K·423 K DC 특성에서 JFET 폭, P-well 도핑, 유효 계면전하를 가우시안 과정으로 역추정하였다. 측정 잡음을 넣었을 때 423 K 특징을 더하면 정규화 오차가 0.112에서 0.072로 줄었다. 그러나 300 K를 두 번 측정해도 0.086이어서, 이득의 약 2/3는 측정 횟수에서 나왔다. 나머지 온도 고유 이득(반복 측정 대비 −0.014, 95% CI −0.024~−0.006)은 JFET 폭에 집중되었고, 측정 간 잡음 상관과 같은 시뮬레이션 예산에서도 유지되었다. 다만 이 이득은 고온 물리를 알 때만 뚜렷하였다. 채널 이동도 온도지수를 틀리게 가정하면 오차가 0.54, 0.93으로 커졌고, 다섯 가정을 모두 포함해 학습하면 이 실패는 피했지만 반복 측정보다 낫다는 통계적 근거는 없었다. 회고적 풀 평가에서 불확실도 선택은 무작위보다 시뮬레이션을 12~20% 줄였으나 Sobol 순서도 비슷하였다. LLM 보조 선택은 제공된 수치를 따랐지만, 시드 10개에서 불확실도 선택보다 나은 결과는 확인되지 않았다.
 
 <p align="center">
   <img src="paper/figures/fig1_structure_flow.png" width="860" alt="Device cross-section and workflow">
@@ -236,7 +236,7 @@ python -m sicsim.runner configs/design_test.csv --out results/test --jobs 4
 | 그림 4 (RQ2·RQ3) | `results/al/`, `results/al_live/nominal/`, `results/al_v47/` | `scripts/run_al.py`, `scripts/al_ninit.py`, `scripts/make_v47_figures.py` | `results/summary/rq2.md`, `rq3.md`, `paper/figures/fig4_*` |
 | 표 3 (RQ3 절제) | `results/al_v47/` | `scripts/rq3_ablation.py`, `scripts/v48_extra_stats.py` | `results/summary/v47_rq3_ablation.md`, `v48_extra_stats.md` |
 | 결과 감사 | 명목 원자료, 설계 CSV | `scripts/audit_results.py` | `docs/AUDIT.md`, `results/pool/audit.json` |
-| 원고 (V4.8) | 위 결과 | `paper/final/build_v48.js` (`proc`/`review`) | `paper/final/proceedings_v48_5p.docx`, `review_v48_4p.docx` |
+| 원고 (V4.9) | 위 결과 | `paper/final/build_v49.js` (`proc`/`review`) | `paper/final/proceedings_v49_5p.docx`, `review_v49_4p.docx` |
 
 ## 데이터 구조
 
@@ -276,7 +276,7 @@ Git 커밋은 계획과 결과의 시간 순서를 보여 주지만, OSF 같은 
 | 반복 측정 통제 S1×2 | 423 K의 이득이 같은 소자를 300 K에서 두 번 측정한 효과보다 큰가? (잡음 상관 ρ 스윕 포함) | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §1 | `scripts/repeat_control.py` |
 | RQ3 절제 | LLM이 제공 정보를 실제로 쓰는가? 익명화(B)·정보 섞기(C)·상위 20 내 무작위(D)를 같은 환경에서 비교 | [`PREDICTIONS_V47.md`](docs/PREDICTIONS_V47.md) §2 | `scripts/run_al.py --llm-variant`, `scripts/rq3_ablation.py` |
 
-실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 결과(커밋 `486b38e`)와 사전 예측의 대조는 [`V47_RESULTS.md`](docs/V47_RESULTS.md)에 있으며, 예측 C1–C9·Q1–Q7 가운데 Q2만 부분 적중이었습니다. 원고는 `paper/final/build_v48.js`(`proc`/`review`, V4.8; V4.7은 `build_v47.js`로 보존), 그림은 `scripts/make_v47_figures.py`로 다시 만듭니다. V4.8에서 추가한 사후 비교(커밋 `90134a2`)와 정정 사항은 [`V48_CHANGES.md`](docs/V48_CHANGES.md)에 있습니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
+실행 절차는 [`V47_RUNBOOK.md`](docs/V47_RUNBOOK.md)(`bash scripts/v47_run_all.sh all`), 원고 반영 계획은 [`V47_PAPER_PLAN.md`](docs/V47_PAPER_PLAN.md)에 있습니다. 결과(커밋 `486b38e`)와 사전 예측의 대조는 [`V47_RESULTS.md`](docs/V47_RESULTS.md)에 있으며, 예측 C1–C9·Q1–Q7 가운데 Q2만 부분 적중이었습니다. 원고는 `paper/final/build_v49.js`(`proc`/`review`, V4.9; V4.8·V4.7은 `build_v48.js`·`build_v47.js`로 보존), 그림은 `scripts/make_v47_figures.py`로 다시 만듭니다. V4.8에서 추가한 사후 비교(커밋 `90134a2`)와 정정 사항은 [`V48_CHANGES.md`](docs/V48_CHANGES.md), 검토 의견 반영(V4.9)은 [`V49_CHANGES.md`](docs/V49_CHANGES.md)에 있습니다. 능동학습 곡선은 CPU에 따라 라운드 1부터 조금씩 달라지므로(라운드 0과 RQ1의 GP 결과는 그대로 재현), RQ3 절제의 모든 조건은 한 환경에서 다시 실행합니다.
 
 ## 타당성에 대한 위협
 

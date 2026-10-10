@@ -63,3 +63,5 @@ Burin 외 arXiv v8(2025-12), Ha 외 TENSYMP 2021 DOI, AgenticTCAD DATE 2026 DOI,
 LibreOffice와 Word 줄 간격에 맞춘 측정용 대체 글꼴로 확인한 결과, 프로시딩은 5쪽(마지막 쪽 약 9줄 여유), 심사용은 4쪽(약 5줄 여유)이다.
 Word(Windows)에서 최종 쪽수와 그림·표 위치를 다시 확인해야 한다. 그림·표 위치는 `ORD_F2/F3/T2/F4/T3`(pre/post, F4는 late 포함)
 환경 변수로 바꿀 수 있고, 기본값은 심사용 F2·F3 = pre, F4 = late(첫 RQ3 문단 뒤), 나머지는 post이다.
+
+> V4.9(검토 의견 반영)는 [`V49_CHANGES.md`](V49_CHANGES.md)를 참조.
