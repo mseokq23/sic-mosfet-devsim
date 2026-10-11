@@ -64,15 +64,19 @@
 
 ### Gate 3를 동결 설정(v1.1)으로 다시 계산
 
-커밋된 `results/pretest/gate3/*.json`은 사전 시험 설정(`baseline-v0.2-pretest`, physics hash `94782cbb0e0f`)의 기록이다.
-같은 300 K medium·fine 사례를 v1.1-frozen(physics hash `1dab7e7ac807`)으로 다시 계산했다(medium 52 s, fine 120 s).
+커밋된 `results/pretest/gate3/*.json`은 사전 시험 단계(설정 이름 `baseline-v0.2-pretest`)에 저장되었다. 그 뒤(v0.3) V<sub>th</sub>·SS 추출을
+0.25 V 격자 보간에서 목표 전류의 게이트 전압을 다시 푸는 보정 추출로 바꿨으므로, 기록의 V<sub>th</sub>는 보간 방식 값이다.
+같은 300 K medium·fine 사례를 v1.1-frozen으로 다시 계산했다(medium 52 s, fine 120 s).
 
-| 설정 | ΔV<sub>th</sub> (medium − fine) | SS | g<sub>m,max</sub> | I<sub>on</sub> | R<sub>on,sp</sub> | 기준 소자 V<sub>th</sub> (medium) |
+- **I–V 곡선은 두 사례 모두 기록과 비트 단위로 같다**(전달·출력 곡선 상대 차이 0). g<sub>m,max</sub>, I<sub>on</sub>, R<sub>on,sp</sub>도 같다.
+- 다시 계산한 결과의 `vth_interp_V`(보간 방식)는 기록의 V<sub>th</sub>와 같고, `vth_V`(보정 추출)는 논문 2.3절 값이다.
+
+| V<sub>th</sub> 추출 | 기준 소자 V<sub>th</sub> (medium) | ΔV<sub>th</sub> (medium − fine) | SS | g<sub>m,max</sub> | I<sub>on</sub> | R<sub>on,sp</sub> |
 |---|---|---|---|---|---|---|
-| v0.2-pretest (커밋된 기록) | 0.073 mV | +0.10% | −2.66% | −0.85% | +0.87% | 3.7718 V |
-| v1.1-frozen (다시 계산) | 0.028 mV | +0.11% | −2.66% | −0.85% | +0.87% | 3.7646 V |
+| 격자 보간 (커밋된 기록) | 3.7718 V | 0.073 mV | +0.10% | −2.66% | −0.85% | +0.87% |
+| 보정 추출 (동결 설정, 논문) | 3.7646 V | 0.028 mV | +0.11% | −2.66% | −0.85% | +0.87% |
 
-메시 비교의 결론(허용오차 안, 논문 2.3절의 "V<sub>th</sub> 0.07 mV, R<sub>on,sp</sub> 0.9% 이내")은 동결 설정에서도 같고, 기준 소자 V<sub>th</sub>는 논문 값 3.765 V와 일치한다.
+메시 비교의 결론(허용오차 안, 논문 2.3절의 "V<sub>th</sub> 0.07 mV, R<sub>on,sp</sub> 0.9% 이내")은 어느 추출 방식에서도 성립한다.
 
 ## 원고와 리포트
 

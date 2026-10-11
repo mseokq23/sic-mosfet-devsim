@@ -161,7 +161,7 @@ $$
 | Gate 3 | 2D MOSFET half-cell (300 K) | [`sweep_protocol.yaml`](configs/sweep_protocol.yaml) 허용오차 | medium 대 fine: V<sub>th</sub> 0.07 mV, SS 0.1%, g<sub>m</sub> 2.7%, I<sub>on</sub>·R<sub>on</sub> 0.9%; 배정밀도 대 128비트 V<sub>th</sub> 2×10<sup>−11</sup> V; 2회 실행 비트 단위 동일 | [`gate3_summary.json`](results/pretest/gate3_summary.json) |
 | 풀 감사 | 해석 기울기 dV<sub>th</sub>/dQ<sub>it</sub>, 설계↔run 대응, 특징 재추출 | −q/C<sub>ox</sub> | −2.32005 V (이론 −2.319888 V, 10<sup>12</sup> cm<sup>−2</sup>당) | [`AUDIT.md`](docs/AUDIT.md) |
 
-- Gate 3 결과 파일은 사전 시험 설정(`baseline-v0.2-pretest`)으로 계산한 기록입니다. 동결 설정(v1.1)으로 300 K medium·fine 사례를 다시 계산하면 차이는 V<sub>th</sub> 0.03 mV, SS 0.1%, g<sub>m</sub> 2.7%, I<sub>on</sub>·R<sub>on</sub> 0.9%로 같은 결론이고, 기준 소자 V<sub>th</sub>는 논문 2.3절 값(3.765 V)이 됩니다([`REPRO_CHECK.md`](docs/REPRO_CHECK.md)).
+- Gate 3 결과 파일은 사전 시험 단계(`baseline-v0.2-pretest`)에 저장되어, V<sub>th</sub>가 0.25 V 격자 보간으로 뽑은 값(3.772 V)입니다. 이후 V<sub>th</sub>를 목표 전류의 게이트 전압을 다시 풀어 구하는 보정 추출로 바꿨습니다. 동결 설정(v1.1)으로 같은 사례를 다시 계산하면 I–V 곡선은 기록과 비트 단위로 같고, 보정 추출 V<sub>th</sub>는 논문 2.3절 값 3.765 V, medium·fine 차이는 V<sub>th</sub> 0.03 mV, R<sub>on,sp</sub> 0.87%입니다([`REPRO_CHECK.md`](docs/REPRO_CHECK.md)).
 - v1.1 기준 소자는 300 K→423 K에서 V<sub>th</sub> 3.765→3.530 V, SS 112.5→155.7 mV/dec, R<sub>on,sp</sub> 2.00→2.87 mΩ·cm<sup>2</sup>입니다([`stage_a_v11`](results/stage_a_v11/)).
 
 ## 재현 가이드
@@ -255,7 +255,7 @@ python scripts/rerun_check.py            # 시험점 T0000을 300·423 K에서 �
 python scripts/rerun_check.py --set results/test_gamma0 --config configs/variants/gamma0.yaml --temps 423
 ```
 
-- `gate3_mosfet.py`는 이미 있는 사례를 건너뜁니다. 다시 계산하려면 `results/pretest/gate3/<사례>.json`을 옮긴 뒤 사례 이름을 인자로 주십시오(예: `python scripts/gate3_mosfet.py ms1.5_dp_300`, medium 약 1분·fine 약 2분). 현재 설정은 v1.1이므로 사전 시험 기록과 V<sub>th</sub>가 7 mV 다릅니다([모델 검증](#모델-검증)).
+- `gate3_mosfet.py`는 이미 있는 사례를 건너뜁니다. 다시 계산하려면 `results/pretest/gate3/<사례>.json`을 옮긴 뒤 사례 이름을 인자로 주십시오(예: `python scripts/gate3_mosfet.py ms1.5_dp_300`, medium 약 1분·fine 약 2분). 다시 계산한 곡선은 기록과 같고, V<sub>th</sub>만 보정 추출 값(기록보다 7 mV 낮음)으로 저장됩니다([모델 검증](#모델-검증)).
 - `rerun_check.py`는 임시 폴더에 계산하므로 `results/`를 바꾸지 않습니다. 해시가 다르거나 특징 차이가 10<sup>−9</sup>을 넘으면 종료 코드 1을 돌려줍니다.
 
 ### L3 · 전체 DOE 재계산
