@@ -1,4 +1,4 @@
-| feature (+20% change) | W_JFET | N_pw | Q_it,eff | μ_ch (nuisance) |
+| feature (+20% change) | W_JFET | N_pw | Q_it,eff | s_μ (nuisance) |
 |---|---|---|---|---|
 | ΔV_th (mV) | 0.0 / 0.0 | +485.3 / +474.4 | +463.9 / +463.9 | -12.8 / -13.2 |
 | SS (%) | 0.0 / 0.0 | +3.4 / +3.8 | 0.0 / 0.0 | -0.2 / -0.1 |

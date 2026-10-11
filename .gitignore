@@ -4,3 +4,6 @@ __pycache__/
 *.egg-info/
 .env
 results/**/runs/*.job.json
+environment.local.txt
+node_modules/
+paper/final/package-lock.json

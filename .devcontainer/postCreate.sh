@@ -6,4 +6,6 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 python scripts/gate0_check.py || echo "WARNING: gate0 check failed - see output above"
-bash scripts/lock_env.sh
+# environment.txt records the environment of the paper runs; this codespace's own record goes to a
+# git-ignored file so that creating a codespace never changes the committed record.
+bash scripts/lock_env.sh environment.local.txt

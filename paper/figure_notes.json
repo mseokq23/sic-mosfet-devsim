@@ -137,49 +137,49 @@
    "W_JFET": "0.0 / 0.0",
    "N_pw": "+485.3 / +474.4",
    "Q_it,eff": "+463.9 / +463.9",
-   "μ_ch (nuisance)": "-12.8 / -13.2"
+   "s_μ (nuisance)": "-12.8 / -13.2"
   },
   {
    "feature (+20% change)": "SS (%)",
    "W_JFET": "0.0 / 0.0",
    "N_pw": "+3.4 / +3.8",
    "Q_it,eff": "0.0 / 0.0",
-   "μ_ch (nuisance)": "-0.2 / -0.1"
+   "s_μ (nuisance)": "-0.2 / -0.1"
   },
   {
    "feature (+20% change)": "g_m,max (%)",
    "W_JFET": "+0.6 / +1.2",
    "N_pw": "-4.7 / -5.1",
    "Q_it,eff": "-1.2 / -0.6",
-   "μ_ch (nuisance)": "+16.2 / +11.8"
+   "s_μ (nuisance)": "+16.2 / +11.8"
   },
   {
    "feature (+20% change)": "I_on (%)",
    "W_JFET": "+3.1 / +4.5",
    "N_pw": "-3.0 / -1.7",
    "Q_it,eff": "-1.3 / -0.6",
-   "μ_ch (nuisance)": "+7.8 / +3.6"
+   "s_μ (nuisance)": "+7.8 / +3.6"
   },
   {
    "feature (+20% change)": "R_on,sp (%)",
    "W_JFET": "-3.1 / -4.3",
    "N_pw": "+3.1 / +1.7",
    "Q_it,eff": "+1.3 / +0.7",
-   "μ_ch (nuisance)": "-7.3 / -3.5"
+   "s_μ (nuisance)": "-7.3 / -3.5"
   },
   {
    "feature (+20% change)": "I_D @ V_DS=2 V (%)",
    "W_JFET": "+3.3 / +4.7",
    "N_pw": "-3.4 / -1.9",
    "Q_it,eff": "-1.4 / -0.7",
-   "μ_ch (nuisance)": "+8.3 / +3.8"
+   "s_μ (nuisance)": "+8.3 / +3.8"
   },
   {
    "feature (+20% change)": "Δ[V_th(423 K) − V_th(300 K)] (mV)",
    "W_JFET": "0.0",
    "N_pw": "-10.9",
    "Q_it,eff": "0.0",
-   "μ_ch (nuisance)": "-0.4"
+   "s_μ (nuisance)": "-0.4"
   }
  ]
 }
