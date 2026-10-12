@@ -7,3 +7,6 @@ results/**/runs/*.job.json
 environment.local.txt
 node_modules/
 paper/final/package-lock.json
+
+# manuscript caption text written by scripts/make_paper_figures.py (not tracked)
+paper/captions.md
