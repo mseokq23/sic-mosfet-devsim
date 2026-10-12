@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sicsim"
 version = "0.2.0"
-description = "DEVSIM-based multi-temperature inverse estimation of process-outcome parameters in 4H-SiC planar MOSFETs and evaluation of LLM-assisted TCAD sample selection"
+description = "DEVSIM simulation of 4H-SiC planar MOSFET I-V characteristics at 300 K and 423 K, feature extraction, inverse models and sample-selection policies"
 requires-python = ">=3.11"
 
 [tool.setuptools.packages.find]

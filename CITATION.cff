@@ -1,51 +1,26 @@
 cff-version: 1.2.0
 message: "If you use this software or its data, please cite it using the metadata below."
 type: software
-title: "sic-mosfet-devsim: simulation code, configurations and results of the study on multi-temperature inverse estimation and LLM-assisted TCAD sample selection for 4H-SiC planar MOSFETs"
+title: "sic-mosfet-devsim"
 abstract: >-
-  Simulation code, frozen configurations, per-run raw data and analysis scripts for a study that
-  estimates the JFET width, P-well doping and effective interface charge of a 4H-SiC planar MOSFET
-  from DC characteristics simulated with DEVSIM at 300 K and 423 K, separates the multi-temperature
-  gain from the gain of a repeated 300 K measurement, evaluates its dependence on high-temperature
-  physics assumptions, and evaluates adaptive and LLM-assisted TCAD sample selection in a
-  retrospective pool-based setting (manuscript V4.9; results at commit 90134a2 on branch
-  exp/v4.7-controls).
+  DEVSIM simulation of 4H-SiC planar MOSFET half-cell I-V characteristics at 300 K and 423 K, feature
+  extraction, inverse models and sample-selection policies, with the per-run raw data (3,840 runs).
 authors:
   - family-names: Lee
     given-names: Minseok
     affiliation: "Department of Electronic Engineering, Kwangwoon University"
     email: minseok1270@gmail.com
-version: "4.9"
-date-released: 2026-10-11
+date-released: 2026-10-12
 license: MIT
-repository-code: "https://github.com/mseokq23/sic-mosfet-devsim/tree/exp/v4.7-controls"
+repository-code: "https://github.com/mseokq23/sic-mosfet-devsim"
 url: "https://github.com/mseokq23/sic-mosfet-devsim"
 keywords:
   - 4H-SiC MOSFET
   - DEVSIM
   - TCAD
+  - I-V characteristics
   - inverse estimation
-  - multi-temperature characterization
-  - model mismatch
-  - repeated measurement
   - active learning
-  - large language model
-# TODO after a GitHub release with Zenodo archiving: add
-#   identifiers:
-#     - type: doi
-#       value: 10.5281/zenodo.XXXXXXX
-preferred-citation:
-  type: conference-paper
-  title: "Multi-Temperature Inverse Estimation of Process-Outcome Parameters and Evaluation of LLM-Assisted TCAD Sample Selection for 4H-SiC Planar MOSFETs Using DEVSIM"
-  authors:
-    - family-names: Lee
-      given-names: Minseok
-      affiliation: "Department of Electronic Engineering, Kwangwoon University"
-  year: 2026
-  status: in-preparation
-  languages:
-    - kor
-  # TODO after acceptance: change status, add collection-title (proceedings name), start/end pages and doi.
 references:
   - type: article
     authors:

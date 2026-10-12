@@ -15,7 +15,7 @@ AL=(python scripts/run_al.py --pool results/pool --test results/test --seeds 10 
 
 check() {
   local branch; branch=$(git rev-parse --abbrev-ref HEAD)
-  [ "$branch" = "exp/v4.7-controls" ] || echo "WARNING: current branch is $branch (expected exp/v4.7-controls)"
+  case "$branch" in main|exp/v4.7-controls) ;; *) echo "WARNING: current branch is $branch (expected main or exp/v4.7-controls)";; esac
   if [ -n "$(git status --porcelain -- src scripts configs docs/PREDICTIONS_V47.md)" ]; then
     echo "ERROR: uncommitted changes in src/, scripts/, configs/ or the plan. Commit them first (the plan must be committed before running)."
     git status --short -- src scripts configs docs/PREDICTIONS_V47.md

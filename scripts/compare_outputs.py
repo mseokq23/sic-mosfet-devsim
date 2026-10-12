@@ -1,5 +1,5 @@
 """Compare regenerated outputs in this working tree with the committed versions (git HEAD).
-  python scripts/compare_outputs.py                 # every modified or new file under results/ and paper/
+  python scripts/compare_outputs.py                 # every modified or new file under results/, paper/, docs/figures/
   python scripts/compare_outputs.py results/summary # limit to some paths
 For JSON/CSV the largest absolute and relative difference over all numbers is reported, plus fields whose text
 changed (commit, CPU, timestamps); Markdown is compared line by line; figures are binary (fonts and library
@@ -86,7 +86,7 @@ def compare(path):
 
 
 def main():
-    scope = sys.argv[1:] or ["results", "paper", "docs/report"]
+    scope = sys.argv[1:] or ["results", "paper", "docs/figures"]
     status = git("status", "--porcelain", "--untracked-files=all", "--", *scope).splitlines()
     if not status:
         print("no regenerated file differs from the committed version")
