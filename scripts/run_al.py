@@ -4,7 +4,7 @@ RQ1: inverse-model accuracy for S1 (300 K) / S2 (300+423 K) / S3 (S2 + T-differe
 RQ2/3: pool-based retrospective active learning for each policy and seed.
 LLM policy: dry-run stand-in by default; --llm-live calls Claude with the key from ANTHROPIC_API_KEY or MSEOKQ_CLAUDE
 (or --api-key-env NAME). Live mode aborts if no key is found or the API keeps failing (never silently dry-run).
-RQ3 ablation (plan: docs/PREDICTIONS_V47.md at commit cb3534b, in the git history):
+RQ3 ablation (plan: docs/PREDICTIONS_V47.md at commit d2fe029, in the git history):
   --llm-variant named|anon|shuffled   what the LLM is shown (named = original RQ3 condition A)
   --replay-log PATH                   re-feed a logged LLM run (no API) to regenerate its payloads and curves
   --policies top20_random             condition D: 10 drawn uniformly from the uncertainty top-20 (no LLM)
@@ -85,7 +85,7 @@ json.dump(dict(noise=a.noise, noise_version=nz["version"], current_floor=fl, see
                llm_mode=llm_mode, llm_model=a.llm_model if a.llm_live else None, llm_variant=a.llm_variant,
                replay_log=a.replay_log, api_key_env=key_env, code_commit=commit,
                code_dirty=bool(git("status", "--porcelain", "--", "src", "scripts", "configs")),
-               plan_commit="cb3534b",            # RQ3 ablation plan (docs/PREDICTIONS_V47.md, committed before the runs)
+               plan_commit="d2fe029",            # RQ3 ablation plan (docs/PREDICTIONS_V47.md, committed before the runs)
                env=compute_env(), created_at=dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")),
           open(out / "meta.json", "w"), indent=1)
 curves = []

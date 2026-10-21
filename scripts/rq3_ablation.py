@@ -1,5 +1,5 @@
 """RQ3 ablation report: LLM-assisted selection (A, B, C) against D, uncertainty, random and Sobol. No API calls.
-Analysis plan committed before the runs: docs/PREDICTIONS_V47.md at commit cb3534b (git history).
+Analysis plan committed before the runs: docs/PREDICTIONS_V47.md at commit d2fe029 (git history).
   python scripts/rq3_ablation.py [--blind]
 All ablation conditions are run in ONE environment and session (same 10 seeds, initial sets, budget; S2 features,
 RF inverse model, nominal noise), because active-learning trajectories differ slightly between CPUs:
@@ -22,7 +22,7 @@ from sicsim.design import DESIGN_VARS, _spec, load_bounds
 R = ROOT / "results"
 V = R / "al_ablation"
 SESOI = 0.0025          # equivalence margin = RQ2 uncertainty-vs-random final-round effect (fixed in the plan)
-PLAN, PLAN_COMMIT = "docs/PREDICTIONS_V47.md", "cb3534b"     # pre-run analysis plan (in the git history)
+PLAN, PLAN_COMMIT = "docs/PREDICTIONS_V47.md", "d2fe029"     # pre-run analysis plan (in the git history)
 COND = {"A": (V / "named/nominal", "llm"), "B": (V / "anon/nominal", "llm"), "C": (V / "shuffled/nominal", "llm"),
         "D": (V / "numeric/nominal", "top20_random"), "U": (V / "numeric/nominal", "uncertainty"),
         "random": (V / "numeric/nominal", "random"), "sobol": (V / "numeric/nominal", "sobol"),

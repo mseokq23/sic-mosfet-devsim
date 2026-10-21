@@ -1,4 +1,4 @@
-"""RQ3 ablation of the LLM-assisted selection (analysis plan: docs/PREDICTIONS_V47.md at commit cb3534b).
+"""RQ3 ablation of the LLM-assisted selection (analysis plan: docs/PREDICTIONS_V47.md at commit d2fe029).
 
 What the LLM is shown in each round, and how its batch relates to what it was shown.
   named     unchanged payload (condition A; A0 is its first run)

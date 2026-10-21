@@ -1,0 +1,4 @@
+old_commit,new_commit,recorded_in
+ae736696632ceddd81432e08c63ad82715734515,9977972412dc73c67c491d678ed95cbc2a9bc8b2,code_commit of the 423 K physics-variant runs (results/pool_*/ and results/test_* for gamma0 gamma_m1 qitT10 qitT30)
+cb3534b3f9b0a0014c9826e1ba9f770923cf8d0d,d2fe02942930961c0d950041e2d57d8163e30701,plan_commit in results/al_ablation/*/nominal/meta.json
+2b2a7ff416ae4e37f49715230cbf283c0715e275,5ecfc71b50a0df0c11aa13eee3bc75c0054328ef,code_commit in results/al_ablation/*/nominal/meta.json and results/summary/repeat_control.* and rq3_ablation.*

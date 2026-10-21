@@ -59,7 +59,7 @@ python scripts/check_paper_numbers.py     # 논문 수치 123개 항목 대조 �
 | RQ1–RQ3 요약표(처음 분석 때의 형식, 부트스트랩 설정이 표 3과 달라 구간 끝자리가 다를 수 있음) | [`summarize_results.py`](scripts/summarize_results.py) | `results/summary/rq1.md`, `rq1_equal_budget.md`, `rq2.md`, `rq3.md` | 4.1, 4.3 |
 | 설계↔run 대응, 특징 재추출, dV<sub>th</sub>/dQ<sub>it</sub> 기울기 감사 | [`audit_results.py`](scripts/audit_results.py) | `results/pool/audit.json` | 2.2 |
 
-`results/summary/`의 `repeat_control`, `rq3_ablation`, `posthoc_stats` 파일은 원래 분석 실행의 결과입니다. 저장소를 정리하면서 파일 이름과 머리글·라벨의 원고 버전 표기만 바꿨고(커밋 `2318acd`), 수치와 `meta`에 적힌 원래 실행 커밋(`code_commit`)은 그대로입니다. 정리하면서 `configs/`의 주석 몇 줄도 고쳤습니다(읽어 들인 설정 값과 물리 해시는 같음).
+`results/summary/`의 `repeat_control`, `rq3_ablation`, `posthoc_stats` 파일은 원래 분석 실행의 결과입니다. 저장소를 정리하면서 파일 이름과 머리글·라벨의 버전 표기만 바꿨고(커밋 `c095e5f`), 수치와 `meta`에 적힌 원래 실행 커밋(`code_commit`)은 그대로입니다. 정리하면서 `configs/`의 주석 몇 줄도 고쳤습니다(읽어 들인 설정 값과 물리 해시는 같음).
 
 ## I–V 특성
 
@@ -331,13 +331,15 @@ sic-mosfet-devsim/
 
 설정 동결과 분석 계획은 해당 실행보다 먼저 커밋했습니다. 문서는 저장소 정리 때 최신 트리에서 뺐고 아래 커밋에 그대로 남아 있습니다.
 
+저장소 이력은 2026-10-21에 정리했고, 이때 `9977972`(이전 `ae73669`)부터의 커밋 해시가 바뀌었습니다(커밋 날짜와 사전 기록 문서의 내용은 그대로). 결과 파일의 `code_commit`·`plan_commit`에 적힌 이전 해시와 현재 커밋의 대응은 [`results/commit_map.csv`](results/commit_map.csv)에 있습니다.
+
 | 기록 | 커밋 | 파일 |
 |---|---|---|
 | 사전 시험(γ = 0) 후 설정 동결 v1.0: γ = +1, s<sub>μ</sub>를 교란 변수로 추가 | [`d769518`](https://github.com/mseokq23/sic-mosfet-devsim/tree/d769518) | `docs/PRETEST.md`, `docs/ROADMAP.md` |
 | 설정 동결 v1.1: 셀 피치 고정 JFET 폭 변화 | [`90dc2e5`](https://github.com/mseokq23/sic-mosfet-devsim/tree/90dc2e5) | `configs/baseline.yaml` |
 | 풀·시험 분석 전 예측과 잡음 규칙(noise-v1.1) | [`f542405`](https://github.com/mseokq23/sic-mosfet-devsim/blob/f542405/docs/PREDICTIONS.md) | `docs/PREDICTIONS.md`, `docs/AUDIT.md` |
-| 423 K 물리 변형 실행 전 예측 | [`ae73669`](https://github.com/mseokq23/sic-mosfet-devsim/blob/ae73669/docs/PREDICTIONS_ROBUSTNESS.md) | `docs/PREDICTIONS_ROBUSTNESS.md` |
-| 반복 측정 통제·RQ3 대조 실행 전 계획(동등 판정 범위 ±0.0025) | [`cb3534b`](https://github.com/mseokq23/sic-mosfet-devsim/blob/cb3534b/docs/PREDICTIONS_V47.md) | `docs/PREDICTIONS_V47.md` |
+| 423 K 물리 변형 실행 전 예측 | [`9977972`](https://github.com/mseokq23/sic-mosfet-devsim/blob/9977972/docs/PREDICTIONS_ROBUSTNESS.md) | `docs/PREDICTIONS_ROBUSTNESS.md` |
+| 반복 측정 통제·RQ3 대조 실행 전 계획(동등 판정 범위 ±0.0025) | [`d2fe029`](https://github.com/mseokq23/sic-mosfet-devsim/blob/d2fe029/docs/PREDICTIONS_V47.md) | `docs/PREDICTIONS_V47.md` |
 
 ## 라이선스
 

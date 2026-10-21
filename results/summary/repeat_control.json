@@ -2,7 +2,7 @@
  "meta": {
   "analysis": "repeated-measurement control",
   "plan": "docs/PREDICTIONS_V47.md",
-  "plan_commit": "cb3534b",
+  "plan_commit": "d2fe029",
   "code_commit": "2b2a7ff",
   "code_dirty": false,
   "noise_version": "noise-v1.1",

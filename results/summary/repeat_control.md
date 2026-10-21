@@ -1,6 +1,6 @@
-# 반복 측정 통제 (RQ1, 사전 계획: cb3534b:docs/PREDICTIONS_V47.md)
+# 반복 측정 통제 (RQ1, 사전 계획: d2fe029:docs/PREDICTIONS_V47.md)
 
-코드 2b2a7ff, 계획 커밋 cb3534b, 잡음 noise-v1.1, 시험점 128, 부트스트랩 5000회.
+코드 2b2a7ff, 계획 커밋 d2fe029, 잡음 noise-v1.1, 시험점 128, 부트스트랩 5000회.
 
 MAE_norm = 절대오차/DOE 범위. 대비(Δ)는 시험점 짝지은 부트스트랩 95% CI, 비는 평균 오차의 비.
 

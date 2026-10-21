@@ -1,5 +1,5 @@
 """Repeated-measurement control for RQ1 (S1 vs S1x2 vs S2). No DEVSIM runs.
-Analysis plan committed before the run: docs/PREDICTIONS_V47.md at commit cb3534b (git history).
+Analysis plan committed before the run: docs/PREDICTIONS_V47.md at commit d2fe029 (git history).
   python scripts/repeat_control.py                       # full plan (about 5 min on 1 core)
   python scripts/repeat_control.py --blind               # write outputs, print only reproduction checks
 Feature sets (GP and Ridge inverse models, train = pool 512, test = 128):
@@ -21,7 +21,7 @@ from sicsim.robust import apply_series_resistance
 SETS = ["S1", "S1x2", "S1x2cat", "S2", "S3"]
 CONTRASTS = [("S2", "S1x2"), ("S1x2", "S1"), ("S2", "S1"), ("S2", "S1x2cat"), ("S1x2cat", "S1x2"), ("S3", "S2")]
 TAG = {"wjfet_scale": "W_JFET", "npwell_scale": "N_pw", "qit_eff_cm2": "Q_it,eff"}
-PLAN, PLAN_COMMIT = "docs/PREDICTIONS_V47.md", "cb3534b"     # pre-run analysis plan (in the git history)
+PLAN, PLAN_COMMIT = "docs/PREDICTIONS_V47.md", "d2fe029"     # pre-run analysis plan (in the git history)
 PUBLISHED = {"S1": 0.112275, "S2": 0.072011, "ci": (-0.049, -0.031), "series_S1": 0.378, "series_S2": 0.261}
 RHO_RANGE, RHO_SEED = (0.1, 0.3), 2026         # series-R draw, identical to scripts/robustness.py
 
