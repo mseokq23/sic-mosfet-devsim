@@ -262,7 +262,14 @@ python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --no
 
 ## 다시 계산한 값의 일치 수준
 
-REPRO_TABLE
+2026-10-21에 커밋된 결과를 만든 CPU(AMD EPYC 7763)와 다른 Intel Xeon 2.80 GHz(2코어)에서 같은 패키지 버전으로 확인한 결과입니다.
+
+| 대상 | 결과 |
+|---|---|
+| 논문 그림(`make_paper_figures.py`) | PNG 3개가 원고에 넣은 그림과 바이트 단위로 같음 |
+| 논문 수치(`check_paper_numbers.py`) | 123개 모두 일치 |
+| 저장된 run 재계산(`rerun_check.py`, T0000 기준 물리 300·423 K, γ = 0 변형 423 K) | 물리·솔버·메시 해시 일치, 특징 상대 차이 ≤ 6×10<sup>−16</sup>, 곡선은 일부 점에서 ≤ 3×10<sup>−13</sup> |
+| 단위 시험(`pytest -q`), Gate 0 | 56개 통과, 공식 diode 예제 2회 실행 결과 동일 |
 
 ## 디렉터리 구조
 
