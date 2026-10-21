@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Recompute the summary tables and figures from the committed raw data (level L1: no DEVSIM, no API calls) in a
 # throw-away git worktree of the current commit, then compare every regenerated file with the committed one.
-#   bash scripts/reproduce_l1.sh             # analyses, summaries, figures, paper numbers (about 10 min on one core)
-#   bash scripts/reproduce_l1.sh --with-al   # + active-learning re-runs: run_al x 3 noise levels, al_ninit (+20 min)
+#   bash scripts/reproduce_l1.sh             # analyses, summaries, figures, paper numbers (about 12 min on one core)
+#   bash scripts/reproduce_l1.sh --with-al   # + active-learning re-runs: run_al x 3 noise levels, al_ninit (+19 min)
 #   KEEP=1 bash scripts/reproduce_l1.sh      # keep the worktree afterwards (its path is printed)
 # Your working tree is not touched. Commit (or stash) local changes first: the worktree is made from HEAD.
 set -euo pipefail
@@ -41,6 +41,8 @@ if [ "$WITH_AL" = "1" ]; then
     step "active learning, noise=$nz"  python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --noise "$nz"
   done
   step "initial-set size (n_init 30/90)" python scripts/al_ninit.py --n-init 30 90 --seeds 10
+else
+  step "initial-set size summary"     python scripts/al_ninit.py --from-curves
 fi
 step "summary tables"               python scripts/summarize_results.py
 step "paper figures and tables"     python scripts/make_paper_figures.py

@@ -187,8 +187,8 @@ DEVSIM은 MKL이 없으면 import에 실패합니다. 결과를 만든 패키지
 ### L1 · 분석·요약표·그림을 원자료에서 다시 계산
 
 ```bash
-bash scripts/reproduce_l1.sh              # 1코어 약 9분
-bash scripts/reproduce_l1.sh --with-al    # 표본 선택 곡선(run_al 3회, al_ninit)까지, 약 35분
+bash scripts/reproduce_l1.sh              # 1코어 약 12분
+bash scripts/reproduce_l1.sh --with-al    # 표본 선택 곡선(run_al 3회, al_ninit)까지, 약 30분
 ```
 
 현재 커밋의 임시 worktree에서 아래 명령을 차례로 실행하고, 다시 만든 파일을 커밋된 파일과 숫자로 비교한 표를 출력합니다([`compare_outputs.py`](scripts/compare_outputs.py)). 작업 폴더는 바뀌지 않습니다.
@@ -205,14 +205,14 @@ bash scripts/reproduce_l1.sh --with-al    # 표본 선택 곡선(run_al 3회, al
 | 8 | `python scripts/posthoc_stats.py` | `results/summary/posthoc_stats.{md,json}` |
 | 9 | `python scripts/rq3_ablation.py` | `results/summary/rq3_ablation.{md,json}` |
 | 10 | `python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --noise <none\|nominal\|high>` (`--with-al`) | `results/al/<noise>/` |
-| 11 | `python scripts/al_ninit.py --n-init 30 90 --seeds 10` (`--with-al`) | `results/summary/al_ninit_*.csv` |
+| 11 | `python scripts/al_ninit.py --from-curves` (`--with-al`이면 `--n-init 30 90 --seeds 10`로 다시 실행) | `results/summary/al_ninit_summary.csv` (`al_ninit_curves_n30_n90.csv`) |
 | 12 | `python scripts/summarize_results.py` | `results/summary/rq1.md`, `rq1_equal_budget.md`, `rq2.md`, `rq3.md` |
 | 13 | `python scripts/make_paper_figures.py` | `paper/figures/`, `paper/tables/` |
 | 14 | `python scripts/make_readme_figures.py` | `docs/figures/` |
 | 15 | `python scripts/check_paper_numbers.py` | `paper/numbers.csv` |
 
 - 분석 스크립트를 작업 폴더에서 직접 실행하면 `results/`·`paper/`·`docs/figures/`의 파일을 덮어씁니다. 그때는 `python scripts/compare_outputs.py`로 차이를 보고 `git checkout -- results paper docs/figures`로 되돌립니다.
-- 10은 `results/al/`을 다시 만들고 11·12는 그 곡선을 읽습니다. 9는 커밋된 `results/al/nominal/`과 `results/al_ablation/`을 읽습니다.
+- 10은 `results/al/`을 다시 만들고 11·12는 그 곡선을 읽습니다. 9는 커밋된 `results/al/nominal/`과 `results/al_ablation/`을 읽습니다. `--with-al` 없이 실행하면 10을 건너뛰고 11은 커밋된 곡선에서 요약만 다시 계산합니다.
 - `results/al/`의 `llm` 행은 API 없이 규칙으로 고르는 대역(dry-run)이고, 실제 LLM 선택은 `results/al_live/`(A0)와 `results/al_ablation/`(A·B·C)에 있습니다.
 
 ### L2 · 소자 검증과 저장된 run 재계산
@@ -262,12 +262,14 @@ python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --no
 
 ## 다시 계산한 값의 일치 수준
 
-2026-10-21에 커밋된 결과를 만든 CPU(AMD EPYC 7763)와 다른 Intel Xeon 2.80 GHz(2코어)에서 같은 패키지 버전으로 확인한 결과입니다.
+2026-10-21에 커밋된 결과를 만든 CPU(AMD EPYC 7763)와 다른 Intel Xeon 2.80 GHz(2코어)에서 같은 패키지 버전으로 `reproduce_l1.sh --with-al`과 `rerun_check.py`를 실행한 결과입니다.
 
 | 대상 | 결과 |
 |---|---|
-| 논문 그림(`make_paper_figures.py`) | PNG 3개가 원고에 넣은 그림과 바이트 단위로 같음 |
-| 논문 수치(`check_paper_numbers.py`) | 123개 모두 일치 |
+| 분석 재계산(L1 순서 1–9, 12) | Markdown 요약표는 코드 커밋을 적은 머리글 한 줄만 다르고, JSON·CSV 수치는 마지막 자릿수만 다름(절대 차이 ≤ 5.1×10<sup>−7</sup>) |
+| 표본 선택 곡선(순서 10–11) | 무작위·Sobol은 같음. 불확실도와 dry-run LLM은 라운드 0은 같고 라운드 1부터 달라짐. 기본 잡음에서 불확실도 최종 오차 0.1238 → 0.1242, 불확실도 − 무작위 −0.0025 [−0.0039, −0.0009] → −0.0021 [−0.0042, +0.0003], 불확실도 − Sobol −0.0002 [−0.0013, +0.0009] → +0.0002 [−0.0015, +0.0022]. 곡선이 CPU 종류에 따라 다르므로 비교할 정책은 한 환경에서 실행. `run_al.py`가 함께 계산하는 `rq1_feature_sets.json`은 상대 차이 ≤ 6×10<sup>−4</sup>(잡음 없는 조건)이고 `rq1.md`는 같음 |
+| 논문 그림·README 그림(순서 13–14) | PNG가 커밋된 파일과 바이트 단위로 같음. PDF는 그린 값의 마지막 자릿수 차이로 그림 3만 바이트가 다름 |
+| 논문 수치(순서 15) | 123개 모두 일치(표본 선택 곡선을 다시 실행한 결과로 계산해도 일치) |
 | 저장된 run 재계산(`rerun_check.py`, T0000 기준 물리 300·423 K, γ = 0 변형 423 K) | 물리·솔버·메시 해시 일치, 특징 상대 차이 ≤ 6×10<sup>−16</sup>, 곡선은 일부 점에서 ≤ 3×10<sup>−13</sup> |
 | 단위 시험(`pytest -q`), Gate 0 | 56개 통과, 공식 diode 예제 2회 실행 결과 동일 |
 
