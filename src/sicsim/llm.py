@@ -42,7 +42,7 @@ Rules:
 - reason_codes must come from the allowed enum; short_rationale: at most two sentences.
 - Never claim that the selection guarantees an improvement."""
 
-# v4.7 ablation B: same rules, no device/physics context (variables are x1..x4, see ablation.ANON).
+# RQ3 ablation B: same rules, no device/physics context (variables are x1..x4, see ablation.ANON).
 SYSTEM_PROMPT_ANON = """You choose the next batch of simulation candidates in an active-learning study that
 estimates three latent input variables (x1, x2, x3) of a simulator from its outputs; x4 is varied but not
 estimated.

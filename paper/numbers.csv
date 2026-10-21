@@ -1,0 +1,124 @@
+section,item,paper,repo,ok,source
+II,gate oxide (nm),50,50,True,configs/baseline.yaml
+II,P-well doping (cm^-3),1e17,1e17,True,configs/baseline.yaml
+II,JFET doping (cm^-3),2e16,2e16,True,configs/baseline.yaml
+II,"drift layer (um, cm^-3)","10, 1e16","10, 1e16",True,configs/baseline.yaml
+II,half-pitch (um),3.5,3.5,True,configs/baseline.yaml
+II,channel length (um),0.5,0.5,True,configs/baseline.yaml
+II,surface-mobility depth lambda (nm),3,3,True,configs/baseline.yaml
+II,mu_surf at 300 K (cm^2/Vs),20,20,True,configs/baseline.yaml
+II,"gamma: baseline, variants","+1; 0, -1","+1; 0, -1",True,"configs/baseline.yaml, configs/variants/gamma*.yaml"
+II,Q_f (cm^-2),1e12,1e12,True,configs/baseline.yaml
+II,"r (Q_it,eff reduction at 423 K)","0, 0.1, 0.3","0, 0.1, 0.3",True,configs/variants/qitT*.yaml
+II,max V_DS (V),5,5,True,configs/baseline.yaml
+II,"bias: transfer V_DS, output V_GS (V)","0.1, 18","0.1, 18",True,configs/baseline.yaml
+II,transfer samples V_GS (V),"4,5,6,7,8,10,12,14,16,18,20","4,5,6,7,8,10,12,14,16,18,20",True,configs/baseline.yaml
+II,"ranges W_JFET, N_pw","+-20%, +-20%","+-20%, +-20%",True,configs/parameter_bounds.yaml
+II,"range Q_it,eff (1e12 cm^-2)",-1.0 (-1.5~-0.5),-1.0 (-1.5~-0.5),True,configs/parameter_bounds.yaml
+II,range s_mu,0.8~1.2,0.8~1.2,True,configs/parameter_bounds.yaml
+II,features per temperature,17,17,True,results/pool/runs.csv
+II,PN diode / MOS capacitor potential vs analytic (mV),< 5,< 5,True,"results/validation/gate1_pn_diode.json, gate2_moscap.json"
+II,V_th 300->423 K (V),3.765->3.530,3.765->3.530,True,results/stage_a/runs/A_base_T*.json
+II,SS 300->423 K (mV/dec),112.5->155.7,112.5->155.7,True,results/stage_a/runs/A_base_T*.json
+II,"R_on,sp 300->423 K (mOhm cm^2)",2.00->2.87,2.00->2.87,True,results/stage_a/runs/A_base_T*.json
+II,"mesh nodes standard, fine","1.1e4, 2.36e4","1.1e4, 2.36e4",True,results/validation/gate3_summary.json
+II,"standard vs fine mesh: V_th (mV), R_on,sp (%)","0.07, 0.9","0.07, 0.9",True,results/validation/gate3_summary.json
+II,V_th shift vs -q dQ_it/C_ox (mV),< 1,< 1,True,results/stage_a/runs/A_qit_*.json
+Table 1,"dV_th (mV), wjfet",0/0,0/0,True,results/stage_a/stage_a_deltas.csv
+Table 1,"dV_th (mV), npwell",+485/+474,+485/+474,True,results/stage_a/stage_a_deltas.csv
+Table 1,"dV_th (mV), qit",+464/+464,+464/+464,True,results/stage_a/stage_a_deltas.csv
+Table 1,"dV_th (mV), mu",-13/-13,-13/-13,True,results/stage_a/stage_a_deltas.csv
+Table 1,"SS (%), wjfet",0/0,0/0,True,results/stage_a/stage_a_deltas.csv
+Table 1,"SS (%), npwell",+3.4/+3.8,+3.4/+3.8,True,results/stage_a/stage_a_deltas.csv
+Table 1,"SS (%), qit",0/0,0/0,True,results/stage_a/stage_a_deltas.csv
+Table 1,"SS (%), mu",-0.2/-0.1,-0.2/-0.1,True,results/stage_a/stage_a_deltas.csv
+Table 1,"I_on (%), wjfet",+3.1/+4.5,+3.1/+4.5,True,results/stage_a/stage_a_deltas.csv
+Table 1,"I_on (%), npwell",-3.0/-1.7,-3.0/-1.7,True,results/stage_a/stage_a_deltas.csv
+Table 1,"I_on (%), qit",-1.3/-0.6,-1.3/-0.6,True,results/stage_a/stage_a_deltas.csv
+Table 1,"I_on (%), mu",+7.8/+3.6,+7.8/+3.6,True,results/stage_a/stage_a_deltas.csv
+Table 1,"d[V_th(423)-V_th(300)] (mV), wjfet",0.0,0.0,True,results/stage_a/stage_a_summary.json
+Table 1,"d[V_th(423)-V_th(300)] (mV), npwell",-10.9,-10.9,True,results/stage_a/stage_a_summary.json
+Table 1,"d[V_th(423)-V_th(300)] (mV), qit",0.0,0.0,True,results/stage_a/stage_a_summary.json
+Table 1,"d[V_th(423)-V_th(300)] (mV), mu",-0.4,-0.4,True,results/stage_a/stage_a_summary.json
+III,"I_on sensitivity ratio W_JFET/s_mu, 300->423 K",0.40->1.26,0.40->1.26,True,results/stage_a/stage_a_deltas.csv
+III,pool / test devices,512 / 128,512 / 128,True,"results/pool, results/test"
+III,"DEVSIM runs, baseline physics (all converged)",1280,1280,True,"results/{pool,test}/runs.csv"
+III,"DEVSIM runs, 423 K physics variants (all converged)",2560,2560,True,"results/{pool,test}_<variant>/runs.csv"
+III,"noise: V_th (mV); SS, g_m, transfer (%); currents, R (%)","10; 2, 2, 2; 1, 1, 1","10; 2, 2, 2; 1, 1, 1",True,configs/noise_model.yaml
+III,2x noise level,2,2,True,configs/noise_model.yaml
+III,GP kernel,Constant*RBF+White,Constant*RBF+White,True,src/sicsim/analysis.py
+III,RF trees,300,300,True,src/sicsim/analysis.py
+III,Ridge with cross-validated alpha,RidgeCV,RidgeCV,True,src/sicsim/analysis.py
+III,MAE_norm of the range-midpoint guess,0.25,0.25,True,results/test/runs.csv
+III,extra noise realisations (secondary),4,4,True,results/summary/repeat_control.json
+III,noise correlation rho,"0, 0.5, 0.9","0, 0.5, 0.9",True,results/summary/repeat_control.json
+III,series resistance (mOhm cm^2),0.1~0.3,0.1~0.3,True,results/summary/robustness.json
+III,"selection: initial points, batch x rounds, seeds","60, 10x6, 10","60, 10x6, 10",True,results/al_ablation/numeric/nominal/meta.json
+III,uncertainty policy: candidates scanned (top_factor x batch),30,30,True,src/sicsim/alsim.py
+III,LLM: candidates shown,20,20,True,src/sicsim/alsim.py
+III,"LLM model (A0, A, B, C)",claude-sonnet-5-5,claude-sonnet-5-5,True,results/al_*/**/meta.json
+III,equivalence margin,0.0025,0.0025,True,results/summary/rq3_ablation.json
+IV.1,"MAE_norm S1, S1x2, S2","0.112, 0.086, 0.072","0.112, 0.086, 0.072",True,results/summary/repeat_control.json
+IV.1,S2-S1x2 [95% CI],"-0.014 [-0.024, -0.006]","-0.014 [-0.024, -0.006]",True,results/summary/repeat_control.json
+IV.1,W_JFET S1x2->S2,0.079->0.050,0.079->0.050,True,results/summary/repeat_control.json
+IV.1,share of the 423 K gain explained by averaging,2/3,2/3,True,results/summary/repeat_control.json
+IV.1,"same, 2x noise",1/2,1/2,True,results/summary/repeat_control.json
+IV.1,"W_JFET significant, N_pw/Q_it,eff not (34-dim, 2x noise, Ridge)",yes,yes,True,results/summary/repeat_control.json
+IV.1,"other noise realisations: S1x2, S2","0.086~0.092, 0.069~0.078","0.086~0.092, 0.069~0.078",True,results/summary/repeat_control.json
+IV.1,other noise realisations: same pattern,yes,yes,True,results/summary/repeat_control.json
+IV.1,"equal budget 120 runs: S2 (60 pts), S1, S1x2 (120 pts)","0.085, 0.127, 0.096","0.085, 0.127, 0.096",True,results/summary/posthoc_stats.json
+IV.1,N_pw: V_th temperature shift per +20% (mV),-10.9,-10.9,True,results/stage_a/stage_a_summary.json
+IV.1,noise of V_th(423)-V_th(300) (mV),14,14,True,configs/noise_model.yaml
+IV.1,noise-free S1 (GP) below 0.001,yes,yes,True,results/al/none/rq1_feature_sets.json
+IV.1,"local CRB ratio S2/S1: W_JFET, N_pw, Q_it,eff","0.38, 0.59, 0.58","0.38, 0.59, 0.58",True,results/summary/repeat_control.json
+IV.1,"rho = 0.9: S1x2, S2, S3","0.110, 0.075, 0.064","0.110, 0.075, 0.064",True,results/summary/repeat_control.json
+Fig. 3,W_JFET S2 vs S1x2 (%),-36,-36,True,results/summary/repeat_control.json
+Table 2,base: oracle,0.072 (-17%)*,0.072 (-17%)*,True,results/summary/posthoc_stats.json
+Table 2,base: mixture,0.082 (-5%),0.082 (-5%),True,results/summary/posthoc_stats.json
+Table 2,gamma0: oracle,0.073 (-15%)*,0.073 (-15%)*,True,results/summary/posthoc_stats.json
+Table 2,gamma0: mismatch,0.537,0.537,True,results/summary/posthoc_stats.json
+Table 2,gamma0: mixture,0.083 (-3%),0.083 (-3%),True,results/summary/posthoc_stats.json
+Table 2,gamma_m1: oracle,0.076 (-12%)*,0.076 (-12%)*,True,results/summary/posthoc_stats.json
+Table 2,gamma_m1: mismatch,0.928,0.928,True,results/summary/posthoc_stats.json
+Table 2,gamma_m1: mixture,0.088 (+1%),0.088 (+1%),True,results/summary/posthoc_stats.json
+Table 2,qitT10: oracle,0.057 (-34%)*,0.057 (-34%)*,True,results/summary/posthoc_stats.json
+Table 2,qitT10: mismatch,0.084,0.084,True,results/summary/posthoc_stats.json
+Table 2,qitT10: mixture,0.079 (-8%),0.079 (-8%),True,results/summary/posthoc_stats.json
+Table 2,qitT30: oracle,0.033 (-62%)*,0.033 (-62%)*,True,results/summary/posthoc_stats.json
+Table 2,qitT30: mismatch,0.132,0.132,True,results/summary/posthoc_stats.json
+Table 2,qitT30: mixture,0.080 (-7%),0.080 (-7%),True,results/summary/posthoc_stats.json
+Table 2,"series resistance: S1, S1x2, S2","0.378, 0.405, 0.261","0.378, 0.405, 0.261",True,results/summary/repeat_control.json
+Abstract,"mismatch gamma = 0, -1","0.54, 0.93","0.54, 0.93",True,results/summary/posthoc_stats.json
+IV.2,mixture range; none below S1x2,0.079~0.088; yes,0.079~0.088; yes,True,results/summary/posthoc_stats.json
+IV.2,"423 K, gamma = 0, -1: g_m,max decrease (%)","20, 38","20, 38",True,"results/test/runs.csv, results/test_gamma*/runs.csv (median of 128)"
+IV.2,"423 K, gamma = 0, -1: V_th shift (mV)","+27, +56","+27, +56",True,"results/test/runs.csv, results/test_gamma*/runs.csv (median of 128)"
+Table 3,"final MAE_norm, random",0.1263,0.1263,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, sobol",0.1240,0.1240,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, U",0.1238,0.1238,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, A0",0.1250,0.1250,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, A",0.1236,0.1236,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, B",0.1242,0.1242,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, C",0.1257,0.1257,True,results/summary/rq3_ablation.json
+Table 3,"final MAE_norm, D",0.1259,0.1259,True,results/summary/rq3_ablation.json
+Table 3,random vs uncertainty (x1e-3),"+2.5 [+0.9, +3.9]","+2.5 [+0.9, +3.9]",True,results/summary/posthoc_stats.json
+Table 3,Sobol vs uncertainty (x1e-3),"+0.2 [-0.9, +1.3]","+0.2 [-0.9, +1.3]",True,results/summary/posthoc_stats.json
+Table 3,A0 vs uncertainty (x1e-3),"+1.2 [-0.8, +3.6]","+1.2 [-0.8, +3.6]",True,results/summary/posthoc_stats.json
+Table 3,A vs uncertainty (x1e-3),"-0.2 [-1.7, +1.3]","-0.2 [-1.7, +1.3]",True,results/summary/posthoc_stats.json
+Table 3,B vs uncertainty (x1e-3),"+0.4 [-1.6, +3.1]","+0.4 [-1.6, +3.1]",True,results/summary/posthoc_stats.json
+Table 3,C vs uncertainty (x1e-3),"+1.9 [-0.7, +4.8]","+1.9 [-0.7, +4.8]",True,results/summary/posthoc_stats.json
+Table 3,D vs uncertainty (x1e-3),"+2.1 [-0.3, +5.0]","+2.1 [-0.3, +5.0]",True,results/summary/posthoc_stats.json
+Table 3,"top-10 overlap actual/displayed, A0",0.63/0.63,0.63/0.63,True,results/summary/rq3_ablation.json
+Table 3,"top-10 overlap actual/displayed, A",0.62/0.62,0.62/0.62,True,results/summary/rq3_ablation.json
+Table 3,"top-10 overlap actual/displayed, B",0.55/0.55,0.55/0.55,True,results/summary/rq3_ablation.json
+Table 3,"top-10 overlap actual/displayed, C",0.49/0.64,0.49/0.64,True,results/summary/rq3_ablation.json
+IV.3,uncertainty - random [95% CI],"-0.0025 [-0.0039, -0.0009]","-0.0025 [-0.0039, -0.0009]",True,results/summary/posthoc_stats.json
+IV.3,"samples saved vs random: n_init 60; 30, 90 (%)","12; 20, 15","12; 20, 15",True,results/summary/al_ninit_summary.csv
+IV.3,uncertainty vs Sobol: CI includes 0,yes,yes,True,results/summary/posthoc_stats.json
+IV.3,2x noise: uncertainty and Sobol vs random CIs include 0,yes,yes,True,results/summary/rq2.md
+IV.3,GP on 60 random points < every RF policy at 120,0.085; yes,0.085; yes,True,"results/summary/posthoc_stats.json, rq3_ablation.json"
+IV.3,LLM calls validated,238/240,238/240,True,results/summary/rq3_ablation.json
+IV.3,within +-0.0025 of uncertainty: only A,yes,yes,True,results/summary/posthoc_stats.json
+IV.3,minimum detectable difference,0.0025~0.0047,0.0025~0.0047,True,results/summary/posthoc_stats.json
+IV.3,C: overlap with displayed / actual top-10 (%),"64, 49","64, 49",True,results/summary/rq3_ablation.json
+IV.3,C: widened toward the displayed worst target,51/59,51/59,True,results/summary/rq3_ablation.json
+IV.3,"B, A: widened toward the worst target (of 60)","49, 47","49, 47",True,results/summary/rq3_ablation.json

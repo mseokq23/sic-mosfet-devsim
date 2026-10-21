@@ -107,7 +107,7 @@ def save(fig, out: Path, name: str):
 
 
 def mean_ci(E, n=2000, seed=7):
-    """Column means and 95 % CI over test devices (bootstrap seed 7, 2000 resamples; as scripts/make_v47_figures.py)."""
+    """Column means and 95 % CI over test devices (bootstrap seed 7, 2000 resamples; as scripts/make_paper_figures.py)."""
     E = np.asarray(E, float)
     bi = np.random.default_rng(seed).integers(0, len(E), (n, len(E)))
     lo, hi = np.percentile(E[bi].mean(1), [2.5, 97.5], axis=0)
@@ -123,7 +123,7 @@ def iv_baseline(out):
     """Design-center device (all scales 1, Q_it,eff = -1e12 cm^-2): transfer (log, linear) and output, 300/423 K."""
     fig, ax = plt.subplots(1, 3, figsize=(10, 3.25), constrained_layout=True)
     for T in (300, 423):
-        d = run(f"results/stage_a_v11/runs/A_base_T{T}.json")
+        d = run(f"results/stage_a/runs/A_base_T{T}.json")
         vg, i = transfer(d)
         vds, io = output(d)
         f = d["features"]
@@ -155,7 +155,7 @@ def iv_one_at_a_time(out):
         for lv in lvls:
             for T, ls in ((300, "-"), (423, "--")):
                 name = "A_base" if lv == "base" else f"A_{p}_{lv}"
-                d = run(f"results/stage_a_v11/runs/{name}_T{T}.json")
+                d = run(f"results/stage_a/runs/{name}_T{T}.json")
                 vg, i = transfer(d)
                 vds, io = output(d)
                 kw = dict(color=C_LVL[lv], ls=ls, lw=1.25 if lv != "base" else 1.5)
@@ -195,7 +195,7 @@ def iv_population(out):
             n += T == 300
     USED[CUR[0]].add("results/test/runs/*_T300.json, *_T423.json")
     for T, ls in ((300, "-"), (423, "--")):
-        d = run(f"results/stage_a_v11/runs/A_base_T{T}.json")
+        d = run(f"results/stage_a/runs/A_base_T{T}.json")
         vg, i = transfer(d)
         vds, io = output(d)
         ax[0].semilogy(vg, i, color="#1a1a1a", ls=ls, lw=1.4)
@@ -292,8 +292,8 @@ def variants_423k(out):
 
 def estimation_errors(out):
     """GP inverse model on noisy features: normalized absolute error over the 128 test devices."""
-    pts = csv("results/summary/v47_repeat_control_points.csv")
-    budget = jload("results/summary/v48_extra_stats.json")["part2"]
+    pts = csv("results/summary/repeat_control_points.csv")
+    budget = jload("results/summary/posthoc_stats.json")["part2"]
     errc = [f"err_{v}" for v in VARS]
 
     def sel(rho=0.0, level="nominal", model="gp"):
@@ -340,8 +340,8 @@ def estimation_errors(out):
 
 def robustness_423k(out):
     """Mean normalized error when the 423 K data come from other physics assumptions; drain series resistance."""
-    p1 = jload("results/summary/v48_extra_stats.json")["part1"]
-    rc = jload("results/summary/v47_repeat_control.json")
+    p1 = jload("results/summary/posthoc_stats.json")["part1"]
+    rc = jload("results/summary/repeat_control.json")
     scen = ["base", "gamma0", "gamma_m1", "qitT10", "qitT30"]
     names = {"base": r"frozen ($\gamma$ = +1)", "gamma0": r"$\gamma$ = 0", "gamma_m1": r"$\gamma$ = −1",
              "qitT10": r"$|Q_\mathrm{it}|$ −10 %", "qitT30": r"$|Q_\mathrm{it}|$ −30 %"}
@@ -377,10 +377,10 @@ def robustness_423k(out):
     save(fig, out, "robustness_423k")
 
 
-POLICY_DIR = {"random": "results/al_v47/numeric/nominal", "sobol": "results/al_v47/numeric/nominal",
-              "uncertainty": "results/al_v47/numeric/nominal", "top20_random": "results/al_v47/numeric/nominal",
-              "A": "results/al_v47/named/nominal", "B": "results/al_v47/anon/nominal",
-              "C": "results/al_v47/shuffled/nominal", "A0": "results/al_live/nominal"}
+POLICY_DIR = {"random": "results/al_ablation/numeric/nominal", "sobol": "results/al_ablation/numeric/nominal",
+              "uncertainty": "results/al_ablation/numeric/nominal", "top20_random": "results/al_ablation/numeric/nominal",
+              "A": "results/al_ablation/named/nominal", "B": "results/al_ablation/anon/nominal",
+              "C": "results/al_ablation/shuffled/nominal", "A0": "results/al_live/nominal"}
 LBL_POL = {"random": "random", "sobol": "Sobol", "uncertainty": "uncertainty (forward RF)", "top20_random": "random among top-20 (D)",
            "A0": "LLM, first run (A0)", "A": "LLM, re-run (A)", "B": "LLM, anonymized (B)", "C": "LLM, shuffled info (C)"}
 
@@ -393,8 +393,8 @@ def selection_curves(out):
         d = d[d.policy == ("llm" if key in ("A", "B", "C", "A0") else key)]
         g = d.groupby("n_points").mean_mae_norm
         cur[key] = (g.mean().index.values, g.mean().values, g.std(ddof=1).values, d.seed.nunique())
-    ab = jload("results/summary/v47_rq3_ablation.json")
-    p3 = jload("results/summary/v48_extra_stats.json")["part3"]
+    ab = jload("results/summary/rq3_ablation.json")
+    p3 = jload("results/summary/posthoc_stats.json")["part3"]
     fig = plt.figure(figsize=(10, 6.4), constrained_layout=True)
     gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1])
     a0, a1, a2 = fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[1, :])

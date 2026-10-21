@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src")
 from sicsim.config import load_config, _Loader
 from sicsim.extract import extract_features
 from sicsim.utils import save_json
-D = ROOT / "results" / "pretest" / "gate3"
+D = ROOT / "results" / "validation" / "gate3"
 cfg = load_config(); proto = yaml.load(open(ROOT / "configs" / "sweep_protocol.yaml"), Loader=_Loader)
 R = {}
 for p in D.glob("*.json"):
@@ -41,7 +41,7 @@ summary["repeatability_bitwise_identical"] = bool(same)
 hot = R["ms1.5_dp_423"]
 summary["temperature_300_to_423"] = {k: dict(T300=dp["features"][k], T423=hot["features"][k]) for k in KEYS}
 summary["env"] = dp.get("env")
-save_json(summary, ROOT / "results" / "pretest" / "gate3_summary.json")
+save_json(summary, ROOT / "results" / "validation" / "gate3_summary.json")
 print(json.dumps({k: summary[k] for k in ("medium_vs_fine", "coarse_vs_fine", "medium_pass", "medium_accepted",
                                            "precision_dp_vs_xp", "kcl_floor", "repeatability_bitwise_identical")}, indent=1, default=float))
 for k in KEYS: print(f"{k}: 300K {dp['features'][k]:.4g} -> 423K {hot['features'][k]:.4g}")
@@ -64,4 +64,4 @@ for lv, st in (("coarse", ":"), ("medium", "-"), ("fine", "--")):
 ax[1, 1].set(xlabel="VGS (V)", ylabel="JD (A/cm²)", title="(d) mesh study, 300 K")
 for a in ax.flat: a.legend(fontsize=7); a.grid(alpha=0.3)
 fig.suptitle("Gate 3: 2D half-cell 4H-SiC planar MOSFET (unipolar DD, baseline)")
-fig.tight_layout(); fig.savefig(ROOT / "results" / "pretest" / "fig_gate3_mosfet.png", dpi=130)
+fig.tight_layout(); fig.savefig(ROOT / "results" / "validation" / "fig_gate3_mosfet.png", dpi=130)

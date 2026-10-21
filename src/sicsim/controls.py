@@ -1,4 +1,4 @@
-"""v4.7 control analyses on the stored features (no new DEVSIM runs).
+"""Control analyses on the stored features (no new DEVSIM runs).
 
 Repeated-measurement control (S1x2): is the 300 K -> 300+423 K gain more than measuring the same device
 twice?  Under noise-v1.1 the 300 K and 423 K features carry independent noise, so S2 also averages two
@@ -121,7 +121,7 @@ def replicate_seeds(base_seed: int, k: int):
 
 def compute_env() -> dict:
     """Numerical environment of an analysis run. Active-learning trajectories depend on it: on a different CPU
-    the published uncertainty/LLM curves reproduce at round 0 but drift from round 1, because the forward
+    the committed uncertainty/LLM curves reproduce at round 0 but drift from round 1, because the forward
     surrogate's candidate ranking changes slightly (most likely last-bit differences in SIMD reductions that
     flip near-tie tree splits). The inverse models and the GP results of RQ1 reproduce exactly."""
     import sklearn

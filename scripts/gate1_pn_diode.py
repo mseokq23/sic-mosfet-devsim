@@ -11,7 +11,7 @@ from sicsim.solver import ramp, STATS
 from sicsim.params import Q, EPS0
 from sicsim.utils import reset_devsim, save_json, env_info
 
-OUT = Path(__file__).resolve().parents[1] / "results" / "pretest"
+OUT = Path(__file__).resolve().parents[1] / "results" / "validation"
 cfg = load_config(); mat = material_from(cfg); g = cfg["pn_diode"]
 tol = cfg["numerics"]["tol"]
 

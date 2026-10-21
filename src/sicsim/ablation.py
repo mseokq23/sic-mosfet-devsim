@@ -1,7 +1,7 @@
-"""v4.7 RQ3 ablation (analysis plan: docs/PREDICTIONS_V47.md).
+"""RQ3 ablation of the LLM-assisted selection (analysis plan: docs/PREDICTIONS_V47.md at commit cb3534b).
 
 What the LLM is shown in each round, and how its batch relates to what it was shown.
-  named     unchanged payload (condition A, the original RQ3 run)
+  named     unchanged payload (condition A; A0 is its first run)
   anon      variable names replaced by x1..x4 and a physics-free system prompt (condition B)
   shuffled  per round, the (predictive_uncertainty, distance_to_train) pairs are permuted across the 20
             candidates and listed in the displayed-uncertainty order; the cross-validation errors are
@@ -76,7 +76,7 @@ def _mpd(X):
 
 def call_stats(rec: dict, coords, n_mc=2000, mc_seed=0) -> dict | None:
     """Batch statistics of one accepted call. coords: DataFrame (index candidate_id; columns VARS+NUISANCE,
-    normalised to [0, 1]). Uses rec['payload'] (logged since v4.7); for older logs without it, the candidate
+    normalised to [0, 1]). Uses rec['payload'] (logged for A, B, C); for logs without it (A0), the candidate
     list (true uncertainty order) is used and the worst-target statistics are skipped."""
     if rec.get("validator_status") != "accepted":
         return None

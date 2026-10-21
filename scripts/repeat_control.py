@@ -1,4 +1,5 @@
-"""v4.7 repeated-measurement control for RQ1 (analysis plan: docs/PREDICTIONS_V47.md). No DEVSIM runs.
+"""Repeated-measurement control for RQ1 (S1 vs S1x2 vs S2). No DEVSIM runs.
+Analysis plan committed before the run: docs/PREDICTIONS_V47.md at commit cb3534b (git history).
   python scripts/repeat_control.py                       # full plan (about 5 min on 1 core)
   python scripts/repeat_control.py --blind               # write outputs, print only reproduction checks
 Feature sets (GP and Ridge inverse models, train = pool 512, test = 128):
@@ -6,7 +7,7 @@ Feature sets (GP and Ridge inverse models, train = pool 512, test = 128):
   S2 (300 + 423 K), S3 (S2 + differences).
 Noise: frozen noise-v1.1; the second 300 K realisation uses seed + 1000 (pool 1101, test 1202).
 rho: correlation between the two measurements of a device (300/423 K for S2, 300/300 K for S1x2).
--> results/summary/v47_repeat_control.json, v47_repeat_control.md, v47_repeat_control_points.csv"""
+-> results/summary/repeat_control.json, repeat_control.md, repeat_control_points.csv"""
 import argparse, datetime as dt, json, subprocess, sys
 from pathlib import Path
 import numpy as np, pandas as pd, yaml
@@ -20,6 +21,7 @@ from sicsim.robust import apply_series_resistance
 SETS = ["S1", "S1x2", "S1x2cat", "S2", "S3"]
 CONTRASTS = [("S2", "S1x2"), ("S1x2", "S1"), ("S2", "S1"), ("S2", "S1x2cat"), ("S1x2cat", "S1x2"), ("S3", "S2")]
 TAG = {"wjfet_scale": "W_JFET", "npwell_scale": "N_pw", "qit_eff_cm2": "Q_it,eff"}
+PLAN, PLAN_COMMIT = "docs/PREDICTIONS_V47.md", "cb3534b"     # pre-run analysis plan (in the git history)
 PUBLISHED = {"S1": 0.112275, "S2": 0.072011, "ci": (-0.049, -0.031), "series_S1": 0.378, "series_S2": 0.261}
 RHO_RANGE, RHO_SEED = (0.1, 0.3), 2026         # series-R draw, identical to scripts/robustness.py
 
@@ -31,7 +33,7 @@ def git(*args):
 def crb_table(rhos):
     """Local Cramer-Rao bounds from Stage A (6 scalar features) with correlated repeat/temperature noise."""
     from identifiability import NUISANCE, TARGETS, jacobian, sigmas
-    df = pd.read_csv(ROOT / "results/stage_a_v11/runs.csv")
+    df = pd.read_csv(ROOT / "results/stage_a/runs.csv")
     df = df[df.converged.astype(str).str.lower() == "true"]
     nz = yaml.load(open(ROOT / "configs/noise_model.yaml"), Loader=_Loader)
     tags = dict(TARGETS); tags.update(NUISANCE)
@@ -86,8 +88,7 @@ def main():
     bpool, btest = pd.read_csv(ROOT / "results/pool/runs.csv"), pd.read_csv(ROOT / "results/test/runs.csv")
     pool_w, test_w = wide_table(bpool).sort_index(), wide_table(btest).sort_index()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    meta = dict(analysis="v4.7 repeated-measurement control", plan="docs/PREDICTIONS_V47.md",
-                plan_commit=git("log", "-1", "--format=%h", "--", "docs/PREDICTIONS_V47.md"),
+    meta = dict(analysis="repeated-measurement control", plan=PLAN, plan_commit=PLAN_COMMIT,
                 code_commit=git("rev-parse", "--short", "HEAD"), code_dirty=bool(git("status", "--porcelain", "--", "src", "scripts", "configs")),
                 noise_version=nz["version"], current_floor=fl, levels=a.levels, rhos=a.rhos, models=a.models,
                 replicates=a.replicates, n_boot=a.n_boot, n_pool=len(pool_w), n_test=len(test_w),
@@ -134,18 +135,18 @@ def main():
         sr = res["series_r"]["sets"]
         print(f"reproduction (series R): S1 {sr['S1']['mean']:.3f} S2 {sr['S2']['mean']:.3f} "
               f"(published {PUBLISHED['series_S1']} / {PUBLISHED['series_S2']})")
-    json.dump(res, open(out / "v47_repeat_control.json", "w"), indent=1)
-    pd.concat(points).to_csv(out / "v47_repeat_control_points.csv", index=False)
-    (out / "v47_repeat_control.md").write_text(report(res))
+    json.dump(res, open(out / "repeat_control.json", "w"), indent=1)
+    pd.concat(points).to_csv(out / "repeat_control_points.csv", index=False)
+    (out / "repeat_control.md").write_text(report(res))
     if not a.blind:
-        print((out / "v47_repeat_control.md").read_text())
-    print("-> results/summary/v47_repeat_control.{json,md}, v47_repeat_control_points.csv")
+        print((out / "repeat_control.md").read_text())
+    print("-> results/summary/repeat_control.{json,md}, repeat_control_points.csv")
 
 
 def report(res):
     f3 = lambda x: f"{x:.3f}"
     ci = lambda c: f"{c['delta']:+.4f} [{c['ci'][0]:+.4f}, {c['ci'][1]:+.4f}]"
-    L = ["# v4.7 반복 측정 통제 (RQ1 보강, 계획: docs/PREDICTIONS_V47.md)\n",
+    L = [f"# 반복 측정 통제 (RQ1, 사전 계획: {PLAN_COMMIT}:{PLAN})\n",
          f"코드 {res['meta']['code_commit']}{' (dirty)' if res['meta']['code_dirty'] else ''}, 계획 커밋 {res['meta']['plan_commit']}, "
          f"잡음 {res['meta']['noise_version']}, 시험점 {res['meta']['n_test']}, 부트스트랩 {res['meta']['n_boot']}회.\n",
          "MAE_norm = 절대오차/DOE 범위. 대비(Δ)는 시험점 짝지은 부트스트랩 95% CI, 비는 평균 오차의 비.\n"]

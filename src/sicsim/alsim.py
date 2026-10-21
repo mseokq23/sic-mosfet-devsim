@@ -4,8 +4,8 @@ The candidate pool and an independent test set are simulated ONCE; each policy t
 (DEVSIM results) from the pool.  Same pool, same initial set and same budget for every policy and seed
 -> fair multi-seed comparison at a fraction of the DEVSIM cost (RQ2/RQ3).
 Policies: random | sobol (pool order) | uncertainty (forward-surrogate tree variance + diversity) | llm
-          | top20_random (v4.7 ablation D: 10 drawn uniformly from the uncertainty top-20, no LLM)
-LLM variants (llm_cfg['variant'], v4.7 ablation): named (A) | anon (B) | shuffled (C), see ablation.py.
+          | top20_random (RQ3 ablation D: 10 drawn uniformly from the uncertainty top-20, no LLM)
+LLM variants (llm_cfg['variant'], RQ3 ablation): named (A) | anon (B) | shuffled (C), see ablation.py.
 """
 from __future__ import annotations
 

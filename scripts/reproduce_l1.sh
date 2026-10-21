@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Recompute the summary tables and figures from the committed raw data (level L1: no DEVSIM, no API calls) in a
 # throw-away git worktree of the current commit, then compare every regenerated file with the committed one.
-#   bash scripts/reproduce_l1.sh             # analyses, summaries, figures   (about 10 min on one core)
+#   bash scripts/reproduce_l1.sh             # analyses, summaries, figures, paper numbers (about 10 min on one core)
 #   bash scripts/reproduce_l1.sh --with-al   # + active-learning re-runs: run_al x 3 noise levels, al_ninit (+20 min)
 #   KEEP=1 bash scripts/reproduce_l1.sh      # keep the worktree afterwards (its path is printed)
 # Your working tree is not touched. Commit (or stash) local changes first: the worktree is made from HEAD.
@@ -28,14 +28,14 @@ step() {   # step <label> <command...>
   if "$@" >>"$LOG" 2>&1; then echo "ok ($((SECONDS - t0)) s)"; else echo "FAILED, see $LOG"; KEEP=1; exit 1; fi
 }
 step "result audit"                 python scripts/audit_results.py results/pool configs/design_pool.csv results/test configs/design_test.csv
-step "Stage A sensitivity"          python scripts/stage_a_report.py results/stage_a_v11
-step "local identifiability (CRB)"  python scripts/identifiability.py results/stage_a_v11
+step "Stage A sensitivity"          python scripts/stage_a_report.py results/stage_a
+step "local identifiability (CRB)"  python scripts/identifiability.py results/stage_a
 step "ridge inverse model"          python scripts/ridge_rq1.py
-step "repeated measurement S1x2"   python scripts/repeat_control.py
+step "repeated measurement S1x2"    python scripts/repeat_control.py
 step "423 K physics variants"       python scripts/robustness.py
 step "mixed-physics training"       python scripts/robustness_mixed.py
-step "scenario / budget / seed stats" python scripts/v48_extra_stats.py
-step "selection ablation summary"   python scripts/rq3_ablation.py
+step "post hoc statistics"          python scripts/posthoc_stats.py
+step "RQ3 ablation summary"         python scripts/rq3_ablation.py
 if [ "$WITH_AL" = "1" ]; then
   for nz in none nominal high; do
     step "active learning, noise=$nz"  python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --noise "$nz"
@@ -43,9 +43,11 @@ if [ "$WITH_AL" = "1" ]; then
   step "initial-set size (n_init 30/90)" python scripts/al_ninit.py --n-init 30 90 --seeds 10
 fi
 step "summary tables"               python scripts/summarize_results.py
-step "paper/figures, paper/tables"  python scripts/make_paper_figures.py
-step "paper/figures (v4.7 set)"     python scripts/make_v47_figures.py
+step "paper figures and tables"     python scripts/make_paper_figures.py
 step "README figures (docs/figures)" python scripts/make_readme_figures.py
+printf '  %-44s' "paper numbers (check_paper_numbers.py)"
+if python scripts/check_paper_numbers.py >>"$LOG" 2>&1; then echo "all match"
+else echo "MISMATCH, see $LOG (expected only with --with-al on another CPU type)"; fi
 echo
 echo "Regenerated files that differ from the committed versions:"
 python scripts/compare_outputs.py results paper docs/figures

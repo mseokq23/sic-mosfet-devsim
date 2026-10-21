@@ -1,4 +1,4 @@
-# Robustness study v1.3 (docs/ROBUSTNESS.md): re-simulate the frozen pool/test designs at 423 K under
+# 423 K physics variants: re-simulate the frozen pool/test designs at 423 K under
 # model-assumption variants (configs/variants/<name>.yaml); 300 K runs are reused from results/pool, results/test.
 # One dispatch runs every listed variant: matrix = variants x (pool_shards + test_shards) jobs (<= 256).
 # Concurrency is capped by the account plan (standard runners: Free 20, Pro 40); extra jobs queue automatically.

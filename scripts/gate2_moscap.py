@@ -11,7 +11,7 @@ from sicsim.params import Q, EPS0, gate_offset
 from sicsim.solver import ramp, STATS
 from sicsim.utils import reset_devsim, save_json, env_info
 
-OUT = Path(__file__).resolve().parents[1] / "results" / "pretest"
+OUT = Path(__file__).resolve().parents[1] / "results" / "validation"
 cfg = load_config(); mat = material_from(cfg); gate = gate_from(cfg); g = cfg["moscap"]
 tol = cfg["numerics"]["tol"]
 cox = 3.9 * EPS0 / (g["tox_um"] * 1e-4)

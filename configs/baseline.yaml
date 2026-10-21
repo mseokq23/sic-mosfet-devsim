@@ -1,5 +1,5 @@
 # Baseline configuration (protocol is FROZEN after DOE freeze day; change -> new version tag)
-version: v1.1-frozen               # v1.0 + fixed-pitch JFET-width variation (docs/ROADMAP.md)
+version: v1.1-frozen               # v1.0 + fixed-pitch JFET-width variation (wjfet_mode below)
 
 numerics:
   extended_precision: false     # Gate 3: double == 128-bit features (dVth ~1e-11 V), 3x faster; gates 1-2 force 128-bit

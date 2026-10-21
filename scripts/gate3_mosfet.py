@@ -4,7 +4,7 @@ import json, os, subprocess, sys, time
 from pathlib import Path
 import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "results" / "pretest" / "gate3"
+OUT = ROOT / "results" / "validation" / "gate3"
 OUT.mkdir(parents=True, exist_ok=True)
 env = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "MKL_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"}
 cases = [

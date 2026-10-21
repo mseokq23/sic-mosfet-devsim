@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parents[1]
-out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results" / "pretest" / "stage_a"
+out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results" / "stage_a"
 df = pd.read_csv(out / "runs.csv")
 F = ["vth_V", "ss_mV_dec", "gm_max_S_per_cm", "ion_A_per_cm", "ron_mohm_cm2", "id_vds_req_A_per_cm"]
 # expected sign of d(feature)/d(+20% change) written before the runs (0 = ~no effect expected)
@@ -16,7 +16,7 @@ EXPECT = {"wjfet": dict(vth_V=0, ss_mV_dec=0, ion_A_per_cm=+1, ron_mohm_cm2=-1, 
           "qit": dict(vth_V=+1, ss_mV_dec=0, ion_A_per_cm=-1),      # +20% = more negative charge
           # v1.0 (written before the v1.0 runs): higher channel mobility -> constant-current Vth slightly lower
           "mu": dict(vth_V=-1, ss_mV_dec=0, gm_max_S_per_cm=+1, ion_A_per_cm=+1, ron_mohm_cm2=-1, id_vds_req_A_per_cm=+1)}
-gate3 = json.load(open(ROOT / "results" / "pretest" / "gate3_summary.json"))
+gate3 = json.load(open(ROOT / "results" / "validation" / "gate3_summary.json"))
 mesh_err = {k: abs(v) for k, v in gate3["medium_vs_fine"].items()}   # Vth absolute (V), others relative
 rows, ok = [], df[df["converged"].astype(str).str.lower() == "true"]
 VARS_PRESENT = [t for t in ("wjfet", "npwell", "qit", "mu") if f"A_{t}_+20pct" in set(ok.candidate_id)]

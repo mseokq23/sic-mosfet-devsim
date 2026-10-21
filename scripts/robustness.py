@@ -1,4 +1,5 @@
-"""Robustness of the multi-temperature gain (pre-registered in docs/PREDICTIONS_ROBUSTNESS.md).
+"""Robustness of the multi-temperature gain to the 423 K physics (predictions committed before the runs:
+docs/PREDICTIONS_ROBUSTNESS.md at commit ae73669, in the git history).
   in-model : train/test both from variant physics (300 K baseline + 423 K variant)
   out-model: train on the frozen baseline, test on variant physics or with a parasitic series resistance
   python scripts/robustness.py [--model gp|ridge] [--levels nominal high]
