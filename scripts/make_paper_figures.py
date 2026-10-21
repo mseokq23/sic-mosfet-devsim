@@ -3,7 +3,7 @@
   python scripts/make_paper_figures.py fig3 tables      # a subset: fig1 fig2 fig3 tables
   python scripts/make_paper_figures.py --out /tmp/p     # write to /tmp/p/figures and /tmp/p/tables instead
 -> paper/figures/fig1_structure_flow, fig2_validation, fig3_rq1 (.png 600 dpi + .pdf), figure_data.json
-   paper/tables/table1_sensitivity, table2_physics, table3_policies (.md + .csv)
+   paper/tables/table1_sensitivity, table2_physics, table3_policies, model_parameters (.md + .csv)
 
 Figures are drawn at their printed size (column width 8.0 cm, text >= 6 pt). With the pinned packages
 (requirements.txt) the PNGs are pixel-identical to the images in the paper; text hinting is fixed below because
@@ -14,7 +14,8 @@ Sources:
   Fig. 3  results/summary/repeat_control_points.csv, repeat_control.json (test-point bootstrap: seed 7, 2,000)
   Table 1 results/stage_a/stage_a_deltas.csv, stage_a_summary.json
   Table 2 results/summary/posthoc_stats.json (part 1), repeat_control.json
-  Table 3 results/summary/rq3_ablation.json, posthoc_stats.json (part 3)"""
+  Table 3 results/summary/rq3_ablation.json, posthoc_stats.json (part 3)
+  model parameters: src/sicsim/params.py defaults with the material overrides of configs/baseline.yaml"""
 import json, sys
 from pathlib import Path
 import numpy as np, pandas as pd, yaml
@@ -22,7 +23,8 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src"))
-from sicsim.config import _Loader, load_config
+from sicsim.config import _Loader, load_config, material_from
+from sicsim.params import parameter_table
 
 R, S = ROOT / "results", ROOT / "results" / "summary"
 FIG, TAB = ROOT / "paper" / "figures", ROOT / "paper" / "tables"
@@ -47,7 +49,7 @@ def plabel(ax, s, x, y):
 
 def save(fig, name):
     FIG.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG / f"{name}.png", dpi=600); fig.savefig(FIG / f"{name}.pdf")
+    fig.savefig(FIG / f"{name}.png", dpi=600); fig.savefig(FIG / f"{name}.pdf", metadata={"CreationDate": None})
     w, h = fig.get_size_inches(); NOTES.setdefault("size_cm", {})[name] = [round(w * 2.54, 2), round(h * 2.54, 2)]
     plt.close(fig)
 
@@ -393,7 +395,16 @@ def table3():
         "run of A in another environment; A, B, C, D, uncertainty, random and Sobol ran in one session."], csv_rows=raw)
 
 
-PARTS = {"fig1": fig1, "fig2": fig2, "fig3": fig3, "tables": lambda: (table1(), table2(), table3())}
+def model_parameters():
+    """4H-SiC material and mobility-model constants used by every run (the paper refers to the repository for them)."""
+    rows = parameter_table(material_from(cfg))
+    write_table("model_parameters", rows, ["name", "value"], [
+        f"Configuration {cfg['version']}: defaults of src/sicsim/params.py (sources listed in its docstring) with the "
+        "material overrides of configs/baseline.yaml. Gate work function "
+        f"{cfg['gate']['phi_m']} eV, fixed oxide charge Q_f = {cfg['interface']['qf_cm2']:.0e} cm⁻².".replace("e+", "e")])
+
+
+PARTS = {"fig1": fig1, "fig2": fig2, "fig3": fig3, "tables": lambda: (table1(), table2(), table3(), model_parameters())}
 
 if __name__ == "__main__":
     args = sys.argv[1:]

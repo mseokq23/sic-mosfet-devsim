@@ -534,5 +534,135 @@
    "calls": null,
    "accepted": null
   }
+ ],
+ "model_parameters": [
+  {
+   "name": "eps_r",
+   "value": 9.7
+  },
+  {
+   "name": "Eg300",
+   "value": 3.23
+  },
+  {
+   "name": "Eg_alpha",
+   "value": 0.00065
+  },
+  {
+   "name": "Eg_beta",
+   "value": 1300.0
+  },
+  {
+   "name": "Nc300",
+   "value": 1.69e+19
+  },
+  {
+   "name": "Nv300",
+   "value": 2.49e+19
+  },
+  {
+   "name": "chi",
+   "value": 3.7
+  },
+  {
+   "name": "dED",
+   "value": 0.066
+  },
+  {
+   "name": "gD",
+   "value": 2.0
+  },
+  {
+   "name": "alphaD",
+   "value": 0.0
+  },
+  {
+   "name": "dEA",
+   "value": 0.191
+  },
+  {
+   "name": "gA",
+   "value": 4.0
+  },
+  {
+   "name": "alphaA",
+   "value": 0.0
+  },
+  {
+   "name": "mun_min",
+   "value": 40.0
+  },
+  {
+   "name": "mun_max",
+   "value": 950.0
+  },
+  {
+   "name": "mun_Nref",
+   "value": 2e+17
+  },
+  {
+   "name": "mun_delta",
+   "value": 0.76
+  },
+  {
+   "name": "mun_gmin",
+   "value": -0.5
+  },
+  {
+   "name": "mun_gmax",
+   "value": -2.4
+  },
+  {
+   "name": "mun_gref",
+   "value": 1.0
+  },
+  {
+   "name": "mup_min",
+   "value": 15.9
+  },
+  {
+   "name": "mup_max",
+   "value": 124.0
+  },
+  {
+   "name": "mup_Nref",
+   "value": 1.76e+19
+  },
+  {
+   "name": "mup_delta",
+   "value": 0.34
+  },
+  {
+   "name": "mup_gmin",
+   "value": -0.5
+  },
+  {
+   "name": "mup_gmax",
+   "value": -2.15
+  },
+  {
+   "name": "mup_gref",
+   "value": 0.0
+  },
+  {
+   "name": "taun",
+   "value": 1e-07
+  },
+  {
+   "name": "taup",
+   "value": 1e-07
+  },
+  {
+   "name": "mu_surf300",
+   "value": 20.0
+  },
+  {
+   "name": "mu_surf_gamma",
+   "value": 1.0
+  },
+  {
+   "name": "surf_lambda_um",
+   "value": 0.003
+  }
  ]
 }

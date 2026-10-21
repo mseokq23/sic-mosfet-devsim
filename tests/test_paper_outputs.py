@@ -26,7 +26,7 @@ def test_paper_figures_and_tables_rebuild(tmp_path):
         old = np.asarray(Image.open(ROOT / "paper" / "figures" / f"{name}.png").convert("RGB"), dtype=int)
         assert new.shape == old.shape, name
         assert (np.abs(new - old).max(axis=2) > 0).mean() < 0.005, name      # identical with the pinned packages
-    for name in ("table1_sensitivity", "table2_physics", "table3_policies"):
+    for name in ("table1_sensitivity", "table2_physics", "table3_policies", "model_parameters"):
         for ext in ("md", "csv"):
             assert (tmp_path / "tables" / f"{name}.{ext}").read_text(encoding="utf-8") == \
                 (ROOT / "paper" / "tables" / f"{name}.{ext}").read_text(encoding="utf-8"), f"{name}.{ext}"

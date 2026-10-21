@@ -1,0 +1,36 @@
+| name | value |
+|---|---|
+| eps_r | 9.7 |
+| Eg300 | 3.23 |
+| Eg_alpha | 0.00065 |
+| Eg_beta | 1300.0 |
+| Nc300 | 1.69e+19 |
+| Nv300 | 2.49e+19 |
+| chi | 3.7 |
+| dED | 0.066 |
+| gD | 2.0 |
+| alphaD | 0.0 |
+| dEA | 0.191 |
+| gA | 4.0 |
+| alphaA | 0.0 |
+| mun_min | 40.0 |
+| mun_max | 950.0 |
+| mun_Nref | 2e+17 |
+| mun_delta | 0.76 |
+| mun_gmin | -0.5 |
+| mun_gmax | -2.4 |
+| mun_gref | 1.0 |
+| mup_min | 15.9 |
+| mup_max | 124.0 |
+| mup_Nref | 1.76e+19 |
+| mup_delta | 0.34 |
+| mup_gmin | -0.5 |
+| mup_gmax | -2.15 |
+| mup_gref | 0.0 |
+| taun | 1e-07 |
+| taup | 1e-07 |
+| mu_surf300 | 20.0 |
+| mu_surf_gamma | 1.0 |
+| surf_lambda_um | 0.003 |
+
+Configuration v1.1-frozen: defaults of src/sicsim/params.py (sources listed in its docstring) with the material overrides of configs/baseline.yaml. Gate work function 4.1 eV, fixed oxide charge Q_f = 1e12 cm⁻².
