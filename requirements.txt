@@ -1,4 +1,4 @@
-# Versions verified in the pre-test sandbox (Python 3.12, Linux x86_64). mkl is REQUIRED:
+# Versions used for every result in this repository (Python 3.12, Linux x86_64). mkl is REQUIRED:
 # devsim wheels need a BLAS/LAPACK at import time ('Error loading math libraries' without it).
 devsim==2.11.0
 mkl==2026.1.0

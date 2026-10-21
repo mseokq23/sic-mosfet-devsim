@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Environment lock written next to every result set (draft reproducibility checklist).
+# Environment lock (package versions, DEVSIM solver, code commit).
 #   bash scripts/lock_env.sh                        -> environment.txt (the committed record of the paper runs)
 #   bash scripts/lock_env.sh environment.local.txt  -> a local record that git ignores
 OUT="${1:-environment.txt}"

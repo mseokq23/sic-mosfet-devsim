@@ -76,7 +76,7 @@ def main(out=ROOT / "paper" / "numbers.csv"):
     # ------------------------------------------------------------ II. validation
     g1, g2, g3 = (J(R / f"validation/{n}.json") for n in ("gate1_pn_diode", "gate2_moscap", "gate3_summary"))
     dev = max([abs(c["vbi_sim"] - c["vbi_ana"]) for c in g1["cases"]] + [abs(c["vfb_sim"] - c["vfb_ana"]) for c in g2["cases"]])
-    check("II", "PN diode / MOS capacitor potential vs analytic (mV)", "< 5", "< 5" if 1e3 * dev < 5 else f"{1e3 * dev:.2f}",
+    check("II", "PN diode V_bi, MOS capacitor V_fb vs analytic (mV)", "< 5", "< 5" if 1e3 * dev < 5 else f"{1e3 * dev:.2f}",
           "results/validation/gate1_pn_diode.json, gate2_moscap.json")
     b3, b4 = (J(R / f"stage_a/runs/A_base_T{T}.json")["features"] for T in (300, 423))
     check("II", "V_th 300->423 K (V)", "3.765->3.530", f"{b3['vth_V']:.3f}->{b4['vth_V']:.3f}", "results/stage_a/runs/A_base_T*.json")

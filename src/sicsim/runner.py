@@ -1,10 +1,10 @@
 """Batch runner with process isolation, parallel workers and resume.
 
-  python -m sicsim.runner designs/stage_a.csv --out results/stage_a --jobs 4 --temps 300 423
+  python -m sicsim.runner configs/design_stage_a.csv --out results/stage_a --jobs 4 --temps 300 423
   (--shard i/N runs only every N-th run, for GitHub Actions matrix jobs)
 
 Outputs in --out:  runs/<run_id>.json (full record incl. curves),  runs.csv (flat table:
-draft log columns + all features),  failures are logged with converged=False (never dropped).
+run metadata + all features),  failures are logged with converged=False (never dropped).
 """
 from __future__ import annotations
 

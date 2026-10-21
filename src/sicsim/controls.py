@@ -123,7 +123,8 @@ def compute_env() -> dict:
     """Numerical environment of an analysis run. Active-learning trajectories depend on it: on a different CPU
     the committed uncertainty/LLM curves reproduce at round 0 but drift from round 1, because the forward
     surrogate's candidate ranking changes slightly (most likely last-bit differences in SIMD reductions that
-    flip near-tie tree splits). The inverse models and the GP results of RQ1 reproduce exactly."""
+    flip near-tie tree splits). The noisy-feature RQ1 inverse models reproduce to the last digits; noise-free GP
+    fits are ill-conditioned and can differ in the 4th significant digit."""
     import sklearn
     cpu = None
     try:

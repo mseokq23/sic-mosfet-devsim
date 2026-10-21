@@ -4,6 +4,6 @@ __pycache__/
 *.egg-info/
 .env
 .venv/
-results/**/runs/*.job.json
+results/**/*.job.json
 results/al_ablation/_aborted/
 environment.local.txt

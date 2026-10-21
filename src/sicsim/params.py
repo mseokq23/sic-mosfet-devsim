@@ -4,7 +4,7 @@ All lengths in cm (DEVSIM convention) unless a name ends with ``_um``.
 Every coefficient carries its source tag so the paper's parameter table can be
 generated from this file (see ``parameter_table()``).
 
-Baseline set (single consistent set, as recommended in the draft):
+Baseline set (a single consistent set):
   * Eg(T), Nc, Nv        : Levinshtein, Rumyantsev, Shur (2001)  [Levi01]
   * electron mobility    : Roschke & Schwierz, IEEE TED 48, 1442 (2001) [Rosc01, perp. c]
   * hole mobility        : Schaffer et al. (1994) [Scha94] + T-exponents as in [Rao22]

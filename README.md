@@ -10,7 +10,7 @@ DEVSIM으로 4H-SiC 평판형 MOSFET 2차원 half-cell의 I–V 특성을 300 K�
 [![DEVSIM](https://img.shields.io/badge/DEVSIM-2.11.0-blue.svg)](environment.txt)
 
 - **원자료:** DEVSIM run마다 JSON 한 개. DOE 3,840 run(전부 수렴): 기준 물리 1,280(소자 640개 × 300·423 K), 423 K 물리 변형 2,560(소자 640개 × 4가지). 그 밖에 설계 중심·변수별 변화 34 run과 소자 검증(Gate 1–3) 기록.
-- **재현:** 논문 그림 PNG는 고정한 패키지 버전에서 논문에 넣은 그림과 바이트 단위로 같고, 본문·표의 수치 123개는 [`scripts/check_paper_numbers.py`](scripts/check_paper_numbers.py)가 결과 파일에서 다시 계산해 모두 일치합니다. 둘 다 DEVSIM 없이 몇 초 걸리며 CI에서 push마다 확인합니다.
+- **재현:** 논문 그림 PNG는 고정한 패키지 버전에서 논문에 넣은 그림과 바이트 단위로 같고, 본문·표의 수치 123개 항목은 [`scripts/check_paper_numbers.py`](scripts/check_paper_numbers.py)가 결과 파일에서 다시 계산해 모두 일치합니다. 둘 다 DEVSIM 없이 몇 초 걸립니다. CI는 push마다 수치를 대조하고, 그림을 다시 그려 커밋된 PNG와 비교합니다(다른 픽셀 0.5 % 미만 허용).
 
 **목차** · [논문 그림·표](#논문-그림표) · [분석과 결과 파일](#분석과-결과-파일) · [I–V 특성](#iv-특성) · [추출 특징](#추출-특징과-설계-변수) · [역추정 오차](#역추정-오차) · [표본 선택](#표본-선택-곡선) · [변수와 조건](#변수와-조건) · [설치](#설치) · [실행](#실행) · [일치 수준](#다시-계산한-값의-일치-수준) · [디렉터리 구조](#디렉터리-구조) · [데이터 형식](#데이터-형식) · [사전 기록](#사전-기록)
 
@@ -23,8 +23,8 @@ DEVSIM으로 4H-SiC 평판형 MOSFET 2차원 half-cell의 I–V 특성을 300 K�
 </p>
 
 ```bash
-python scripts/make_paper_figures.py      # 그림 1–3, 표 1–3, 모델 상수표 (약 5초)
-python scripts/check_paper_numbers.py     # 논문 수치 123개 대조 → paper/numbers.csv (약 2초)
+python scripts/make_paper_figures.py      # 그림 1–3, 표 1–3, 모델 상수표 (몇 초)
+python scripts/check_paper_numbers.py     # 논문 수치 123개 항목 대조 → paper/numbers.csv (몇 초)
 ```
 
 | 논문 | 내용 | 출력 | 읽는 결과 파일 |
@@ -36,7 +36,7 @@ python scripts/check_paper_numbers.py     # 논문 수치 123개 대조 → pape
 | 표 2 | 423 K 물리 시나리오별 S2 오차(물리 일치·불일치·다중 가정 혼합, 직렬저항) | [`paper/tables/table2_physics`](paper/tables/table2_physics.md) | [`results/summary/posthoc_stats.json`](results/summary/posthoc_stats.json), [`repeat_control.json`](results/summary/repeat_control.json) |
 | 표 3 | 표본 선택 정책과 LLM 대조 조건의 최종 오차·선택 행동 | [`paper/tables/table3_policies`](paper/tables/table3_policies.md) | [`results/summary/rq3_ablation.json`](results/summary/rq3_ablation.json), [`posthoc_stats.json`](results/summary/posthoc_stats.json) |
 | 모델 상수 | 4H-SiC 물성, 이동도 모델, 불완전 이온화, 수명 상수 | [`paper/tables/model_parameters`](paper/tables/model_parameters.md) | [`src/sicsim/params.py`](src/sicsim/params.py), [`configs/baseline.yaml`](configs/baseline.yaml) |
-| 본문 수치 | 구조·모델 설정, 검증, RQ1–RQ3 수치 123개(논문 값, 다시 계산한 값, 근거 파일) | [`paper/numbers.csv`](paper/numbers.csv) | `configs/`, `results/` |
+| 본문 수치 | 구조·모델 설정, 검증, RQ1–RQ3 수치 123개 항목(논문 값, 다시 계산한 값, 근거 파일) | [`paper/numbers.csv`](paper/numbers.csv) | `configs/`, `results/` |
 
 그림에 그린 값은 [`paper/figures/figure_data.json`](paper/figures/figure_data.json)에 있습니다. 그림 3의 오차 막대는 시험 소자 부트스트랩(seed 7, 2,000회) 95 % 구간입니다.
 
@@ -56,8 +56,10 @@ python scripts/check_paper_numbers.py     # 논문 수치 123개 대조 → pape
 | 표본 선택 곡선(무작위·Sobol·불확실도, 잡음 3수준) | [`run_al.py`](scripts/run_al.py) | `results/al/<none\|nominal\|high>/` | 4.3 |
 | 초기 표본 30·90점 | [`al_ninit.py`](scripts/al_ninit.py) | `results/summary/al_ninit_summary.csv`, `al_ninit_curves_n30_n90.csv` | 4.3 |
 | LLM 보조 선택 대조(A0·A·B·C·D) | [`rq3_ablation.py`](scripts/rq3_ablation.py) | `results/summary/rq3_ablation.{md,json}` | 3.4, 4.3, 표 3 |
-| RQ1–RQ3 요약표 | [`summarize_results.py`](scripts/summarize_results.py) | `results/summary/rq1.md`, `rq1_equal_budget.md`, `rq2.md`, `rq3.md` | 4.1, 4.3 |
+| RQ1–RQ3 요약표(처음 분석 때의 형식, 부트스트랩 설정이 표 3과 달라 구간 끝자리가 다를 수 있음) | [`summarize_results.py`](scripts/summarize_results.py) | `results/summary/rq1.md`, `rq1_equal_budget.md`, `rq2.md`, `rq3.md` | 4.1, 4.3 |
 | 설계↔run 대응, 특징 재추출, dV<sub>th</sub>/dQ<sub>it</sub> 기울기 감사 | [`audit_results.py`](scripts/audit_results.py) | `results/pool/audit.json` | 2.2 |
+
+`results/summary/`의 `repeat_control`, `rq3_ablation`, `posthoc_stats` 파일은 원래 분석 실행의 결과입니다. 저장소를 정리하면서 파일 이름과 머리글·라벨의 원고 버전 표기만 바꿨고(커밋 `2318acd`), 수치와 `meta`에 적힌 원래 실행 커밋(`code_commit`)은 그대로입니다. 정리하면서 `configs/`의 주석 몇 줄도 고쳤습니다(읽어 들인 설정 값과 물리 해시는 같음).
 
 ## I–V 특성
 
@@ -88,7 +90,7 @@ W<sub>JFET</sub>·N<sub>pw</sub>·s<sub>μ</sub> 배율 1, Q<sub>it,eff</sub> = 
 
 ![423 K characteristics under four alternative physics assumptions and the shifts of all test devices](docs/figures/variants_423k.png)
 
-423 K만 다른 물리 가정으로 다시 계산한 결과입니다(가정의 정의: [변수와 조건](#변수와-조건)). (a)·(b) 설계 중심에 가장 가까운 시험 소자 T0057, (c)·(d) 시험 소자 128개의 기준 물리 대비 V<sub>th</sub>·R<sub>on,sp</sub> 변화(상자: 사분위, 수염: 최솟값–최댓값).<br>
+423 K만 다른 물리 가정으로 다시 계산한 결과입니다(가정의 정의: [변수와 조건](#변수와-조건)). (a)·(b) 설계 중심에 가장 가까운 시험 소자 T0057, (c)·(d) 시험 소자 128개의 기준 물리 대비 V<sub>th</sub>·R<sub>on,sp</sub> 변화(점: 소자별 값, 상자: 사분위, 수염: 사분위 범위의 1.5배 이내).<br>
 원자료: `results/test_{gamma0,gamma_m1,qitT10,qitT30}/`, [`results/test/`](results/test/)
 
 ## 추출 특징과 설계 변수
@@ -212,7 +214,7 @@ bash scripts/reproduce_l1.sh --with-al    # 표본 선택 곡선(run_al 3회, al
 | 15 | `python scripts/check_paper_numbers.py` | `paper/numbers.csv` |
 
 - 분석 스크립트를 작업 폴더에서 직접 실행하면 `results/`·`paper/`·`docs/figures/`의 파일을 덮어씁니다. 그때는 `python scripts/compare_outputs.py`로 차이를 보고 `git checkout -- results paper docs/figures`로 되돌립니다.
-- 10은 `results/al/`을 다시 만들고 11·12는 그 곡선을 읽습니다. 9는 커밋된 `results/al/nominal/`과 `results/al_ablation/`을 읽습니다. `--with-al` 없이 실행하면 10을 건너뛰고 11은 커밋된 곡선에서 요약만 다시 계산합니다.
+- 10은 `results/al/`을 다시 만들고 11·12는 그 곡선을 읽습니다. 9는 커밋된 `results/al/nominal/`, `results/al_live/nominal/`, `results/al_ablation/`을 읽습니다. `--with-al` 없이 실행하면 10을 건너뛰고 11은 커밋된 곡선에서 요약만 다시 계산합니다.
 - `results/al/`의 `llm` 행은 API 없이 규칙으로 고르는 대역(dry-run)이고, 실제 LLM 선택은 `results/al_live/`(A0)와 `results/al_ablation/`(A·B·C)에 있습니다.
 
 ### L2 · 소자 검증과 저장된 run 재계산
@@ -269,7 +271,7 @@ python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --no
 | 분석 재계산(L1 순서 1–9, 12) | Markdown 요약표는 코드 커밋을 적은 머리글 한 줄만 다르고, JSON·CSV 수치는 마지막 자릿수만 다름(절대 차이 ≤ 5.1×10<sup>−7</sup>) |
 | 표본 선택 곡선(순서 10–11) | 무작위·Sobol은 같음. 불확실도와 dry-run LLM은 라운드 0은 같고 라운드 1부터 달라짐. 기본 잡음에서 불확실도 최종 오차 0.1238 → 0.1242, 불확실도 − 무작위 −0.0025 [−0.0039, −0.0009] → −0.0021 [−0.0042, +0.0003], 불확실도 − Sobol −0.0002 [−0.0013, +0.0009] → +0.0002 [−0.0015, +0.0022]. 곡선이 CPU 종류에 따라 다르므로 비교할 정책은 한 환경에서 실행. `run_al.py`가 함께 계산하는 `rq1_feature_sets.json`은 상대 차이 ≤ 6×10<sup>−4</sup>(잡음 없는 조건)이고 `rq1.md`는 같음 |
 | 논문 그림·README 그림(순서 13–14) | PNG가 커밋된 파일과 바이트 단위로 같음. PDF는 그린 값의 마지막 자릿수 차이로 그림 3만 바이트가 다름 |
-| 논문 수치(순서 15) | 123개 모두 일치(표본 선택 곡선을 다시 실행한 결과로 계산해도 일치) |
+| 논문 수치(순서 15) | 123개 항목 모두 일치(표본 선택 곡선을 다시 실행한 결과로 계산해도 일치) |
 | 저장된 run 재계산(`rerun_check.py`, T0000 기준 물리 300·423 K, γ = 0 변형 423 K) | 물리·솔버·메시 해시 일치, 특징 상대 차이 ≤ 6×10<sup>−16</sup>, 곡선은 일부 점에서 ≤ 3×10<sup>−13</sup> |
 | 단위 시험(`pytest -q`), Gate 0 | 56개 통과, 공식 diode 예제 2회 실행 결과 동일 |
 
@@ -281,7 +283,7 @@ sic-mosfet-devsim/
 ├── requirements.txt · requirements-optional.txt · environment.txt · pyproject.toml · pytest.ini · .env.example
 ├── .devcontainer/                     Codespaces 설정(설치, Gate 0, environment.local.txt 기록)
 ├── .github/workflows/                 ci.yml(단위 시험 + 논문 그림·수치 대조 + Gate 0), doe-batch.yml, robustness-batch.yml
-├── configs/                           동결 설정 baseline.yaml, 변수 범위, 잡음 모델, 바이어스 프로토콜, 설계점 CSV, variants/
+├── configs/                           동결 설정 baseline.yaml, 변수 범위, 잡음 모델, 메시·정밀도·Stage A 프로토콜, 설계점 CSV, variants/
 ├── src/sicsim/
 │   ├── params.py · physics.py         4H-SiC 물성, DEVSIM 모델식(이동도, 불완전 이온화, 계면전하)
 │   ├── devices.py · solver.py · simulate.py   구조와 메시, 바이어스 스윕, 단일 run
@@ -317,7 +319,7 @@ sic-mosfet-devsim/
 | 특징 | `vth_V`, `ss_mV_dec`, `gm_max_S_per_cm`, `ion_A_per_cm`, `ron_mohm_cm2`, `id_vds_req_A_per_cm`, `logid_vg4`–`logid_vg20` | 역추정 입력 |
 | 품질 표시 | `refined`, `ss_window_resolved`, `vds_reached_V`, `kcl_floor_A_per_cm` | 추출 조건 |
 
-계면전하 변형(`qitT10`, `qitT30`)의 run에는 423 K에서 적용한 값 `qit_eff_at_T_cm2`가 더 있습니다. 표본 선택 결과 `al_curves.csv`는 정책·시드·라운드별 소자 수와 오차를, `llm_calls.jsonl`은 호출마다 모델 ID, 입력 해시, 보여 준 후보(A·B·C), 응답, 검증 결과, 토큰 수, 지연을 담습니다.
+423 K 물리 변형 run(`*_gamma0`, `*_gamma_m1`, `*_qitT10`, `*_qitT30`)에는 그 온도에서 적용한 계면전하 `qit_eff_at_T_cm2`가 더 있습니다(γ 변형에서는 `qit_eff_cm2`와 같음). 표본 선택 결과 `al_curves.csv`는 정책·시드·라운드별 소자 수와 오차를, `llm_calls.jsonl`은 호출마다 모델 ID, 입력 해시, 보여 준 후보(A·B·C), 응답, 검증 결과, 토큰 수, 지연을 담습니다.
 
 ## 실행 환경
 

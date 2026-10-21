@@ -1,5 +1,5 @@
-# Manually triggered DOE batch on GitHub-hosted runners (sharded matrix). Download the artifacts,
-# copy all runs/*.json into one folder and run `python scripts/merge_runs.py <out>`.
+# Manually triggered DOE batch on GitHub-hosted runners (sharded matrix). With commit_results=true the merge job
+# collects the shard artifacts, rebuilds runs.csv (scripts/merge_runs.py) and commits <out> to the repository.
 name: doe-batch
 on:
   workflow_dispatch:

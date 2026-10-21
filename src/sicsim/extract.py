@@ -98,7 +98,7 @@ def extract_features(rec: dict, cfg: dict) -> dict:
         ioff_A_per_cm=abs(float(idd[0])) if len(idd) else float("nan"),
         kcl_floor_A_per_cm=floor,
     )
-    f["ron_norm"] = f["ron_mohm_cm2"]                     # draft column name
+    f["ron_norm"] = f["ron_mohm_cm2"]                     # legacy column name (same value)
     f["ioff_below_floor"] = bool(f["ioff_A_per_cm"] < 10 * floor) if np.isfinite(floor) else None
     f["ss_window_resolved"] = bool(np.isfinite(f["ss_mV_dec"]) and lo > 10 * floor)
     for v in ex["feature_vgs"]:

@@ -1,11 +1,12 @@
 """DEVSIM model definitions for 4H-SiC (semiconductor) and SiO2 (insulator).
 
-Formulation: Potential / Electrons / Holes (Scharfetter-Gummel, Boltzmann statistics).
+Formulation: Potential / Electrons (/ Holes with holes=True) (Scharfetter-Gummel, Boltzmann statistics).
 Potential reference = intrinsic level.  Because n_i(4H-SiC, 300 K) ~ 1e-8 cm^-3,
-minority densities reach ~1e-35 cm^-3; DEVSIM extended (128-bit) precision is
-therefore enabled by default (see set_extended_precision).
+minority densities reach ~1e-35 cm^-3; DEVSIM extended (128-bit) precision is available
+(set_extended_precision). Gates 1-2 use it; the 2-D MOSFET runs use double precision
+(configs/baseline.yaml numerics.extended_precision, checked against 128-bit in Gate 3) and holes=False.
 
-Included (draft 'minimum physics'): Poisson, e/h continuity, SG currents, SRH,
+Included (minimum physics set): Poisson, electron (and optionally hole) continuity, SG currents, SRH,
 doping+temperature dependent mobility, incomplete ionization (II), effective
 interface charge (static sheet, optional single-level acceptor occupancy) and an
 effective channel (surface) mobility.  NOT included: impact ionization,
@@ -158,7 +159,7 @@ def create_sic_drift_diffusion(dev, reg, ii=True, intf_mode="static", holes=True
     holes=False: unipolar n-channel model - Potential + Electrons; holes stay in equilibrium with the
                  grounded source/body (phi_p = 0 -> p = n_i exp(-psi/V_t), node model
                  IntrinsicHoles).  Justified for n-channel MOSFET operation without impact
-                 ionization / body-diode conduction (draft physics scope); removes the
+                 ionization / body-diode conduction (outside the physics scope); removes the
                  ill-conditioned hole continuity equation (p ~ 1e-35 cm^-3 in n+ regions).
     """
     carriers = (("Electrons", "IntrinsicElectrons"), ("Holes", "IntrinsicHoles"))

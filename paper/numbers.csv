@@ -17,7 +17,7 @@ II,"ranges W_JFET, N_pw","+-20%, +-20%","+-20%, +-20%",True,configs/parameter_bo
 II,"range Q_it,eff (1e12 cm^-2)",-1.0 (-1.5~-0.5),-1.0 (-1.5~-0.5),True,configs/parameter_bounds.yaml
 II,range s_mu,0.8~1.2,0.8~1.2,True,configs/parameter_bounds.yaml
 II,features per temperature,17,17,True,results/pool/runs.csv
-II,PN diode / MOS capacitor potential vs analytic (mV),< 5,< 5,True,"results/validation/gate1_pn_diode.json, gate2_moscap.json"
+II,"PN diode V_bi, MOS capacitor V_fb vs analytic (mV)",< 5,< 5,True,"results/validation/gate1_pn_diode.json, gate2_moscap.json"
 II,V_th 300->423 K (V),3.765->3.530,3.765->3.530,True,results/stage_a/runs/A_base_T*.json
 II,SS 300->423 K (mV/dec),112.5->155.7,112.5->155.7,True,results/stage_a/runs/A_base_T*.json
 II,"R_on,sp 300->423 K (mOhm cm^2)",2.00->2.87,2.00->2.87,True,results/stage_a/runs/A_base_T*.json

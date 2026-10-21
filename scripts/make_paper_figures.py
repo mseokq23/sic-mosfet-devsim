@@ -1,5 +1,5 @@
 """Figures and tables of the paper, drawn from the committed result files (no DEVSIM, no model fitting, no API calls).
-  python scripts/make_paper_figures.py                  # everything (about 10 s)
+  python scripts/make_paper_figures.py                  # everything (a few seconds)
   python scripts/make_paper_figures.py fig3 tables      # a subset: fig1 fig2 fig3 tables
   python scripts/make_paper_figures.py --out /tmp/p     # write to /tmp/p/figures and /tmp/p/tables instead
 -> paper/figures/fig1_structure_flow, fig2_validation, fig3_rq1 (.png 600 dpi + .pdf), figure_data.json
