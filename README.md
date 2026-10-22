@@ -9,6 +9,7 @@ DEVSIM으로 4H-SiC 평판형 MOSFET 2차원 half-cell의 I–V 특성을 300 K�
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](environment.txt)
 [![DEVSIM](https://img.shields.io/badge/DEVSIM-2.11.0-blue.svg)](environment.txt)
 
+- **결과 페이지:** [mseokq23.github.io/sic-mosfet-devsim](https://mseokq23.github.io/sic-mosfet-devsim/)에서 설계점, 소자별 I–V, 역추정, 표본 선택 결과와 LLM 호출 기록을 조작해 볼 수 있습니다. 페이지([`site/`](site))의 데이터는 [`scripts/make_site.py`](scripts/make_site.py)가 커밋된 결과 파일에서 만듭니다.
 - **원자료:** DEVSIM run마다 JSON 한 개. DOE 3,840 run(전부 수렴): 기준 물리 1,280(소자 640개 × 300·423 K), 423 K 물리 변형 2,560(소자 640개 × 4가지). 그 밖에 설계 중심·변수별 변화 34 run과 소자 검증(Gate 1–3) 기록.
 - **재현:** 논문 그림 PNG는 고정한 패키지 버전에서 논문에 넣은 그림과 바이트 단위로 같고, 본문·표의 수치 123개 항목은 [`scripts/check_paper_numbers.py`](scripts/check_paper_numbers.py)가 결과 파일에서 다시 계산해 모두 일치합니다. 둘 다 DEVSIM 없이 몇 초 걸립니다. CI는 push마다 수치를 대조하고, 그림을 다시 그려 커밋된 PNG와 비교합니다(다른 픽셀 0.5 % 미만 허용).
 
@@ -213,6 +214,7 @@ bash scripts/reproduce_l1.sh --with-al    # 표본 선택 곡선(run_al 3회, al
 | 14 | `python scripts/make_readme_figures.py` | `docs/figures/` |
 | 15 | `python scripts/check_paper_numbers.py` | `paper/numbers.csv` |
 
+- 결과 페이지의 데이터(`site/data/`)는 `python scripts/make_site.py`로 다시 만듭니다(1코어 약 2분, DEVSIM·API 호출 없음). [`tests/test_site.py`](tests/test_site.py)가 커밋된 데이터와 다시 만든 데이터를 비교합니다.
 - 분석 스크립트를 작업 폴더에서 직접 실행하면 `results/`·`paper/`·`docs/figures/`의 파일을 덮어씁니다. 그때는 `python scripts/compare_outputs.py`로 차이를 보고 `git checkout -- results paper docs/figures`로 되돌립니다.
 - 10은 `results/al/`을 다시 만들고 11·12는 그 곡선을 읽습니다. 9는 커밋된 `results/al/nominal/`, `results/al_live/nominal/`, `results/al_ablation/`을 읽습니다. `--with-al` 없이 실행하면 10을 건너뛰고 11은 커밋된 곡선에서 요약만 다시 계산합니다.
 - `results/al/`의 `llm` 행은 API 없이 규칙으로 고르는 대역(dry-run)이고, 실제 LLM 선택은 `results/al_live/`(A0)와 `results/al_ablation/`(A·B·C)에 있습니다.
@@ -282,7 +284,7 @@ sic-mosfet-devsim/
 ├── README.md · LICENSE · CITATION.cff
 ├── requirements.txt · requirements-optional.txt · environment.txt · pyproject.toml · pytest.ini · .env.example
 ├── .devcontainer/                     Codespaces 설정(설치, Gate 0, environment.local.txt 기록)
-├── .github/workflows/                 ci.yml(단위 시험 + 논문 그림·수치 대조 + Gate 0), doe-batch.yml, robustness-batch.yml
+├── .github/workflows/                 ci.yml(단위 시험 + 논문 그림·수치 대조 + Gate 0), doe-batch.yml, robustness-batch.yml, pages.yml(결과 페이지)
 ├── configs/                           동결 설정 baseline.yaml, 변수 범위, 잡음 모델, 메시·정밀도·Stage A 프로토콜, 설계점 CSV, variants/
 ├── src/sicsim/
 │   ├── params.py · physics.py         4H-SiC 물성, DEVSIM 모델식(이동도, 불완전 이온화, 계면전하)
@@ -302,6 +304,7 @@ sic-mosfet-devsim/
 │   └── summary/                       분석 요약(md, json, csv)
 ├── paper/                             논문 그림(figures/), 표(tables/), 수치 대조표(numbers.csv)
 ├── docs/figures/                      README 그림과 sources.json
+├── site/                              결과 페이지(GitHub Pages): index.html, assets/, data/(make_site.py가 결과 파일에서 생성)
 └── tests/                             단위·파이프라인 시험, 논문 그림·표·수치 재생성 시험(DEVSIM 시뮬레이션 없음)
 ```
 
@@ -343,6 +346,6 @@ sic-mosfet-devsim/
 
 ## 라이선스
 
-코드는 [MIT License](LICENSE)를 따릅니다. DEVSIM 등 외부 소프트웨어는 각 저작권자의 조건을 따릅니다.
+코드는 [MIT License](LICENSE)를 따릅니다. DEVSIM 등 외부 소프트웨어는 각 저작권자의 조건을 따릅니다. 결과 페이지의 글꼴은 IBM Plex Sans KR·IBM Plex Mono의 일부로, SIL Open Font License 1.1을 따릅니다([`site/assets/fonts/OFL.txt`](site/assets/fonts/OFL.txt)).
 
 문의: 이민석 · minseok1270@gmail.com · [Issues](https://github.com/mseokq23/sic-mosfet-devsim/issues)
