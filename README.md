@@ -2,7 +2,7 @@
 
 DEVSIM으로 4H-SiC 평판형 MOSFET 2차원 half-cell의 I–V 특성을 300 K와 423 K에서 계산하고, 그 특성으로 공정 파라미터 역추정과 표본 선택 정책을 실행한 코드·설정·원자료입니다. 아래 논문의 그림·표·수치를 이 저장소의 결과 파일에서 다시 만들 수 있습니다.
 
-> 이민석, “DEVSIM 기반 4H-SiC MOSFET 다중온도 역추정: 반복 측정 대조와 LLM 보조 표본 선택 (DEVSIM-Based Multi-Temperature Inverse Estimation of 4H-SiC MOSFETs: Replicate Controls and LLM-Assisted Sampling),” 대한전자공학회 학부생 학술논문 투고, 2026.
+> 이민석, “423K 특징을 이용한 4H-SiC MOSFET JFET 폭 역추정 개선과 LLM 보조 표본 선택 평가 (Improving JFET-Width Inverse Estimation of 4H-SiC MOSFETs with 423K Features and Evaluating LLM-Assisted Sampling),” 대한전자공학회 학부생 학술논문 투고, 2026.
 
 [![CI](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mseokq23/sic-mosfet-devsim/actions/workflows/ci.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
