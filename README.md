@@ -9,7 +9,7 @@ DEVSIM으로 4H-SiC 평판형 MOSFET 2차원 half-cell의 I–V 특성을 300 K�
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](environment.txt)
 [![DEVSIM](https://img.shields.io/badge/DEVSIM-2.11.0-blue.svg)](environment.txt)
 
-- **결과 페이지:** [mseokq23.github.io/sic-mosfet-devsim](https://mseokq23.github.io/sic-mosfet-devsim/)에서 설계점, 소자별 I–V, 역추정, 표본 선택 결과와 LLM 호출 기록을 조작해 볼 수 있습니다. 페이지([`site/`](site))의 데이터는 [`scripts/make_site.py`](scripts/make_site.py)가 커밋된 결과 파일에서 만듭니다.
+- **결과 페이지:** [mseokq23.github.io/sic-mosfet-devsim](https://mseokq23.github.io/sic-mosfet-devsim/)에서 설계점, 소자별 I–V, 역추정, 표본 선택 결과와 LLM 호출 기록을 조작해 볼 수 있습니다(포스터와 같은 I–IV 순서, 영어·한국어). 페이지([`site/`](site))의 데이터는 [`scripts/make_site.py`](scripts/make_site.py)가 커밋된 결과 파일에서 만듭니다.
 - **원자료:** DEVSIM run마다 JSON 한 개. DOE 3,840 run(전부 수렴): 기준 물리 1,280(소자 640개 × 300·423 K), 423 K 물리 변형 2,560(소자 640개 × 4가지). 그 밖에 설계 중심·변수별 변화 34 run과 소자 검증(Gate 1–3) 기록.
 - **재현:** 논문 그림 PNG는 고정한 패키지 버전에서 논문에 넣은 그림과 바이트 단위로 같고, 본문·표의 수치 123개 항목은 [`scripts/check_paper_numbers.py`](scripts/check_paper_numbers.py)가 결과 파일에서 다시 계산해 모두 일치합니다. 둘 다 DEVSIM 없이 몇 초 걸립니다. CI는 push마다 수치를 대조하고, 그림을 다시 그려 커밋된 PNG와 비교합니다(다른 픽셀 0.5 % 미만 허용).
 
@@ -179,7 +179,7 @@ cd sic-mosfet-devsim
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt && pip install -e .
 export MKL_NUM_THREADS=1 OMP_NUM_THREADS=1      # 모든 결과는 단일 스레드로 계산
-pytest -q                                       # 56개, 약 30초 (DEVSIM 시뮬레이션 없음)
+pytest -q                                       # 63개, 약 30초 (DEVSIM 시뮬레이션 없음)
 python scripts/gate0_check.py                   # official diode_1d x2: PASS
 ```
 
@@ -275,7 +275,7 @@ python scripts/run_al.py --pool results/pool --test results/test --seeds 10 --no
 | 논문 그림·README 그림(순서 13–14) | PNG가 커밋된 파일과 바이트 단위로 같음. PDF는 그린 값의 마지막 자릿수 차이로 그림 3만 바이트가 다름 |
 | 논문 수치(순서 15) | 123개 항목 모두 일치(표본 선택 곡선을 다시 실행한 결과로 계산해도 일치) |
 | 저장된 run 재계산(`rerun_check.py`, T0000 기준 물리 300·423 K, γ = 0 변형 423 K) | 물리·솔버·메시 해시 일치, 특징 상대 차이 ≤ 6×10<sup>−16</sup>, 곡선은 일부 점에서 ≤ 3×10<sup>−13</sup> |
-| 단위 시험(`pytest -q`), Gate 0 | 56개 통과, 공식 diode 예제 2회 실행 결과 동일 |
+| 단위 시험(`pytest -q`), Gate 0 | 63개 통과, 공식 diode 예제 2회 실행 결과 동일 |
 
 ## 디렉터리 구조
 

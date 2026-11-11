@@ -357,6 +357,15 @@ def mean_ci(E, n=2000, seed=7):
     return E.mean(0), lo, hi
 
 
+def ex(x):
+    """Unrounded float (NaN/inf -> None) for values the page prints with 2-3 decimals: rounding first and again
+    in the browser can move the last digit (0.08646 -> 0.0865 -> 0.087), so these keep the full value."""
+    if x is None:
+        return None
+    x = float(x)
+    return x if math.isfinite(x) else None
+
+
 def rq1() -> dict:
     pts = pd.read_csv(ROOT / "results/summary/repeat_control_points.csv")
     errc = [f"err_{v}" for v in VARS]
@@ -367,20 +376,34 @@ def rq1() -> dict:
             E = s.sort_values("candidate_id")[errc].values
             E = np.column_stack([E, E.mean(1)])
             m, lo, hi = mean_ci(E)
-            rec[S] = dict(mean=rl(m, 4), lo=rl(lo, 4), hi=rl(hi, 4))
+            rec[S] = dict(mean=[ex(v) for v in m], lo=[ex(v) for v in lo], hi=[ex(v) for v in hi])
         bars[f"{level}|{rho:g}|{model}"] = rec
     ph = jread("results/summary/posthoc_stats.json")
-    budget = {b: {S: dict(points=v["points"], mean=rn(v["mean"], 4), sd=rn(v["sd"], 4)) for S, v in rec.items()}
+    budget = {b: {S: dict(points=v["points"], mean=ex(v["mean"]), sd=ex(v["sd"])) for S, v in rec.items()}
               for b, rec in ph["part2"].items()}
     scen = {}
     for s, rec in ph["part1"]["scenarios"].items():
-        scen[s] = {k: rn(v["mean"], 4) for k, v in rec.items() if isinstance(v, dict) and "mean" in v}
-    ref = {S: rn(v["mean"], 4) for S, v in ph["part1"]["reference"].items()}
+        scen[s] = {k: ex(v["mean"]) for k, v in rec.items() if isinstance(v, dict) and "mean" in v}
+    ref = {S: ex(v["mean"]) for S, v in ph["part1"]["reference"].items()}
     rc = jread("results/summary/repeat_control.json")
     nom = next(c for c in rc["cases"] if c["level"] == "nominal" and c["rho"] == 0 and c["model"] == "gp")
-    series = dict(plain={S: rn(nom["sets"][S]["mean"], 4) for S in ("S1", "S1x2", "S2")},
-                  series_r={S: rn(rc["series_r"]["sets"][S]["mean"], 4) for S in ("S1", "S1x2", "S2")})
-    return dict(bars=bars, budget=budget, scenarios=scen, reference=ref, series=series, no_information=0.25)
+    series = dict(plain={S: ex(nom["sets"][S]["mean"]) for S in ("S1", "S1x2", "S2")},
+                  series_r={S: ex(rc["series_r"]["sets"][S]["mean"]) for S in ("S1", "S1x2", "S2")})
+    # paired-bootstrap contrasts of scripts/repeat_control.py (5000 resamples): split of the 423 K gain, labels of the
+    # per-parameter bars
+    contrasts = {}
+    for c in rc["cases"]:
+        contrasts[f"{c['level']}|{c['rho']:g}|{c['model']}"] = {
+            name: {v: dict(delta=ex(r["delta"]), lo=ex(r["ci"][0]), hi=ex(r["ci"][1]), ratio=ex(r["ratio"])) for v, r in rec.items()}
+            for name, rec in c["contrasts"].items() if name in ("S1x2-S1", "S2-S1x2", "S2-S1", "S3-S2")}
+    # the frozen noise realisation (k = 0) and the four further ones (GP, nominal noise, rho = 0)
+    draws = [dict(k=0, **{S: ex(nom["sets"][S]["mean"]) for S in ("S1", "S1x2", "S2")})]
+    draws += [dict(k=r["replicate"], **{S: ex(r["sets"][S]["mean"]) for S in ("S1", "S1x2", "S2")}) for r in rc["replicates"]]
+    # local Cramer-Rao bound ratios at the design centre (S2 / S1 and S1x2 / S1) per noise correlation rho
+    crb = {k: {f"{float(rho):g}": {v: ex(x) for v, x in d.items()} for rho, d in rc["crb"][k].items()}
+           for k in ("S2_over_S1", "S1x2_over_S1")}
+    return dict(bars=bars, budget=budget, scenarios=scen, reference=ref, series=series, no_information=0.25,
+                contrasts=contrasts, draws=draws, crb=crb)
 
 
 # ------------------------------------------------------------------------------------------------ selection (RQ2, RQ3)
@@ -416,7 +439,12 @@ def selection() -> dict:
         diffs.append(dict(key=k, a=a, b=b, delta=rn(r["delta"], 6), lo=rn(r["boot95"][0], 6), hi=rn(r["boot95"][1], 6),
                           wins=int(r["wins"]), n=10))
     ab = jread("results/summary/rq3_ablation.json")
-    return dict(curves=curves, levels=levels, diffs=diffs, sesoi=ab["meta"]["sesoi"])
+    # share of the 10 LLM picks inside the top 10 by true and by displayed uncertainty (calls that passed validation)
+    beh = ab["behaviour"]
+    overlap = {c: dict(true=ex(beh[c]["overlap_true"]), shown=ex(beh[c]["overlap_shown"]), n=int(beh[c]["n_stats"]),
+                       calls=int(beh[c]["calls"]), accepted=int(beh[c]["accepted"])) for c in ("A0", "A", "B", "C")}
+    return dict(curves=curves, levels=levels, diffs=diffs, sesoi=ab["meta"]["sesoi"], overlap=overlap,
+                random_overlap=0.5)
 
 
 def llm() -> dict:
@@ -477,19 +505,20 @@ def llm() -> dict:
 
 
 # ------------------------------------------------------------------------------------------------ code excerpts
-CODE = [  # (section, file, object name, short label)
-    ("design", "src/sicsim/design.py", "sobol_pool", "후보 풀: Sobol 설계"),
-    ("design", "src/sicsim/devices.py", "dmosfet_geometry", "JFET 폭 변화(셀 피치 고정)"),
-    ("data", "src/sicsim/simulate.py", "run_mosfet", "DEVSIM 바이어스 스윕(전달·출력 특성)"),
-    ("data", "src/sicsim/extract.py", "vth_constant_current", "V_th 추출(정전류)"),
-    ("data", "src/sicsim/extract.py", "extract_features", "특징 17개 추출"),
-    ("estimate", "src/sicsim/analysis.py", "add_noise", "측정 잡음"),
-    ("estimate", "src/sicsim/controls.py", "control_feature_set", "S1·S1×2·S2 특징 세트"),
-    ("estimate", "src/sicsim/analysis.py", "make_model", "역추정 모델(GP·RF·Ridge)"),
-    ("estimate", "src/sicsim/analysis.py", "fit_predict", "학습과 예측"),
-    ("select", "src/sicsim/alsim.py", "run_policy", "표본 선택 루프"),
-    ("select", "src/sicsim/alsim.py", "diverse_top", "불확실도 정책"),
-    ("select", "src/sicsim/schema.py", "validate_selection", "LLM 응답 검증"),
+CODE = [  # (section, file, object name, short label in Korean and English)
+    ("design", "src/sicsim/design.py", "sobol_pool", "후보 풀: Sobol 설계", "Candidate pool: Sobol design"),
+    ("design", "src/sicsim/devices.py", "dmosfet_geometry", "JFET 폭 변화(셀 피치 고정)", "JFET width change (cell pitch fixed)"),
+    ("data", "src/sicsim/simulate.py", "run_mosfet", "DEVSIM 바이어스 스윕(전달·출력 특성)",
+     "DEVSIM bias sweeps (transfer and output)"),
+    ("data", "src/sicsim/extract.py", "vth_constant_current", "V_th 추출(정전류)", "V_th extraction (constant current)"),
+    ("data", "src/sicsim/extract.py", "extract_features", "특징 17개 추출", "The 17 features"),
+    ("estimate", "src/sicsim/analysis.py", "add_noise", "측정 잡음", "Measurement noise"),
+    ("estimate", "src/sicsim/controls.py", "control_feature_set", "S1·S1×2·S2 특징 세트", "Input sets S1, S1×2, S2"),
+    ("estimate", "src/sicsim/analysis.py", "make_model", "역추정 모델(GP·RF·Ridge)", "Inverse models (GP, RF, Ridge)"),
+    ("estimate", "src/sicsim/analysis.py", "fit_predict", "학습과 예측", "Fit and predict"),
+    ("select", "src/sicsim/alsim.py", "run_policy", "표본 선택 루프", "Sampling loop"),
+    ("select", "src/sicsim/alsim.py", "diverse_top", "불확실도 정책", "Uncertainty policy"),
+    ("select", "src/sicsim/schema.py", "validate_selection", "LLM 응답 검증", "LLM response check"),
 ]
 
 
@@ -557,13 +586,13 @@ def highlight_py(text: str) -> str:
 def code() -> dict:
     commit = git("rev-parse", "HEAD")
     items = []
-    for section, rel, name, label in CODE:
+    for section, rel, name, label, label_en in CODE:
         src = (ROOT / rel).read_text(encoding="utf-8")
         node = next(n for n in ast.walk(ast.parse(src)) if isinstance(n, (ast.FunctionDef, ast.ClassDef))
                     and n.name == name)
         start = min([d.lineno for d in getattr(node, "decorator_list", [])] + [node.lineno])
         text = textwrap.dedent("\n".join(src.splitlines()[start - 1:node.end_lineno]))
-        items.append(dict(section=section, file=rel, name=name, label=label, start=start, end=node.end_lineno,
+        items.append(dict(section=section, file=rel, name=name, label=label, label_en=label_en, start=start, end=node.end_lineno,
                           html=highlight_py(text), url=f"{REPO}/blob/{commit}/{rel}#L{start}-L{node.end_lineno}"))
     return dict(items=items)
 

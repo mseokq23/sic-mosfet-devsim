@@ -101,3 +101,39 @@ def test_linked_files_exist():
         assert (SITE / "data" / f"{name}.js").exists(), name
     for el in set(re.findall(r'\$\("([\w-]+)"\)', app)):
         assert f'id="{el}"' in page, el
+
+
+def test_both_languages_present():
+    """Every static text of the page is written in English and Korean (one is shown, set by the class on <html>)."""
+    page = (SITE / "index.html").read_text(encoding="utf-8")
+    en, ko = page.count('data-l="en"'), page.count('data-l="ko"')
+    assert en > 50 and en == ko, (en, ko)
+
+
+def test_page_data_reproduces_figure_values():
+    """Values printed in the figures of the paper's poster, as the page computes them from core.js."""
+    core = load("core")
+    r, sel = core["rq1"], core["selection"]
+    m = {S: r["bars"]["nominal|0|gp"][S]["mean"] for S in ("S1", "S1x2", "S2")}
+    assert [round(m[S][3], 3) for S in ("S1", "S1x2", "S2")] == [0.112, 0.086, 0.072]
+    c = r["contrasts"]["nominal|0|gp"]
+    assert round(c["S1x2-S1"]["mean"]["delta"], 3) == -0.026 and round(c["S2-S1x2"]["mean"]["delta"], 3) == -0.014
+    assert [round(c["S2-S1x2"]["mean"][k], 3) for k in ("lo", "hi")] == [-0.024, -0.006]
+    assert round((c["S2-S1x2"]["wjfet_scale"]["ratio"] - 1) * 100) == -36
+    assert [round(m[S][0], 3) for S in ("S1x2", "S2")] == [0.079, 0.050]
+    for v in ("npwell_scale", "qit_eff_cm2"):                      # no 423 K-specific gain detected
+        assert c["S2-S1x2"][v]["lo"] < 0 < c["S2-S1x2"][v]["hi"]
+    d = r["draws"]
+    assert len(d) == 5 and min(x["S1x2"] for x in d) >= 0.0855 and max(x["S1x2"] for x in d) < 0.0925
+    assert min(x["S2"] for x in d) >= 0.0685 and max(x["S2"] for x in d) < 0.0785
+    crb = r["crb"]
+    assert [round(crb["S2_over_S1"]["0"][v], 2) for v in ("wjfet_scale", "npwell_scale", "qit_eff_cm2")] == [0.38, 0.59, 0.58]
+    assert round(crb["S1x2_over_S1"]["0"]["wjfet_scale"], 2) == 0.71
+    rho9 = {S: round(r["bars"]["nominal|0.9|gp"][S]["mean"][3], 3) for S in ("S1x2", "S2", "S3")}
+    assert rho9 == {"S1x2": 0.110, "S2": 0.075, "S3": 0.064}
+    sc = r["scenarios"]
+    assert (round(sc["gamma0"]["nominal"], 3), round(sc["gamma_m1"]["nominal"], 3)) == (0.537, 0.928)
+    assert [round(r["series"]["series_r"][S], 2) > 0.25 for S in ("S1", "S1x2", "S2")] == [True] * 3
+    ov = sel["overlap"]
+    assert (round(ov["C"]["true"], 2), round(ov["C"]["shown"], 2), sel["random_overlap"]) == (0.49, 0.64, 0.5)
+    assert [round(ov[k]["true"], 2) for k in ("A0", "A", "B")] == [0.63, 0.62, 0.55]

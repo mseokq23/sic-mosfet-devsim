@@ -1,240 +1,351 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en" class="l-en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>4H-SiC MOSFET JFET 폭 역추정 실험 자료</title>
-<meta name="description" content="423K 특징을 이용한 4H-SiC MOSFET JFET 폭 역추정 개선과 LLM 보조 표본 선택 평가: DEVSIM 계산, 역추정, 표본 선택 결과와 코드">
+<title>JFET-width inverse estimation of 4H-SiC MOSFETs: results</title>
+<script>
+  /* page language: ?lang=en|ko, else the last choice, else English (the poster's language) */
+  (function () {
+    var q = null, l = null;
+    try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+    if (q === "ko" || q === "en") { l = q; try { localStorage.setItem("lang", q); } catch (e) {} }
+    else { try { l = localStorage.getItem("lang"); } catch (e) {} }
+    if (l !== "ko") l = "en";
+    var r = document.documentElement;
+    r.lang = l;
+    r.className = "l-" + l;
+    if (l === "ko") document.title = "4H-SiC MOSFET JFET 폭 역추정 실험 자료";
+  })();
+</script>
+<meta name="description" content="Improving JFET-Width Inverse Estimation of 4H-SiC MOSFETs with 423K Features and Evaluating LLM-Assisted Sampling: DEVSIM runs, inverse estimation, sampling results and code">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Cpath d='M4 27h24M4 27V5' stroke='%231f2328' stroke-width='2' fill='none'/%3E%3Cpath d='M7 25c5 0 6-14 10-14s6 3 10 3' fill='none' stroke='%230072b2' stroke-width='2.5'/%3E%3Cpath d='M7 25c4 0 5-11 9-12s7 2 11 2' fill='none' stroke='%23d55e00' stroke-width='2.5' stroke-dasharray='3 2'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<a class="skip" href="#main">본문으로 건너뛰기</a>
+<a class="skip" href="#main"><span data-l="en">Skip to content</span><span data-l="ko">본문으로 건너뛰기</span></a>
 <div class="page">
   <header class="doc-head">
-    <p class="venue">대한전자공학회 학부생 학술논문, 2026</p>
-    <h1>423K 특징을 이용한 4H-SiC MOSFET JFET 폭 역추정 개선과 LLM 보조 표본 선택 평가</h1>
-    <p class="title-en" lang="en">Improving JFET-Width Inverse Estimation of 4H-SiC MOSFETs with 423K Features and Evaluating LLM-Assisted Sampling</p>
-    <p class="byline">이민석, 광운대학교 전자공학과</p>
-    <p class="byline">코드와 원자료: <a data-href="repo">github.com/mseokq23/sic-mosfet-devsim</a></p>
-    <nav class="toc" aria-label="목차">
+    <div class="head-top">
+      <p class="venue"><span data-l="en">IEIE Fall Conference 2026 · undergraduate paper, poster session</span><span data-l="ko">대한전자공학회 2026 추계학술대회 · 학부생 논문 포스터 발표</span></p>
+      <p class="lang-switch"><a href="?lang=en" hreflang="en" data-lang="en">English</a><a href="?lang=ko" hreflang="ko" data-lang="ko">한국어</a></p>
+    </div>
+    <h1><span data-l="en">Improving JFET-Width Inverse Estimation of 4H-SiC MOSFETs with 423K Features and Evaluating LLM-Assisted Sampling</span><span data-l="ko">423K 특징을 이용한 4H-SiC MOSFET JFET 폭 역추정 개선과 LLM 보조 표본 선택 평가</span></h1>
+    <p class="title-alt"><span data-l="en" lang="ko">423K 특징을 이용한 4H-SiC MOSFET JFET 폭 역추정 개선과 LLM 보조 표본 선택 평가</span><span data-l="ko" lang="en">Improving JFET-Width Inverse Estimation of 4H-SiC MOSFETs with 423K Features and Evaluating LLM-Assisted Sampling</span></p>
+    <p class="byline"><span data-l="en">Minseok Lee, Department of Electronic Engineering, Kwangwoon University</span><span data-l="ko">이민석, 광운대학교 전자공학과</span></p>
+    <p class="byline"><span data-l="en">Code and data: </span><span data-l="ko">코드와 원자료: </span><a data-href="repo">github.com/mseokq23/sic-mosfet-devsim</a></p>
+    <nav class="toc" aria-label="Contents">
       <ol>
-        <li><a href="#design">실험 설계</a></li>
-        <li><a href="#data">시뮬레이션 데이터</a></li>
-        <li><a href="#estimate">역추정</a></li>
-        <li><a href="#select">표본 선택</a></li>
-        <li><a href="#reproduce">재현</a></li>
+        <li><a href="#background"><span data-l="en">I. Background</span><span data-l="ko">I. 배경</span></a></li>
+        <li><a href="#method"><span data-l="en">II. Method</span><span data-l="ko">II. 방법</span></a></li>
+        <li><a href="#iii-1"><span data-l="en">III-1. Noise averaging</span><span data-l="ko">III-1. 잡음 평균 효과</span></a></li>
+        <li><a href="#iii-2">III-2. W<sub>JFET</sub></a></li>
+        <li><a href="#iii-3"><span data-l="en">III-3. Common noise, model errors</span><span data-l="ko">III-3. 공통 잡음·모델 오류</span></a></li>
+        <li><a href="#iii-4"><span data-l="en">III-4. Sampling and the LLM</span><span data-l="ko">III-4. 표본 선택과 LLM</span></a></li>
+        <li><a href="#reproduce"><span data-l="en">Code and reproduction</span><span data-l="ko">코드와 재현</span></a></li>
       </ol>
     </nav>
   </header>
 
   <main id="main">
-    <!-- interactive figure: surrogate I-V curves -->
-    <section class="lab" id="lab" aria-labelledby="lab-title">
-      <h2 id="lab-title">설계 변수에 따른 I–V 특성</h2>
-      <div class="lab-grid">
-        <div class="lab-plot">
-          <div class="panel-head">
-            <span class="panel">(a)</span>
-            <div class="seg" role="group" aria-label="특성 곡선">
-              <button type="button" data-curve="t" aria-pressed="true">전달 특성</button>
-              <button type="button" data-curve="o" aria-pressed="false">출력 특성</button>
+    <!-- I. background -->
+    <section id="background" aria-labelledby="background-title">
+      <h2 id="background-title"><span data-l="en">I. Background</span><span data-l="ko">I. 배경</span></h2>
+      <ol class="rq">
+        <li><b>RQ1</b> <span data-l="en">Does 423 K add more than a repeated 300 K measurement?</span><span data-l="ko">423 K 측정은 300 K 측정을 한 번 더 하는 것보다 나은가?</span></li>
+        <li><b>RQ2</b> <span data-l="en">Does adaptive sampling save TCAD runs?</span><span data-l="ko">적응형 표본 선택이 TCAD 실행 수를 줄이는가?</span></li>
+        <li><b>RQ3</b> <span data-l="en">Does an LLM use the numbers it is shown?</span><span data-l="ko">LLM은 주어진 숫자를 실제로 쓰는가?</span></li>
+      </ol>
+
+      <!-- interactive figure: surrogate I-V curves -->
+      <figure class="fig lab" id="lab">
+        <h3><span data-l="en">I–V characteristics vs. process parameters</span><span data-l="ko">공정 변수에 따른 I–V 특성</span></h3>
+        <div class="lab-grid">
+          <div class="lab-plot">
+            <div class="panel-head">
+              <span class="panel">(a)</span>
+              <div class="seg" role="group" aria-label="Curve">
+                <button type="button" data-curve="t" aria-pressed="true"><span data-l="en">Transfer</span><span data-l="ko">전달 특성</span></button>
+                <button type="button" data-curve="o" aria-pressed="false"><span data-l="en">Output</span><span data-l="ko">출력 특성</span></button>
+              </div>
+            </div>
+            <div id="lab-chart"></div>
+          </div>
+          <div class="lab-controls">
+            <div class="sliders" id="sliders"></div>
+            <div class="actions">
+              <button class="btn" type="button" id="lab-reset"><span data-l="en">Design centre</span><span data-l="ko">설계 중심으로</span></button>
+              <button class="btn" type="button" id="lab-random"><span data-l="en">Random design</span><span data-l="ko">무작위 설계점</span></button>
             </div>
           </div>
-          <div id="lab-chart"></div>
-        </div>
-        <div class="lab-controls">
-          <div class="sliders" id="sliders"></div>
-          <div class="actions">
-            <button class="btn" type="button" id="lab-reset">설계 중심으로</button>
-            <button class="btn" type="button" id="lab-random">무작위 설계점</button>
+          <div class="lab-device">
+            <div class="panel-head"><span class="panel">(b)</span><span data-l="en">Half-cell cross-section</span><span data-l="ko">소자 단면</span></div>
+            <div class="device" id="device"></div>
+          </div>
+          <div class="lab-read">
+            <table class="data readout" id="readout"></table>
           </div>
         </div>
-        <div class="lab-device">
-          <div class="panel-head"><span class="panel">(b)</span><span>소자 단면</span></div>
-          <div class="device" id="device"></div>
-        </div>
-        <div class="lab-read">
-          <table class="data readout" id="readout" aria-label="근사 모델이 계산한 특징값"></table>
-        </div>
-      </div>
-      <p class="caption" id="lab-note"></p>
+        <figcaption id="lab-note"></figcaption>
+      </figure>
+
+      <figure class="fig" id="fig-sens">
+        <h3><span data-l="en">Feature change for a +20 % step</span><span data-l="ko">변수 +20 %에 대한 특징 변화</span></h3>
+        <div id="sens"></div>
+        <figcaption><span data-l="en">DEVSIM at the design centre. Bars share one axis per feature. |Q<sub>it,eff</sub>| +20 % means Q<sub>it,eff</sub> = −1.2×10<sup>12</sup> cm<sup>−2</sup>.</span><span data-l="ko">설계 중심에서 계산한 DEVSIM 값. 막대 길이는 특징마다 같은 축. |Q<sub>it,eff</sub>| +20 %는 Q<sub>it,eff</sub> = −1.2×10<sup>12</sup> cm<sup>−2</sup>.</span></figcaption>
+        <div class="fig-actions" data-src="results/stage_a/stage_a_deltas.csv"></div>
+      </figure>
     </section>
 
-    <!-- 1 design -->
-    <section id="design" aria-labelledby="design-title">
-      <h2 id="design-title">1. 실험 설계</h2>
+    <!-- II. method -->
+    <section id="method" aria-labelledby="method-title">
+      <h2 id="method-title"><span data-l="en">II. Method</span><span data-l="ko">II. 방법</span></h2>
 
       <figure class="fig" id="fig-vars">
-        <h3>설계 변수와 범위</h3>
+        <h3><span data-l="en">Estimated parameters θ and the nuisance</span><span data-l="ko">추정 변수 θ와 교란 변수</span> <span class="ptag"><span data-l="en">Poster Fig. 1</span><span data-l="ko">포스터 그림 1</span></span></h3>
         <div class="table-wrap"><table class="data" id="vars-table"></table></div>
+        <figcaption><span data-l="en">1.2 kV planar half-cell, half-pitch 3.5 µm (fixed), 50 nm gate oxide, n<sup>−</sup> drift 10 µm at 1×10<sup>16</sup> cm<sup>−3</sup>. The cross-section is drawn in section I.</span><span data-l="ko">1.2 kV급 평판형 half-cell, half-pitch 3.5 µm 고정, 게이트 산화막 50 nm, n<sup>−</sup> 드리프트 10 µm·1×10<sup>16</sup> cm<sup>−3</sup>. 단면은 I절 그림에 있다.</span></figcaption>
+      </figure>
+
+      <figure class="fig" id="fig-flow">
+        <h3><span data-l="en">Workflow and the inputs compared</span><span data-l="ko">실험 흐름과 비교한 입력</span> <span class="ptag"><span data-l="en">Poster Fig. 2</span><span data-l="ko">포스터 그림 2</span></span></h3>
+        <ol class="flow">
+          <li><b><span class="n">1</span><span data-l="en">Devices</span><span data-l="ko">소자</span></b><span data-l="en">512 Sobol, training<br>128 independent test</span><span data-l="ko">Sobol 512개(학습)<br>독립 시험 128개</span></li>
+          <li><b><span class="n">2</span>DEVSIM 2-D</b><span data-l="en">300 K and 423 K<br>1,280 runs</span><span data-l="ko">300 K와 423 K<br>1,280 run</span></li>
+          <li><b><span class="n">3</span><span data-l="en">Features</span><span data-l="ko">특징</span></b><span data-l="en">17 per temperature<br>+ measurement noise</span><span data-l="ko">온도당 17개<br>+ 측정 잡음</span></li>
+          <li><b><span class="n">4</span><span data-l="en">GP inverse model</span><span data-l="ko">GP 역추정</span></b><span data-l="en">features → θ<br>error: MAE<sub>norm</sub></span><span data-l="ko">특징 → θ<br>오차: MAE<sub>norm</sub></span></li>
+        </ol>
+        <div class="inputs">
+          <p class="inputs-head"><span data-l="en">Inputs compared: same devices, different measurements</span><span data-l="ko">비교한 입력: 같은 소자, 측정만 다름</span></p>
+          <ul>
+            <li><span class="key-box" style="background:var(--s1)"></span><b>S1</b><span class="d">300 K ×1</span></li>
+            <li><span class="key-box" style="background:var(--s1x2)"></span><b>S1×2</b><span class="d"><span data-l="en">300 K ×2, averaged</span><span data-l="ko">300 K ×2, 평균</span></span></li>
+            <li><span class="key-box" style="background:var(--s2)"></span><b>S2</b><span class="d">300 K + 423 K</span></li>
+            <li><span class="key-box" style="background:var(--s3)"></span><b>S3</b><span class="d"><span data-l="en">S2 + ΔT features</span><span data-l="ko">S2 + ΔT 특징</span></span></li>
+          </ul>
+        </div>
+        <figcaption><span data-l="en">S1×2 has as many measurements as S2 but no 423 K. MAE<sub>norm</sub>: |estimate − true value| ÷ parameter range, averaged over θ (0.25 = guessing the midpoint).</span><span data-l="ko">S1×2는 S2와 측정 횟수가 같지만 423 K가 없다. MAE<sub>norm</sub>: |추정값 − 실제 값| ÷ 변수 범위를 θ에 대해 평균한 값(범위 중앙으로 추정하면 0.25).</span></figcaption>
       </figure>
 
       <figure class="fig" id="fig-doe">
-        <h3>설계점 640개</h3>
+        <h3><span data-l="en">640 design points</span><span data-l="ko">설계점 640개</span></h3>
         <div class="controls" id="doe-ctl"></div>
         <div id="doe-chart"></div>
-        <figcaption>채운 점은 후보 풀 512개(Sobol 순서), 빈 원은 시험 소자 128개(균일 무작위). 점을 누르면 그 소자가 2절의 I–V 그림에 표시된다.</figcaption>
+        <figcaption><span data-l="en">Filled: candidate pool of 512 (Sobol order). Open: 128 test devices (uniform random). Tap a point to show that device in the I–V figure below.</span><span data-l="ko">채운 점은 후보 풀 512개(Sobol 순서), 빈 원은 시험 소자 128개(균일 무작위). 점을 누르면 아래 I–V 그림에 그 소자가 표시된다.</span></figcaption>
         <div class="fig-actions" data-src="configs/design_pool.csv configs/design_test.csv"></div>
       </figure>
 
       <figure class="fig" id="fig-oat">
-        <h3>변수 하나만 −20~+20 % 바꾼 소자</h3>
+        <h3><span data-l="en">One parameter changed by −20 to +20 %</span><span data-l="ko">변수 하나만 −20~+20 % 바꾼 소자</span></h3>
         <div class="controls" id="oat-ctl"></div>
         <div class="cols two">
           <div id="oat-t"></div>
           <div id="oat-o"></div>
         </div>
-        <figcaption>설계 중심에서 변수 하나만 바꾼 DEVSIM 계산. 실선 300 K, 점선 423 K. 왼쪽은 전달 특성(V<sub>DS</sub> = 0.1 V), 오른쪽은 출력 특성(V<sub>GS</sub> = 18 V).</figcaption>
+        <figcaption><span data-l="en">DEVSIM around the design centre. Solid 300 K, dashed 423 K. Left: transfer (V<sub>DS</sub> = 0.1 V); right: output (V<sub>GS</sub> = 18 V).</span><span data-l="ko">설계 중심에서 변수 하나만 바꾼 DEVSIM 계산. 실선 300 K, 점선 423 K. 왼쪽 전달 특성(V<sub>DS</sub> = 0.1 V), 오른쪽 출력 특성(V<sub>GS</sub> = 18 V).</span></figcaption>
         <div class="fig-actions" data-src="results/stage_a/runs.csv"></div>
       </figure>
 
-      <figure class="fig" id="fig-sens">
-        <h3>변수 +20 %에 대한 특징 변화</h3>
-        <div id="sens"></div>
-        <figcaption>막대 길이는 특징마다 같은 축. |Q<sub>it,eff</sub>| +20 %는 Q<sub>it,eff</sub> = −1.2×10<sup>12</sup> cm<sup>−2</sup>.</figcaption>
-        <div class="fig-actions" data-src="results/stage_a/stage_a_deltas.csv"></div>
-      </figure>
-
-      <details class="code" data-section="design"><summary>이 절의 코드<span></span></summary><div class="code-list"></div></details>
-    </section>
-
-    <!-- 2 data -->
-    <section id="data" aria-labelledby="data-title">
-      <h2 id="data-title">2. 시뮬레이션 데이터</h2>
-
       <figure class="fig" id="fig-iv">
-        <h3>소자별 I–V 특성</h3>
+        <h3><span data-l="en">I–V of each device</span><span data-l="ko">소자별 I–V 특성</span></h3>
         <div class="controls" id="iv-ctl"></div>
         <div class="dev-meta" id="iv-meta"></div>
-        <div id="iv-chart"><p class="loading">I–V 데이터를 불러오는 중입니다.</p></div>
-        <figcaption>DEVSIM 2차원 드리프트–확산 계산. 실선 300 K, 점선 423 K. 시험 소자는 423 K 고온 물리 가정 4가지로 다시 계산한 곡선도 겹쳐 볼 수 있다.</figcaption>
+        <div id="iv-chart"><p class="loading"><span data-l="en">Loading the I–V data.</span><span data-l="ko">I–V 데이터를 불러오는 중입니다.</span></p></div>
+        <figcaption><span data-l="en">DEVSIM 2-D drift–diffusion. Solid 300 K, dashed 423 K. For test devices, the 423 K curves under the four alternative 423 K physics (γ = 0, −1; r = 0.1, 0.3) can be overlaid.</span><span data-l="ko">DEVSIM 2차원 드리프트–확산 계산. 실선 300 K, 점선 423 K. 시험 소자는 다른 423 K 물리 가정 4가지(γ = 0, −1; r = 0.1, 0.3)로 계산한 곡선을 겹쳐 볼 수 있다.</span></figcaption>
         <div class="fig-actions" data-src="results/pool/runs results/test/runs"></div>
       </figure>
 
       <figure class="fig" id="fig-feat">
-        <h3>추출 특징과 설계 변수</h3>
+        <h3><span data-l="en">Extracted features vs. process parameters</span><span data-l="ko">추출 특징과 공정 변수</span></h3>
         <div class="controls" id="feat-ctl"></div>
         <div id="feat-chart"></div>
-        <figcaption>소자 640개의 300 K, 423 K 특징(온도마다 17개 중 5개). 점을 누르면 그 소자가 위 I–V 그림에 표시된다.</figcaption>
+        <figcaption><span data-l="en">640 devices at 300 K and 423 K (5 of the 17 features per temperature, no noise). Tap a point to show that device above.</span><span data-l="ko">소자 640개의 300 K, 423 K 특징(온도마다 17개 중 5개, 잡음 없음). 점을 누르면 위 I–V 그림에 그 소자가 표시된다.</span></figcaption>
         <div class="fig-actions" data-src="results/pool/runs.csv results/test/runs.csv"></div>
       </figure>
 
       <figure class="fig" id="fig-valid">
-        <h3>시뮬레이션 검증 (논문 그림 2)</h3>
-        <a class="figimg-link" href="assets/img/fig2_validation.png" target="_blank" rel="noopener"><img class="figimg" src="assets/img/fig2_validation.png" width="1889" height="1452" alt="논문 그림 2: 기준 소자의 전달·출력 특성, 메시 수렴, 계면전하에 따른 문턱전압 이동" loading="lazy"></a>
-        <figcaption>(a) 전달 특성, (b) 출력 특성, (c) 메시 수준별 전류 차이, (d) 계면전하에 따른 V<sub>th</sub> 이동과 해석해.</figcaption>
+        <h3><span data-l="en">Simulation checks (paper Fig. 2)</span><span data-l="ko">시뮬레이션 검증 (논문 그림 2)</span></h3>
+        <a class="figimg-link" href="assets/img/fig2_validation.png" target="_blank" rel="noopener"><img class="figimg" src="assets/img/fig2_validation.png" width="1889" height="1452" alt="Transfer and output characteristics of the reference device, mesh convergence and the threshold shift with interface charge" loading="lazy"></a>
+        <figcaption><span data-l="en">(a) Transfer, (b) output, (c) current difference vs. mesh, (d) V<sub>th</sub> shift vs. interface charge with the analytic slope.</span><span data-l="ko">(a) 전달 특성, (b) 출력 특성, (c) 메시 수준별 전류 차이, (d) 계면전하에 따른 V<sub>th</sub> 이동과 해석해.</span></figcaption>
         <div class="fig-actions" data-src="paper/figures/figure_data.json" data-code="scripts/make_paper_figures.py"></div>
       </figure>
 
-      <details class="code" data-section="data"><summary>이 절의 코드<span></span></summary><div class="code-list"></div></details>
+      <figure class="fig" id="fig-mech">
+        <h3><span data-l="en">Where 423 K adds information</span><span data-l="ko">423 K가 정보를 더하는 곳</span> <span class="ptag"><span data-l="en">Poster Fig. 3</span><span data-l="ko">포스터 그림 3</span></span></h3>
+        <div class="cols two">
+          <div>
+            <div class="panel-head"><span class="panel">(a)</span><span data-l="en">Change for a +20 % step</span><span data-l="ko">+20 % 변화에 대한 특징 변화</span></div>
+            <div class="controls" id="slope-ctl"></div>
+            <div id="slope-chart"></div>
+          </div>
+          <div>
+            <div class="panel-head"><span class="panel">(b)</span><span data-l="en">Local Cramér–Rao bound ratio S2/S1</span><span data-l="ko">국소 Cramér–Rao 하한 비 S2/S1</span></div>
+            <div class="controls" id="crb-ctl"></div>
+            <div id="crb-chart"></div>
+          </div>
+        </div>
+        <figcaption><span data-l="en">(a) DEVSIM at the design centre, 300 K and 423 K. (b) Bound on the estimation error with S2 relative to S1 at the design centre (lower = more information); dashed line: two averaged 300 K measurements (S1×2). ρ: noise correlation between the two measurements.</span><span data-l="ko">(a) 설계 중심 DEVSIM, 300 K와 423 K. (b) 설계 중심에서 S2의 추정 오차 하한을 S1에 대한 비로 나타냄(낮을수록 정보가 많음). 점선은 300 K를 두 번 측정해 평균한 경우(S1×2). ρ는 두 측정 사이 잡음 상관.</span></figcaption>
+        <div class="fig-actions" data-src="results/stage_a/stage_a_deltas.csv results/summary/repeat_control.json" data-code="scripts/repeat_control.py"></div>
+      </figure>
+
+      <details class="code" data-section="design data"><summary><span data-l="en">Code for this section</span><span data-l="ko">이 절의 코드</span><span class="count"></span></summary><div class="code-list"></div></details>
     </section>
 
-    <!-- 3 estimate -->
-    <section id="estimate" aria-labelledby="estimate-title">
-      <h2 id="estimate-title">3. 역추정</h2>
+    <!-- III-1 -->
+    <section id="iii-1" aria-labelledby="iii-1-title">
+      <h2 id="iii-1-title"><span data-l="en">III-1. About two-thirds of the gain is noise averaging</span><span data-l="ko">III-1. 이득의 약 2/3는 잡음 평균 효과</span> <span class="rqtag">RQ1</span></h2>
+
+      <figure class="fig" id="fig-decomp">
+        <h3><span data-l="en">Splitting the 423 K gain</span><span data-l="ko">423 K 이득 나누기</span> <span class="ptag"><span data-l="en">Poster Fig. 4</span><span data-l="ko">포스터 그림 4</span></span></h3>
+        <div class="controls" id="decomp-ctl"></div>
+        <div id="decomp-chart"></div>
+        <p class="readline" id="decomp-line"></p>
+        <figcaption><span data-l="en">Mean MAE<sub>norm</sub> on the 128 test devices. S1 → S1×2 is what repeating the 300 K measurement gives; S1×2 → S2 is specific to 423 K. Intervals: 95 % paired bootstrap over test devices.</span><span data-l="ko">시험 소자 128개의 평균 MAE<sub>norm</sub>. S1 → S1×2는 300 K를 한 번 더 측정해 얻는 몫, S1×2 → S2는 423 K에만 있는 몫. 구간은 시험 소자 짝지은 부트스트랩 95 %.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/repeat_control.json" data-code="scripts/repeat_control.py"></div>
+      </figure>
+
+      <figure class="fig" id="fig-draws">
+        <h3><span data-l="en">Five noise realisations</span><span data-l="ko">잡음 실현 5회</span></h3>
+        <div id="draws-chart"></div>
+        <figcaption><span data-l="en">GP, nominal and independent noise. Realisation 0 is the one in the paper and on the poster; 1–4 draw the noise of the training and test features again.</span><span data-l="ko">GP, 기준·독립 잡음. 0은 논문과 포스터의 값, 1–4는 학습·시험 특징의 잡음을 새로 뽑은 결과.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/repeat_control.json"></div>
+      </figure>
 
       <figure class="fig" id="fig-one">
-        <h3>시험 소자별 추정값</h3>
+        <h3><span data-l="en">Estimates for one test device</span><span data-l="ko">시험 소자별 추정값</span></h3>
         <div class="controls" id="one-ctl"></div>
         <div class="dev-meta" id="one-meta"></div>
-        <div id="one-body"><p class="loading">추정 결과를 불러오는 중입니다.</p></div>
-        <figcaption>S1은 300 K 1회, S1×2는 300 K 2회 평균, S2는 300 K와 423 K 특징. 측정 잡음을 더한 후보 풀 512개로 학습한 가우시안 과정 모델로 추정했다. 잡음 실현 ‘논문’은 논문 결과와 같은 고정 잡음이다.</figcaption>
+        <div id="one-body"><p class="loading"><span data-l="en">Loading the estimates.</span><span data-l="ko">추정 결과를 불러오는 중입니다.</span></p></div>
+        <figcaption><span data-l="en">GP trained on the 512 pool devices with measurement noise. Realisation “paper” is the fixed noise used in the paper.</span><span data-l="ko">측정 잡음을 더한 후보 풀 512개로 학습한 가우시안 과정 모델의 추정. 잡음 실현 ‘논문’은 논문 결과와 같은 고정 잡음이다.</span></figcaption>
         <div class="fig-actions" data-src="results/summary/repeat_control_points.csv" data-code="scripts/repeat_control.py"></div>
       </figure>
 
-      <figure class="fig" id="fig-bars">
-        <h3>시험 소자 128개의 평균 오차</h3>
-        <div class="controls" id="bars-ctl"></div>
-        <div id="bars-chart"></div>
-        <figcaption>오차는 |추정값 − 실제 값|을 변수 범위로 나눈 값. 오차 막대는 95 % 신뢰구간, 점선은 무정보 추정(범위 중앙)의 오차 0.25.</figcaption>
-        <div class="fig-actions" data-src="results/summary/repeat_control_points.csv results/summary/repeat_control.json"></div>
-      </figure>
-
-      <div class="cols two">
-        <figure class="fig" id="fig-budget">
-          <h3>같은 DEVSIM 실행 수에서의 오차</h3>
-          <div id="budget-chart"></div>
-          <figcaption>S2는 소자당 2회 계산하므로 같은 실행 수에서 소자 수가 절반이다. 무작위 부분집합 5개의 평균과 표준편차.</figcaption>
-          <div class="fig-actions" data-src="results/summary/posthoc_stats.json"></div>
-        </figure>
-        <figure class="fig" id="fig-series">
-          <h3>드레인 직렬저항을 더한 시험 소자</h3>
-          <div id="series-chart"></div>
-          <figcaption>학습에 없던 직렬저항 0.1–0.3 mΩ·cm<sup>2</sup>를 시험 소자에만 더했다.</figcaption>
-          <div class="fig-actions" data-src="results/summary/repeat_control.json"></div>
-        </figure>
-      </div>
-
-      <figure class="fig" id="fig-phys">
-        <h3>423 K 물리 가정별 오차 (논문 표 2)</h3>
-        <div id="phys-chart"></div>
-        <figcaption>시험 데이터의 고온 물리(채널 이동도 온도지수 γ, 계면전하 감소)를 바꿨을 때 S2의 평균 오차. 가로축은 로그 눈금.</figcaption>
+      <figure class="fig" id="fig-budget">
+        <h3><span data-l="en">Equal number of DEVSIM runs (post hoc)</span><span data-l="ko">같은 DEVSIM 실행 수에서의 오차 (사후 분석)</span></h3>
+        <div id="budget-chart"></div>
+        <figcaption><span data-l="en">S2 needs two runs per device, so at an equal run count it has half the devices. Mean ± SD over 5 random subsets.</span><span data-l="ko">S2는 소자당 2회 계산하므로 같은 실행 수에서 소자 수가 절반이다. 무작위 부분집합 5개의 평균과 표준편차.</span></figcaption>
         <div class="fig-actions" data-src="results/summary/posthoc_stats.json"></div>
       </figure>
 
-      <details class="code" data-section="estimate"><summary>이 절의 코드<span></span></summary><div class="code-list"></div></details>
+      <details class="code" data-section="estimate"><summary><span data-l="en">Code for this section</span><span data-l="ko">이 절의 코드</span><span class="count"></span></summary><div class="code-list"></div></details>
     </section>
 
-    <!-- 4 select -->
-    <section id="select" aria-labelledby="select-title">
-      <h2 id="select-title">4. 표본 선택</h2>
+    <!-- III-2 -->
+    <section id="iii-2" aria-labelledby="iii-2-title">
+      <h2 id="iii-2-title"><span data-l="en">III-2. The 423 K-specific gain is in W<sub>JFET</sub></span><span data-l="ko">III-2. 423 K 고유 이득은 W<sub>JFET</sub>에 집중</span> <span class="rqtag">RQ1</span></h2>
+
+      <figure class="fig" id="fig-bars">
+        <h3><span data-l="en">Error per parameter</span><span data-l="ko">변수별 오차</span> <span class="ptag"><span data-l="en">Poster Fig. 5</span><span data-l="ko">포스터 그림 5</span></span></h3>
+        <div class="controls" id="bars-ctl"></div>
+        <div id="bars-chart"></div>
+        <figcaption><span data-l="en">Mean MAE<sub>norm</sub> on 128 test devices with 95 % bootstrap intervals; dashed line: guessing the midpoint (0.25). Labels: change from S1×2 to S2 where its 95 % paired interval excludes zero, otherwise n.s.</span><span data-l="ko">시험 소자 128개의 평균 MAE<sub>norm</sub>과 부트스트랩 95 % 구간, 점선은 범위 중앙으로 추정한 오차 0.25. 위 숫자는 S1×2 → S2 변화로, 짝지은 95 % 구간이 0을 포함하면 n.s.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/repeat_control_points.csv results/summary/repeat_control.json"></div>
+      </figure>
+    </section>
+
+    <!-- III-3 -->
+    <section id="iii-3" aria-labelledby="iii-3-title">
+      <h2 id="iii-3-title"><span data-l="en">III-3. Common noise and model errors</span><span data-l="ko">III-3. 공통 잡음과 모델 오류</span> <span class="rqtag">RQ1</span></h2>
+
+      <figure class="fig" id="fig-rho">
+        <h3><span data-l="en">Error vs. noise correlation ρ</span><span data-l="ko">측정 간 잡음 상관 ρ에 따른 오차</span> <span class="ptag"><span data-l="en">Poster Fig. 6a</span><span data-l="ko">포스터 그림 6a</span></span></h3>
+        <div class="controls" id="rho-ctl"></div>
+        <div id="rho-chart"></div>
+        <figcaption><span data-l="en">ρ: correlation of the noise between the two measurements (two at 300 K, or 300 K and 423 K). Error bars: 95 % bootstrap intervals over test devices.</span><span data-l="ko">ρ는 두 측정(300 K 두 번, 또는 300 K와 423 K) 사이 잡음 상관. 오차 막대는 시험 소자 부트스트랩 95 % 구간.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/repeat_control_points.csv"></div>
+      </figure>
+
+      <figure class="fig" id="fig-phys">
+        <h3><span data-l="en">423 K physics that differs from training</span><span data-l="ko">학습과 다른 423 K 물리</span> <span class="ptag"><span data-l="en">Poster Fig. 6b</span><span data-l="ko">포스터 그림 6b</span></span></h3>
+        <div id="phys-chart"></div>
+        <figcaption><span data-l="en">S2 error when the test data’s 423 K physics is changed from the base model (channel mobility ∝ T<sup>γ</sup> with γ = +1; r = 0, r: interface-trap emission at 423 K). Log axis.</span><span data-l="ko">시험 데이터의 423 K 물리를 기준 모델(채널 이동도 ∝ T<sup>γ</sup>, γ = +1; r = 0, r: 423 K 계면 트랩 방출)에서 바꿨을 때 S2의 오차. 가로축 로그 눈금.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/posthoc_stats.json"></div>
+      </figure>
+
+      <figure class="fig" id="fig-series">
+        <h3><span data-l="en">Untrained series resistance (exploratory)</span><span data-l="ko">학습에 없던 직렬저항 (탐색 분석)</span></h3>
+        <div id="series-chart"></div>
+        <figcaption><span data-l="en">A drain series resistance of 0.1–0.3 mΩ·cm<sup>2</sup> added to the test devices only.</span><span data-l="ko">드레인 직렬저항 0.1–0.3 mΩ·cm<sup>2</sup>를 시험 소자에만 더했다.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/repeat_control.json"></div>
+      </figure>
+    </section>
+
+    <!-- III-4 -->
+    <section id="iii-4" aria-labelledby="iii-4-title">
+      <h2 id="iii-4-title"><span data-l="en">III-4. Sampling policies and the LLM</span><span data-l="ko">III-4. 표본 선택 정책과 LLM</span> <span class="rqtag">RQ2, RQ3</span></h2>
+
+      <figure class="fig" id="fig-loop">
+        <h3><span data-l="en">Sampling loop</span><span data-l="ko">표본 선택 루프</span> <span class="ptag"><span data-l="en">Poster Fig. 7</span><span data-l="ko">포스터 그림 7</span></span></h3>
+        <ol class="flow loop">
+          <li><b><span data-l="en">Candidate pool</span><span data-l="ko">후보 풀</span></b><span data-l="en">512 pre-computed devices<br>60 initial + 6 × 10 picks</span><span data-l="ko">미리 계산한 소자 512개<br>초기 60개 + 10개 × 6라운드</span></li>
+          <li><b><span data-l="en">Sampling policy</span><span data-l="ko">표본 선택 정책</span></b><span data-l="en">random · Sobol order<br>uncertainty</span><span data-l="ko">무작위 · Sobol 순서<br>불확실도</span></li>
+          <li class="llm"><b><span data-l="en">LLM-assisted (Claude)</span><span data-l="ko">LLM 보조 (Claude)</span></b><span data-l="en">10 of the 20 most uncertain<br>C: perturbed numbers</span><span data-l="ko">불확실도 상위 20개 중 10개<br>C: 교란한 숫자</span></li>
+        </ol>
+        <figcaption><span data-l="en">S2 features, random-forest estimator, 10 seeds. The pool was simulated beforehand, so a policy only decides which devices join the training set.</span><span data-l="ko">S2 특징, 랜덤 포레스트 역추정, 시드 10개. 후보 풀은 미리 계산했으므로 정책은 어떤 소자를 학습에 넣을지만 정한다.</span></figcaption>
+      </figure>
 
       <figure class="fig" id="fig-curves">
-        <h3>학습 곡선</h3>
+        <h3><span data-l="en">Learning curves</span><span data-l="ko">학습 곡선</span></h3>
         <div class="controls" id="curves-ctl"></div>
         <div id="curves-chart"></div>
-        <figcaption>무작위 60개에서 시작해 라운드마다 10개씩 6라운드를 추가했다(시드 10개 평균, 특징 S2, 랜덤 포레스트). LLM 정책과 D는 기준 잡음에서만 실행했다. 범례를 누르면 곡선을 켜고 끈다.</figcaption>
+        <figcaption><span data-l="en">60 random devices, then 10 per round for 6 rounds (mean of 10 seeds). The LLM policies and D ran at nominal noise only. Click a legend item to show or hide a curve; dashed line: the random policy at 120 devices.</span><span data-l="ko">무작위 60개에서 시작해 라운드마다 10개씩 6라운드(시드 10개 평균). LLM 정책과 D는 기준 잡음에서만 실행했다. 범례를 누르면 곡선을 켜고 끈다. 점선은 무작위 정책의 120개 시점 오차.</span></figcaption>
         <div class="fig-actions" data-src="results/al_ablation results/al_live/nominal/al_curves.csv results/al"></div>
       </figure>
 
-      <figure class="fig" id="fig-llm">
-        <h3>LLM 호출 기록</h3>
-        <div class="controls" id="llm-ctl"></div>
-        <div id="llm-body"><p class="loading">LLM 호출 기록을 불러오는 중입니다.</p></div>
-        <figcaption>불확실도 상위 20개 후보를 LLM(claude-sonnet-5-5)에 주고 10개를 받았다. A는 원래 정보, B는 변수 이름을 지운 정보, C는 후보끼리 불확실도·거리 값을 섞고 변수별 교차검증 오차의 순서를 바꾼 정보.</figcaption>
-        <div class="fig-actions" data-src="results/al_ablation/named/nominal/llm_calls.jsonl results/al_ablation/anon/nominal/llm_calls.jsonl results/al_ablation/shuffled/nominal/llm_calls.jsonl"></div>
-      </figure>
-
       <figure class="fig" id="fig-diff">
-        <h3>마지막 라운드 오차 차이 (논문 표 3)</h3>
+        <h3><span data-l="en">Final-round differences (paper Table 3)</span><span data-l="ko">마지막 라운드 오차 차이 (논문 표 3)</span></h3>
         <div id="diff-chart"></div>
-        <figcaption>120개를 고른 뒤 두 정책의 오차 차이를 시드별로 짝지어 비교했다. 0보다 작으면 앞 정책의 오차가 낮다. 회색 띠는 동등 판정 범위 ±2.5×10<sup>−3</sup>, 오른쪽 수치는 평균 [95 % 구간]과 앞 정책이 낮은 시드 수.</figcaption>
+        <figcaption><span data-l="en">Paired by seed after 120 devices; below zero means the first policy has the lower error. Grey band: ±2.5×10<sup>−3</sup> equivalence margin. Right: mean [95 % interval] and the seeds where the first policy was lower.</span><span data-l="ko">120개를 고른 뒤 두 정책의 오차 차이를 시드별로 짝지어 비교. 0보다 작으면 앞 정책의 오차가 낮다. 회색 띠는 동등 판정 범위 ±2.5×10<sup>−3</sup>, 오른쪽은 평균 [95 % 구간]과 앞 정책이 낮은 시드 수.</span></figcaption>
         <div class="fig-actions" data-src="results/summary/posthoc_stats.json results/summary/rq3_ablation.json"></div>
       </figure>
 
-      <details class="code" data-section="select"><summary>이 절의 코드<span></span></summary><div class="code-list"></div></details>
+      <figure class="fig" id="fig-overlap">
+        <h3><span data-l="en">Did the LLM use the numbers?</span><span data-l="ko">LLM은 숫자를 썼는가</span> <span class="ptag"><span data-l="en">Poster Fig. 8</span><span data-l="ko">포스터 그림 8</span></span></h3>
+        <div id="overlap-chart"></div>
+        <figcaption><span data-l="en">Share of the 10 LLM picks inside the top 10 by true uncertainty (filled) and by the uncertainty shown to the LLM (open). In A0, A and B the shown values are the true ones; in C they were shuffled among the candidates. Picking 10 of the 20 at random gives 0.50.</span><span data-l="ko">LLM이 고른 10개 중 실제 불확실도 상위 10개(채운 점)와 LLM에게 보인 불확실도 상위 10개(빈 원)에 든 비율. A0, A, B는 보인 값이 실제 값이고, C는 후보끼리 값을 섞었다. 20개 중 10개를 무작위로 고르면 0.50.</span></figcaption>
+        <div class="fig-actions" data-src="results/summary/rq3_ablation.json"></div>
+      </figure>
+
+      <figure class="fig" id="fig-llm">
+        <h3><span data-l="en">LLM calls</span><span data-l="ko">LLM 호출 기록</span></h3>
+        <div class="controls" id="llm-ctl"></div>
+        <div id="llm-body"><p class="loading"><span data-l="en">Loading the LLM calls.</span><span data-l="ko">LLM 호출 기록을 불러오는 중입니다.</span></p></div>
+        <figcaption><span data-l="en">The 20 most uncertain candidates were sent to the LLM (claude-sonnet-5-5), which returned 10. A: original information; B: variable names removed; C: uncertainty and distance shuffled among the candidates and the per-parameter cross-validation errors rotated.</span><span data-l="ko">불확실도 상위 20개 후보를 LLM(claude-sonnet-5-5)에 주고 10개를 받았다. A는 원래 정보, B는 변수 이름을 지운 정보, C는 후보끼리 불확실도·거리 값을 섞고 변수별 교차검증 오차의 순서를 바꾼 정보.</span></figcaption>
+        <div class="fig-actions" data-src="results/al_ablation/named/nominal/llm_calls.jsonl results/al_ablation/anon/nominal/llm_calls.jsonl results/al_ablation/shuffled/nominal/llm_calls.jsonl"></div>
+      </figure>
+
+      <details class="code" data-section="select"><summary><span data-l="en">Code for this section</span><span data-l="ko">이 절의 코드</span><span class="count"></span></summary><div class="code-list"></div></details>
     </section>
 
-    <!-- 5 reproduce -->
+    <!-- reproduce -->
     <section id="reproduce" aria-labelledby="reproduce-title">
-      <h2 id="reproduce-title">5. 재현</h2>
+      <h2 id="reproduce-title"><span data-l="en">Code and reproduction</span><span data-l="ko">코드와 재현</span></h2>
       <ol class="steps">
-        <li>저장소를 받고 패키지를 설치한다(Python 3.12).
+        <li><span data-l="en">Get the repository and install the packages (Python 3.12).</span><span data-l="ko">저장소를 받고 패키지를 설치한다(Python 3.12).</span>
           <pre><code>git clone https://github.com/mseokq23/sic-mosfet-devsim
 cd sic-mosfet-devsim
 pip install -r requirements.txt</code></pre></li>
-        <li>논문 그림 1–3과 표를 다시 그리고, 본문·표의 수치 123개를 결과 파일과 대조한다(DEVSIM 계산 없음, 수 초).
+        <li><span data-l="en">Redraw the paper’s Figs. 1–3 and tables, and check its 123 numbers against the result files (no DEVSIM, a few seconds).</span><span data-l="ko">논문 그림 1–3과 표를 다시 그리고, 본문·표의 수치 123개를 결과 파일과 대조한다(DEVSIM 계산 없음, 수 초).</span>
           <pre><code>python scripts/make_paper_figures.py
 python scripts/check_paper_numbers.py</code></pre></li>
-        <li>분석 전체를 다시 계산해 커밋된 결과와 비교한다.
+        <li><span data-l="en">Recompute every analysis and compare it with the committed results.</span><span data-l="ko">분석 전체를 다시 계산해 커밋된 결과와 비교한다.</span>
           <pre><code>bash scripts/reproduce_l1.sh</code></pre></li>
-        <li>DEVSIM 시뮬레이션 일부를 다시 계산해 저장된 결과와 비교한다.
+        <li><span data-l="en">Rerun part of the DEVSIM simulations and compare with the stored runs.</span><span data-l="ko">DEVSIM 시뮬레이션 일부를 다시 계산해 저장된 결과와 비교한다.</span>
           <pre><code>python scripts/rerun_check.py</code></pre></li>
       </ol>
       <p class="links-row">
-        <a data-href="codespaces">Codespaces에서 열기</a>
-        <a data-href="numbers">논문 수치 대조표 (paper/numbers.csv)</a>
+        <a data-href="codespaces"><span data-l="en">Open in Codespaces</span><span data-l="ko">Codespaces에서 열기</span></a>
+        <a data-href="numbers"><span data-l="en">Number check (paper/numbers.csv)</span><span data-l="ko">논문 수치 대조표 (paper/numbers.csv)</span></a>
       </p>
-      <p class="caption">Codespaces는 GitHub 로그인이 필요하며, 저장소의 개발 환경 설정으로 DEVSIM과 고정된 패키지 버전이 설치된다.</p>
+      <p class="caption"><span data-l="en">Codespaces needs a GitHub login; the repository’s development container installs DEVSIM and the pinned package versions.</span><span data-l="ko">Codespaces는 GitHub 로그인이 필요하며, 저장소의 개발 환경 설정으로 DEVSIM과 고정된 패키지 버전이 설치된다.</span></p>
       <p class="stamp" id="stamp"></p>
     </section>
   </main>
 
   <footer class="foot">
-    <p>코드와 원자료: <a data-href="repo">github.com/mseokq23/sic-mosfet-devsim</a> (MIT License)</p>
-    <p>문의: 이민석, <a href="mailto:minseok1270@gmail.com">minseok1270@gmail.com</a></p>
+    <p><span data-l="en">Code and data: </span><span data-l="ko">코드와 원자료: </span><a data-href="repo">github.com/mseokq23/sic-mosfet-devsim</a> (MIT License)</p>
+    <p><span data-l="en">Contact: Minseok Lee, </span><span data-l="ko">문의: 이민석, </span><a href="mailto:minseok1270@gmail.com">minseok1270@gmail.com</a></p>
   </footer>
 </div>
 <script src="data/core.js" defer></script>
