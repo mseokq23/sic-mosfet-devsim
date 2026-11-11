@@ -346,6 +346,6 @@ sic-mosfet-devsim/
 
 ## 라이선스
 
-코드는 [MIT License](LICENSE)를 따릅니다. DEVSIM 등 외부 소프트웨어는 각 저작권자의 조건을 따릅니다. 결과 페이지의 글꼴은 IBM Plex Sans KR·IBM Plex Mono의 일부로, SIL Open Font License 1.1을 따릅니다([`site/assets/fonts/OFL.txt`](site/assets/fonts/OFL.txt)).
+코드는 [MIT License](LICENSE)를 따릅니다. DEVSIM 등 외부 소프트웨어는 각 저작권자의 조건을 따릅니다.
 
 문의: 이민석 · minseok1270@gmail.com · [Issues](https://github.com/mseokq23/sic-mosfet-devsim/issues)

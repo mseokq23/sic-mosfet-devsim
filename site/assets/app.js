@@ -218,20 +218,24 @@
       svg.setAttribute("height", H);
       return { w, H };
     }
-    axes({ x, y, xt, yt, xfmt, yfmt, xl, yl, m, w, H, yRight }) {
+    axes({ x, y, xt, yt, xfmt, yfmt, xl, yl, m, w, H }) {
       const g = sv("g", { class: "grid" }, this.svg);
       for (const t of yt) sv("line", { x1: m.l, x2: w - m.r, y1: y(t), y2: y(t) }, g);
-      const ax = sv("g", { class: "axis" }, this.svg);
-      sv("line", { x1: m.l, x2: w - m.r, y1: H - m.b, y2: H - m.b }, ax);
+      for (const t of xt) sv("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b }, g);
       const tk = sv("g", { class: "tick" }, this.svg);
       for (const t of xt) {
-        sv("line", { x1: x(t), x2: x(t), y1: H - m.b, y2: H - m.b + 4, class: "axis", stroke: "var(--axis)" }, tk);
-        richSVG(sv("text", { x: x(t), y: H - m.b + 17, "text-anchor": "middle" }, tk), xfmt(t), 11.5);
+        sv("line", { x1: x(t), x2: x(t), y1: H - m.b, y2: H - m.b + 5 }, tk);
+        richSVG(sv("text", { x: x(t), y: H - m.b + 19, "text-anchor": "middle" }, tk), xfmt(t), 12.5);
       }
-      for (const t of yt) richSVG(sv("text", { x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, tk), yfmt(t), 11.5);
-      if (xl) richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 4, "text-anchor": "middle", class: "ax-title" }, this.svg), xl, 12);
-      if (yl) richSVG(sv("text", { x: 4, y: 13, "text-anchor": "start", class: "ax-title" }, this.svg), yl, 12);
+      for (const t of yt) {
+        sv("line", { x1: m.l - 5, x2: m.l, y1: y(t), y2: y(t) }, tk);
+        richSVG(sv("text", { x: m.l - 8, y: y(t) + 4.5, "text-anchor": "end" }, tk), yfmt(t), 12.5);
+      }
+      if (xl) richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 5, "text-anchor": "middle", class: "ax-title" }, this.svg), xl, 13);
+      if (yl) richSVG(sv("text", { x: 1, y: 14, "text-anchor": "start", class: "ax-title" }, this.svg), yl, 13);
+      this._box = { x: m.l, y: m.t, width: Math.max(0, w - m.l - m.r), height: Math.max(0, H - m.t - m.b) };
     }
+    frame() { if (this._box) sv("rect", Object.assign({ class: "frame" }, this._box), this.svg); }
     legend(items) {
       if (!this.leg) return;
       this.leg.textContent = "";
@@ -271,8 +275,8 @@
       const yt = o.y.ticks || ticks(yd[0], yd[1], Math.max(3, Math.min(7, H / 48)));
       const xdec = decimalsFor(xt), ydec = decimalsFor(yt);
       const xfmt = o.x.fmt || ((v) => fx(v, xdec)), yfmt = o.y.fmt || ((v) => fx(v, ydec));
-      const ml = 12 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 6.6;
-      const m = { l: ml, r: o.mr || 14, t: o.y.label ? 26 : 10, b: o.x.label ? 42 : 26 };
+      const ml = 17 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 7.2;
+      const m = { l: ml, r: o.mr || 16, t: o.y.label ? 30 : 12, b: o.x.label ? 46 : 28 };
       const x = lin(xd[0], xd[1], m.l, w - m.r), y = lin(yd[0], yd[1], H - m.b, m.t);
       this.axes({ x, y, xt, yt, xfmt, yfmt, xl: o.x.label, yl: o.y.label, m, w, H });
       for (const b of o.bands || []) sv("rect", { class: "band", x: m.l, width: w - m.l - m.r, y: y(b[1]), height: Math.max(0, y(b[0]) - y(b[1])) }, this.svg);
@@ -303,7 +307,7 @@
           for (const yy of [p[2], p[3]]) sv("line", { x1: x(p[0]) - 4, x2: x(p[0]) + 4, y1: y(yy), y2: y(yy), stroke: s.color }, eg);
         }
         if (s.markers) for (const p of s.pts) if (p[1] != null && p[1] >= yd[0] && p[1] <= yd[1])
-          sv("circle", { cx: x(p[0]), cy: y(p[1]), r: s.r || 4, class: s.hollow ? "ring" : "dot", fill: s.hollow ? null : s.color, stroke: s.hollow ? s.color : null }, sg);
+          sv("circle", { cx: x(p[0]), cy: y(p[1]), r: s.r || 3.5, class: s.hollow ? "ring" : "dot", fill: s.hollow ? null : s.color, stroke: s.hollow ? s.color : null }, sg);
       }
       if (o.endLabels) {
         const lab = series.filter((s) => s.endLabel).map((s) => {
@@ -313,6 +317,7 @@
         for (let i = 1; i < lab.length; i++) if (lab[i].yv - lab[i - 1].yv < 13) lab[i].yv = lab[i - 1].yv + 13;
         for (const l of lab) richSVG(sv("text", { x: l.xv + 6, y: l.yv + 4, class: "lbl" }, this.svg), l.s.endLabel, 11.5);
       }
+      this.frame();
       this.cross = sv("line", { class: "cross", y1: m.t, y2: H - m.b, visibility: "hidden" }, this.svg);
       const xs = [...new Set(series.flatMap((s) => s.pts.filter((p) => p[1] != null).map((p) => p[0])))].sort((a, b) => a - b);
       this.sc = { x, y, m, w, H, series, xs, xd };
@@ -367,7 +372,7 @@
       const xt = o.x.ticks || ticks(xd[0], xd[1], Math.max(3, Math.min(7, w / 90)));
       const yt = o.y.ticks || ticks(yd[0], yd[1], Math.max(3, Math.min(7, H / 50)));
       const xfmt = o.x.fmt || ((v) => fx(v, decimalsFor(xt))), yfmt = o.y.fmt || ((v) => fx(v, decimalsFor(yt)));
-      const m = { l: 12 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 6.6, r: 14, t: o.y.label ? 26 : 10, b: o.x.label ? 42 : 26 };
+      const m = { l: 17 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 7.2, r: 16, t: o.y.label ? 30 : 12, b: o.x.label ? 46 : 28 };
       const x = lin(xd[0], xd[1], m.l, w - m.r), y = lin(yd[0], yd[1], H - m.b, m.t);
       this.axes({ x, y, xt, yt, xfmt, yfmt, xl: o.x.label, yl: o.y.label, m, w, H });
       for (const v of o.vlines || []) {
@@ -386,6 +391,7 @@
           pts.push({ cx, cy, p, g });
         }
       }
+      this.frame();
       if (o.highlight) {
         const hl = pts.filter((q) => q.p.id === o.highlight);
         for (const q of hl) sv("circle", { cx: q.cx, cy: q.cy, r: (q.p.r || q.g.r || 4) + 4, fill: "none", stroke: "var(--ink)", "stroke-width": 2 }, sg);
@@ -425,18 +431,18 @@
       const yd = o.y.domain || [0, niceDomain(0, mx * 1.05, 5)[1]];
       const yt = ticks(yd[0], yd[1], Math.max(3, Math.min(6, H / 50)));
       const yfmt = o.y.fmt || ((v) => fx(v, decimalsFor(yt)));
-      const m = { l: 12 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 6.6, r: 12, t: o.y.label ? 26 : 10, b: 30 };
+      const m = { l: 17 + Math.max(1, ...yt.map((t) => plainLen(yfmt(t)))) * 7.2, r: 16, t: o.y.label ? 30 : 12, b: 34 };
       const y = lin(yd[0], yd[1], H - m.b, m.t);
       const n = o.cats.length, band = (w - m.l - m.r) / n;
-      const ns = Math.max(1, series.length), bw = Math.min(24, (band * 0.78 - (ns - 1) * 2) / ns);
+      const ns = Math.max(1, series.length), bw = Math.min(28, (band * 0.72 - (ns - 1) * 2) / ns);
       const x = (i) => m.l + band * (i + 0.5);
       this.axes({ x, y, xt: [], yt, xfmt: () => "", yfmt, yl: o.y.label, m, w, H });
       const tk = sv("g", { class: "tick" }, this.svg);
-      o.cats.forEach((c, i) => richSVG(sv("text", { x: x(i), y: H - m.b + 18, "text-anchor": "middle" }, tk), c, 12));
+      o.cats.forEach((c, i) => richSVG(sv("text", { x: x(i), y: H - m.b + 20, "text-anchor": "middle" }, tk), c, 13));
       const rg = sv("g", { class: "ref" }, this.svg);
       for (const r of o.refs || []) {
         sv("line", { x1: m.l, x2: w - m.r, y1: y(r.y), y2: y(r.y), "stroke-dasharray": "4 3" }, rg);
-        richSVG(sv("text", { x: w - m.r, y: y(r.y) - 4, "text-anchor": "end" }, rg), r.label, 11);
+        richSVG(sv("text", { x: w - m.r - 4, y: y(r.y) - 5, "text-anchor": "end" }, rg), r.label, 12);
       }
       const g = sv("g", { class: "series" }, this.svg);
       this.bars = [];
@@ -445,11 +451,10 @@
           const v = s.vals[i];
           if (v == null) return;
           const x0 = x(i) - (ns * bw + (ns - 1) * 2) / 2 + j * (bw + 2), x1 = x0 + bw, yb = y(0), yt_ = y(v);
-          const r = Math.min(4, bw / 2, Math.max(0, yb - yt_));
-          const d = `M${x0},${yb}L${x0},${yt_ + r}Q${x0},${yt_} ${x0 + r},${yt_}L${x1 - r},${yt_}Q${x1},${yt_} ${x1},${yt_ + r}L${x1},${yb}Z`;
-          const p = sv("path", { d, fill: s.color, class: "bar" }, g);
+          const p = sv("rect", { x: x0.toFixed(1), y: Math.min(yb, yt_).toFixed(1), width: bw.toFixed(1), height: Math.abs(yb - yt_).toFixed(1),
+            fill: s.color, class: "bar" }, g);
           if (s.lo && s.hi) {
-            const eg = sv("g", { class: "err" }, g), cx = (x0 + x1) / 2;
+            const eg = sv("g", { class: "err", stroke: "var(--frame)" }, g), cx = (x0 + x1) / 2;
             sv("line", { x1: cx, x2: cx, y1: y(s.lo[i]), y2: y(s.hi[i]) }, eg);
             sv("line", { x1: cx - 3, x2: cx + 3, y1: y(s.lo[i]), y2: y(s.lo[i]) }, eg);
             sv("line", { x1: cx - 3, x2: cx + 3, y1: y(s.hi[i]), y2: y(s.hi[i]) }, eg);
@@ -457,6 +462,7 @@
           this.bars.push({ x0: x0 - 1, x1: x1 + 1, p, i, s, cx: (x0 + x1) / 2, cy: yt_ });
         });
       });
+      this.frame();
       this.sc = { m, H };
       this.legend(o.series.map((s) => ({ key: s.key, label: s.label, color: s.color, shape: "rect" })));
     }
@@ -477,42 +483,45 @@
   class DotRows extends Chart {
     render() {
       const o = this.o;
-      const rowH = 40;
-      this.o.height = (w) => o.rows.length * rowH + 64;
+      const rowH = 42;
+      this.o.height = (w) => o.rows.length * rowH + 78;
       const { w, H } = this.begin();
       const series = o.series.filter((s) => !this.hidden.has(s.key));
       const lx = (v) => Math.log10(v);
       const narrow = w < 560;
       const labW = narrow ? 0 : 150;
-      const m = { l: 10 + labW, r: 16, t: 34, b: 34 };
+      const m = { l: 10 + labW, r: 16, t: 34, b: 48 };
       const x = lin(lx(o.x.min), lx(o.x.max), m.l, w - m.r);
       const g = sv("g", { class: "grid" }, this.svg);
       const tk = sv("g", { class: "tick" }, this.svg);
       for (const t of o.x.ticks) {
-        sv("line", { x1: x(lx(t)), x2: x(lx(t)), y1: m.t - 6, y2: H - m.b }, g);
-        sv("text", { x: x(lx(t)), y: H - m.b + 16, "text-anchor": "middle" }, tk).textContent = String(t);
+        sv("line", { x1: x(lx(t)), x2: x(lx(t)), y1: m.t - 8, y2: H - m.b }, g);
+        sv("line", { x1: x(lx(t)), x2: x(lx(t)), y1: H - m.b, y2: H - m.b + 5 }, tk);
+        sv("text", { x: x(lx(t)), y: H - m.b + 19, "text-anchor": "middle" }, tk).textContent = String(t);
       }
-      richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 4, "text-anchor": "middle", class: "ax-title" }, this.svg), o.x.label, 12);
+      richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 5, "text-anchor": "middle", class: "ax-title" }, this.svg), o.x.label, 13);
       const rg = sv("g", { class: "ref" }, this.svg);
       for (const r of o.refs || []) {
-        sv("line", { x1: x(lx(r.x)), x2: x(lx(r.x)), y1: m.t - 6, y2: H - m.b, "stroke-dasharray": r.dash || "4 3" }, rg);
-        richSVG(sv("text", { x: x(lx(r.x)) + (r.anchor === "end" ? -4 : 4), y: m.t - 10, "text-anchor": r.anchor || "start" }, rg), r.label, 11);
+        sv("line", { x1: x(lx(r.x)), x2: x(lx(r.x)), y1: m.t - 8, y2: H - m.b, "stroke-dasharray": r.dash || "4 3" }, rg);
+        richSVG(sv("text", { x: x(lx(r.x)) + (r.anchor === "end" ? -4 : 4), y: m.t - 13, "text-anchor": r.anchor || "start" }, rg), r.label, 12);
       }
       const yrow = (i) => m.t + rowH * i + rowH / 2;
       const sg = sv("g", { class: "series" }, this.svg);
       this.marks = [];
       o.rows.forEach((row, i) => {
-        if (narrow) richSVG(sv("text", { x: m.l, y: yrow(i) - 11, class: "lbl" }, this.svg), row.label, 12);
-        else richSVG(sv("text", { x: m.l - 10, y: yrow(i) + 4, "text-anchor": "end", class: "lbl" }, this.svg), row.label, 12);
+        if (narrow) richSVG(sv("text", { x: m.l + 4, y: yrow(i) - 9, class: "lbl" }, this.svg), row.label, 13);
+        else richSVG(sv("text", { x: m.l - 10, y: yrow(i) + 4.5, "text-anchor": "end", class: "lbl" }, this.svg), row.label, 13);
         series.forEach((s, j) => {
           const v = s.vals[row.key];
           if (v == null) return;
           const cy = yrow(i) + (narrow ? 4 : 0) + (j - (series.length - 1) / 2) * 7;
           const cx = x(lx(Math.max(o.x.min, Math.min(o.x.max, v))));
-          sv("circle", { cx, cy, r: 5, class: "dot", fill: s.color }, sg);
+          sv("circle", { cx, cy, r: 5.5, class: "dot", fill: s.color }, sg);
           this.marks.push({ cx, cy, s, row, v });
         });
       });
+      this._box = { x: m.l, y: m.t - 8, width: w - m.l - m.r, height: H - m.b - m.t + 8 };
+      this.frame();
       this.sc = { m };
       this.legend(o.series.map((s) => ({ key: s.key, label: s.label, color: s.color, shape: "circle" })));
     }
@@ -531,10 +540,10 @@
     render() {
       const o = this.o, rowH = 34;
       const narrow = (this.wrap.clientWidth || 600) < 600;
-      this.o.height = () => o.rows.length * (narrow ? rowH + 16 : rowH) + 56;
+      this.o.height = () => o.rows.length * (narrow ? rowH + 18 : rowH) + 60;
       const { w, H } = this.begin();
       const labW = narrow ? 0 : 210, valW = narrow ? 0 : 190;
-      const m = { l: 10 + labW, r: 10 + valW, t: 14, b: 40 };
+      const m = { l: 10 + labW, r: 10 + valW, t: 14, b: 46 };
       const vals = o.rows.flatMap((r) => [r.lo, r.hi]);
       const xd = niceDomain(Math.min(...vals, -o.band), Math.max(...vals, o.band), 6);
       const x = lin(xd[0], xd[1], m.l, w - m.r);
@@ -544,21 +553,27 @@
       sv("rect", { class: "band", x: x(-o.band), width: x(o.band) - x(-o.band), y: m.t, height: H - m.t - m.b }, this.svg);
       sv("line", { x1: x(0), x2: x(0), y1: m.t, y2: H - m.b, stroke: "var(--axis)" }, this.svg);
       const tk = sv("g", { class: "tick" }, this.svg);
-      for (const t of xt) sv("text", { x: x(t), y: H - m.b + 16, "text-anchor": "middle" }, tk).textContent = sgn(t, decimalsFor(xt));
-      richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 4, "text-anchor": "middle", class: "ax-title" }, this.svg), o.xlabel, 12);
-      const per = narrow ? rowH + 16 : rowH;
+      for (const t of xt) {
+        sv("line", { x1: x(t), x2: x(t), y1: H - m.b, y2: H - m.b + 5 }, tk);
+        sv("text", { x: x(t), y: H - m.b + 19, "text-anchor": "middle" }, tk).textContent = sgn(t, decimalsFor(xt));
+      }
+      richSVG(sv("text", { x: (m.l + w - m.r) / 2, y: H - 5, "text-anchor": "middle", class: "ax-title" }, this.svg), o.xlabel, 13);
+      const per = narrow ? rowH + 18 : rowH;
       this.marks = [];
       o.rows.forEach((r, i) => {
         const cy = m.t + per * i + per / 2 + (narrow ? 6 : 0);
-        const lab = narrow ? sv("text", { x: m.l, y: cy - 12, class: "lbl" }, this.svg) : sv("text", { x: m.l - 10, y: cy + 4, "text-anchor": "end", class: "lbl" }, this.svg);
-        richSVG(lab, r.label, 12);
-        sv("line", { x1: x(r.lo), x2: x(r.hi), y1: cy, y2: cy, stroke: r.color, "stroke-width": 3, "stroke-linecap": "butt" }, this.svg);
-        sv("circle", { cx: x(r.delta), cy, r: 5.5, class: "dot", fill: r.color }, this.svg);
+        const lab = narrow ? sv("text", { x: m.l + 5, y: cy - 11, class: "lbl" }, this.svg) : sv("text", { x: m.l - 10, y: cy + 4.5, "text-anchor": "end", class: "lbl" }, this.svg);
+        richSVG(lab, r.label, 13);
+        sv("line", { x1: x(r.lo), x2: x(r.hi), y1: cy, y2: cy, stroke: r.color, "stroke-width": 2, "stroke-linecap": "butt" }, this.svg);
+        for (const xv of [r.lo, r.hi]) sv("line", { x1: x(xv), x2: x(xv), y1: cy - 4, y2: cy + 4, stroke: r.color, "stroke-width": 2 }, this.svg);
+        sv("circle", { cx: x(r.delta), cy, r: 4.5, class: "dot", fill: r.color }, this.svg);
         const txt = `${sgn(r.delta, 1)} [${sgn(r.lo, 1)}, ${sgn(r.hi, 1)}], ${r.wins}/${r.n}`;
         if (!narrow) sv("text", { x: w - m.r + 12, y: cy + 4, class: "lbl" }, this.svg).textContent = txt;
-        else sv("text", { x: w - 4, y: cy - 12, "text-anchor": "end", class: "lbl" }, this.svg).textContent = txt;
+        else sv("text", { x: w - m.r - 5, y: cy - 11, "text-anchor": "end", class: "lbl" }, this.svg).textContent = txt;
         this.marks.push({ cy, r });
       });
+      this._box = { x: m.l, y: m.t, width: w - m.l - m.r, height: H - m.t - m.b };
+      this.frame();
       this.sc = { x };
       this.legend([]);
     }
@@ -578,10 +593,17 @@
   // ------------------------------------------------------------------------------------------- figure helpers
   const ghUrl = (p) => `${REPO}/${/\.[a-z0-9]+$/i.test(p) ? "blob" : "tree"}/${COMMIT}/${p}`;
   function figActions() {
-    for (const box of document.querySelectorAll(".fig-actions[data-src]")) {
-      const srcs = box.dataset.src.split(/\s+/).filter(Boolean);
-      for (const p of srcs) box.append(h("a", { href: ghUrl(p), target: "_blank", rel: "noopener" }, "데이터: " + p + (/\.[a-z0-9]+$/i.test(p) ? "" : "/")));
-      if (box.dataset.code) box.append(h("a", { href: ghUrl(box.dataset.code), target: "_blank", rel: "noopener" }, "코드: " + box.dataset.code));
+    for (const box of document.querySelectorAll(".fig-actions")) {
+      const srcs = (box.dataset.src || "").split(/\s+/).filter(Boolean);
+      if (srcs.length) {
+        const sp = h("span", {}, "원자료 ");
+        srcs.forEach((p, i) => {
+          if (i) sp.append(", ");
+          sp.append(h("a", { href: ghUrl(p), target: "_blank", rel: "noopener" }, p + (/\.[a-z0-9]+$/i.test(p) ? "" : "/")));
+        });
+        box.append(sp);
+      }
+      if (box.dataset.code) box.append(h("span", {}, "코드 ", h("a", { href: ghUrl(box.dataset.code), target: "_blank", rel: "noopener" }, box.dataset.code)));
     }
   }
   function tableToggle(figId, getTable) {
@@ -603,7 +625,7 @@
       tb.append(h("tbody", {}, t.rows.map((r) => h("tr", {}, r.map((c) => h("td", { rich: c == null ? "–" : String(c) }))))));
       wrap.append(tb);
     }
-    box.prepend(b);
+    box.append(b);
     box.after(wrap);
     return { refresh: () => { if (!wrap.hidden) draw(); } };
   }
@@ -676,39 +698,41 @@
     const svg = sv("svg", { viewBox: `0 0 ${W.toFixed(0)} ${Hh.toFixed(0)}`, role: "img", "aria-label": "평판형 MOSFET 셀 단면" });
     host.append(svg);
     const L = sv("g", {}, svg);
-    const rect = (x0, x1, y0, y1, fill, extra) => sv("rect", Object.assign({ x: X(Math.min(x0, x1)), y: YY(Y(y0)), width: Math.abs(x1 - x0) * S, height: (Y(y1) - Y(y0)) * S, fill }, extra || {}), L);
+    const OUT = { stroke: "var(--dev-line)", "stroke-width": 1 };
+    const rect = (x0, x1, y0, y1, fill, extra) => sv("rect", Object.assign({ x: X(Math.min(x0, x1)), y: YY(Y(y0)), width: Math.abs(x1 - x0) * S, height: (Y(y1) - Y(y0)) * S, fill }, OUT, extra || {}), L);
     const mirror = (x) => 2 * xh - x;
     // static layers that do not move
     rect(0, 2 * xh, 0, td, "var(--dev-n)");
     rect(0, 2 * xh, td, td + ts, "var(--dev-sub)");
     sv("rect", { x: X(0), y: YY(Y(td + ts)), width: 2 * xh * S, height: 8, fill: "var(--dev-metal)" }, L);
     const dyn = sv("g", {}, svg);
+    // the computed half cell is the left half; the mirrored right half is drawn under a light veil
+    sv("rect", { x: X(xh), y: YY(-0.3), width: xh * S + 2, height: YY(Y(td + ts)) + 9 - YY(-0.3), fill: "#ffffff", "fill-opacity": 0.5 }, svg);
+    sv("line", { x1: X(xh), x2: X(xh), y1: YY(-0.3), y2: YY(Y(td + ts)) + 9, stroke: "var(--dev-line)", "stroke-width": 1, "stroke-dasharray": "6 4" }, svg);
+    const dynT = sv("g", {}, svg);
     const txt = (x, y, s, cls, anchor = "middle", size = 22) => richSVG(sv("text", { x, y, "text-anchor": anchor, "font-size": size, fill: "var(--ink-2)", class: cls || null }, svg), s, size);
     // labels for fixed parts
-    txt(X(xh), YY(Y(5.5)) + 8, "n^{−} 드리프트 (10 µm, 10^{16} cm^{−3})");
-    txt(X(xh), YY(Y(td + 0.5)) + 8, "n^{+} 기판", null, "middle", 20);
-    txt(X(xh), YY(Y(td + ts)) + 38, "Drain");
-    // computational half-cell outline
-    sv("rect", { x: X(0) - 3, y: YY(-0.27) - 3, width: xh * S + 3, height: (Y(td + ts) + 0.27) * S + 14, fill: "none", stroke: "var(--ink-2)",
-      "stroke-dasharray": "6 5", "stroke-width": 1.5 }, svg);
-    txt(X(0.04), YY(Y(td + ts)) + 38, "계산 영역", null, "start", 19);
+    txt(X(xh / 2), YY(Y(5.5)) + 12, "n^{−} 드리프트 (10 µm, 10^{16} cm^{−3})", null, "middle", 19);
+    txt(X(xh / 2), YY(Y(td + 0.5)) + 8, "n^{+} 기판", null, "middle", 20);
+    txt(X(xh), YY(Y(td + ts)) + 38, "Drain", null, "middle", 20);
     const actv = {};
     function draw(u) {
       dyn.textContent = "";
+      dynT.textContent = "";
       const s = C.design.bounds.wjfet_scale.low + u[0] * (C.design.bounds.wjfet_scale.high - C.design.bounds.wjfet_scale.low);
       const shift = 0.5 * (g0.wjfet_um * s - g0.wjfet_um);
       const xpw = g0.x_pw_um - shift, xns1 = g0.x_ns1_um - shift;
       const npw = u[1], q = 1.5 - u[2] * 1.0, mu = 0.8 + u[3] * 0.4;
       const R = (x0, x1, y0, y1, fill, extra) => {
-        for (const [a, b] of [[x0, x1], [mirror(x1), mirror(x0)]]) sv("rect", Object.assign({ x: X(a), y: YY(Y(y0)), width: (b - a) * S, height: (Y(y1) - Y(y0)) * S, fill }, extra || {}), dyn);
+        for (const [a, b] of [[x0, x1], [mirror(x1), mirror(x0)]]) sv("rect", Object.assign({ x: X(a), y: YY(Y(y0)), width: (b - a) * S, height: (Y(y1) - Y(y0)) * S, fill }, OUT, extra || {}), dyn);
       };
       sv("rect", { x: X(xpw), y: YY(0), width: (mirror(xpw) - xpw) * S, height: (Y(g0.d_jfet_um)) * S, fill: "var(--dev-jfet)",
-        stroke: actv.k === 0 ? "var(--ink)" : "none", "stroke-width": 2 }, dyn);
-      R(0, xpw, 0, g0.d_pw_um, "var(--dev-p)", { "fill-opacity": (0.45 + 0.55 * npw).toFixed(2), stroke: actv.k === 1 ? "var(--ink)" : "none", "stroke-width": 2 });
+        stroke: actv.k === 0 ? "var(--ink)" : "var(--dev-line)", "stroke-width": actv.k === 0 ? 2.5 : 1 }, dyn);
+      R(0, xpw, 0, g0.d_pw_um, "var(--dev-p)", { "fill-opacity": (0.45 + 0.55 * npw).toFixed(2), stroke: actv.k === 1 ? "var(--ink)" : "var(--dev-line)", "stroke-width": actv.k === 1 ? 2.5 : 1 });
       R(0, g0.x_pp_um, 0, g0.d_pp_um, "var(--dev-pplus)");
       R(g0.x_ns0_um, xns1, 0, g0.d_ns_um, "var(--dev-nplus)");
       R(g0.x_ox_start_um, xh, -0.08, 0, "var(--dev-ox)");
-      sv("rect", { x: X(g0.x_ox_start_um), y: YY(-0.27), width: (mirror(g0.x_ox_start_um) - g0.x_ox_start_um) * S, height: 0.19 * S, fill: "var(--dev-gate)" }, dyn);
+      sv("rect", Object.assign({ x: X(g0.x_ox_start_um), y: YY(-0.27), width: (mirror(g0.x_ox_start_um) - g0.x_ox_start_um) * S, height: 0.19 * S, fill: "var(--dev-gate)" }, OUT), dyn);
       R(0, g0.x_src_contact_um, -0.19, 0, "var(--dev-metal)");
       // interface charge: marks along the oxide interface, density follows |Q_it,eff|
       const n = Math.round(6 + q * 10), x0 = g0.x_ox_start_um + 0.05, x1 = mirror(g0.x_ox_start_um) - 0.05;
@@ -723,17 +747,19 @@
       }
       // JFET width dimension
       const yd = YY(Y(g0.d_jfet_um)) + 18;
-      sv("line", { x1: X(xpw), x2: X(mirror(xpw)), y1: yd, y2: yd, stroke: "var(--ink)", "stroke-width": 1.5 }, dyn);
-      for (const xx of [xpw, mirror(xpw)]) sv("line", { x1: X(xx), x2: X(xx), y1: yd - 7, y2: yd + 7, stroke: "var(--ink)", "stroke-width": 1.5 }, dyn);
-      richSVG(sv("text", { x: X(xh), y: yd + 26, "text-anchor": "middle", "font-size": 21, fill: "var(--ink)" }, dyn), `W_{JFET} = ${fx(g0.wjfet_um * s, 2)} µm`, 21);
-      const lab = (x, y, s_, size = 20, fill = "var(--ink)") => richSVG(sv("text", { x, y, "text-anchor": "middle", "font-size": size, fill }, dyn), s_, size);
+      sv("line", { x1: X(xpw), x2: X(mirror(xpw)), y1: yd, y2: yd, stroke: "var(--ink)", "stroke-width": 1.5 }, dynT);
+      for (const xx of [xpw, mirror(xpw)]) sv("line", { x1: X(xx), x2: X(xx), y1: yd - 7, y2: yd + 7, stroke: "var(--ink)", "stroke-width": 1.5 }, dynT);
+      const wl = sv("text", { x: X(xh), y: yd + 27, "text-anchor": "middle", "font-size": 21, fill: "var(--ink)", stroke: "#ffffff", "stroke-width": 5,
+        "paint-order": "stroke", "stroke-linejoin": "round" }, dynT);
+      richSVG(wl, `W_{JFET} = ${fx(g0.wjfet_um * s, 2)} µm`, 21);
+      const lab = (x, y, s_, size = 20, fill = "var(--ink)") => richSVG(sv("text", { x, y, "text-anchor": "middle", "font-size": size, fill }, dynT), s_, size);
       lab(X(xpw / 2 + 0.25), YY(Y(0.52)), "P-well");
       lab(X(mirror(xpw / 2 + 0.25)), YY(Y(0.52)), "P-well");
-      lab(X(xh), YY(Y(0.58)), "JFET");
+      lab(X(xh - 0.5), YY(Y(0.58)), "JFET");
       lab(X((g0.x_ns0_um + xns1) / 2), YY(Y(0.16)), "n^{+}", 17);
       lab(X(g0.x_pp_um / 2), YY(Y(0.2)), "p^{+}", 17);
       lab(X(g0.x_src_contact_um / 2), YY(-0.27), "Source", 19, "var(--ink-2)");
-      lab(X(xh), YY(-0.33), "Gate", 19, "var(--ink-2)");
+      lab(X(g0.x_ox_start_um + 0.55), YY(-0.33), "Gate", 19, "var(--ink-2)");
     }
     return { draw, active(k) { actv.k = k; } };
   }
@@ -767,7 +793,7 @@
       sl.append(h("div", { class: "slider" }, lab, inp));
       vals.push({ val, inp });
     });
-    const chart = new LineChart("lab-chart", { series: [], x: {}, y: {}, height: (w) => Math.round(Math.max(230, Math.min(330, w * 0.66))), legend: true, aria: "근사 모델의 전달 특성" });
+    const chart = new LineChart("lab-chart", { series: [], x: {}, y: {}, height: (w) => Math.round(Math.max(250, Math.min(370, w * 0.72))), legend: true, aria: "근사 모델의 전달 특성" });
     const rd = $("readout");
     const allIds = [...C.features.pool.id, ...C.features.test.id];
     function nearest() {
@@ -787,37 +813,37 @@
       const fl = SUR.log_floor + 0.05;
       const series = [];
       for (const T of [300, 423]) {
-        const col = T === 300 ? "var(--c300)" : "var(--c423)";
+        const col = T === 300 ? "var(--c300)" : "var(--c423)", dash = T === 423 ? "6 4" : null;
         if (curve === "t") {
-          series.push({ key: "s" + T, label: `${T} K 근사`, color: col, pts: vgs.map((x, i) => [x, p["t" + T][i] > fl ? p["t" + T][i] : null]) });
+          series.push({ key: "s" + T, label: `${T} K 근사`, color: col, dash, pts: vgs.map((x, i) => [x, p["t" + T][i] > fl ? p["t" + T][i] : null]) });
           const lg = F[String(T)].logid[fi.i];
           series.push({ key: "d" + T, label: `${T} K ${nn.id} DEVSIM`, color: col, line: false, markers: true, r: 4, legend: false,
             pts: C.features.feature_vgs.map((x, i) => [x, lg[i]]) });
         } else {
-          series.push({ key: "s" + T, label: `${T} K 근사`, color: col, pts: vds.map((x, i) => [x, p["o" + T][i] * 1e3]) });
+          series.push({ key: "s" + T, label: `${T} K 근사`, color: col, dash, pts: vds.map((x, i) => [x, p["o" + T][i] * 1e3]) });
         }
       }
       if (curve === "t") {
-        chart.set({ series, x: { domain: [0, 20], ticks: [0, 5, 10, 15, 20], label: "V_{GS} (V),  V_{DS} = 0.1 V", tip: (v) => `V_{GS} = ${fx(v, 2)} V` },
+        chart.set({ series, x: { domain: [0, 10], ticks: [0, 2, 4, 6, 8, 10], label: "V_{GS} (V),  V_{DS} = 0.1 V", tip: (v) => `V_{GS} = ${fx(v, 2)} V` },
           y: { domain: [-12, -1], ticks: [-12, -10, -8, -6, -4, -2], fmt: (v) => `10^{${v}}`, label: "I_{D} (A/cm)",
             tip: (v) => sci(Math.pow(10, v)) + " A/cm" }, tipTol: 0.3,
-          legendItems: [{ label: "300 K", color: "var(--c300)", toggle: false }, { label: "423 K", color: "var(--c423)", toggle: false },
-            { label: `점: ${nn.id} 실제 DEVSIM`, color: "var(--ink-2)", shape: "circle", toggle: false }] });
+          legendItems: [{ label: "300 K", color: "var(--c300)", toggle: false }, { label: "423 K", color: "var(--c423)", dash: true, toggle: false },
+            { label: `점: ${nn.id}의 DEVSIM 값`, color: "var(--ink-2)", shape: "circle", toggle: false }] });
       } else {
         chart.set({ series, x: { domain: [0, 5], ticks: [0, 1, 2, 3, 4, 5], label: "V_{DS} (V),  V_{GS} = 18 V", tip: (v) => `V_{DS} = ${fx(v, 1)} V` },
           y: { domain: null, ticks: null, fmt: null, label: "I_{D} (mA/cm)", tip: (v) => fx(v, 1) + " mA/cm" }, tipTol: 0.3,
-          legendItems: [{ label: "300 K", color: "var(--c300)", toggle: false }, { label: "423 K", color: "var(--c423)", toggle: false }] });
+          legendItems: [{ label: "300 K", color: "var(--c300)", toggle: false }, { label: "423 K", color: "var(--c423)", dash: true, toggle: false }] });
       }
       const f3 = p.f300, f4 = p.f423;
       rd.textContent = "";
-      rd.append(h("thead", {}, h("tr", {}, h("th", { text: "근사 모델 특징값" }),
+      rd.append(h("thead", {}, h("tr", {}, h("th", { text: "특징값 (근사 모델)" }),
         h("th", {}, h("span", { class: "key", style: "border-top-color:var(--c300)" }), "300 K"),
-        h("th", {}, h("span", { class: "key", style: "border-top-color:var(--c423)" }), "423 K"))));
+        h("th", {}, h("span", { class: "key dash", style: "border-top-color:var(--c423)" }), "423 K"))));
       const rows = [["V_{th} (V)", fx(f3[0], 3), fx(f4[0], 3)], ["SS (mV/dec)", fx(f3[1], 1), fx(f4[1], 1)],
         ["g_{m,max} (mS/cm)", fx(Math.pow(10, f3[2]) * 1e3, 2), fx(Math.pow(10, f4[2]) * 1e3, 2)],
         ["R_{on,sp} (mΩ·cm^{2})", fx(Math.pow(10, f3[3]), 3), fx(Math.pow(10, f4[3]), 3)]];
       rd.append(h("tbody", {}, rows.map((r) => h("tr", {}, h("td", { rich: r[0] }), h("td", { text: r[1] }), h("td", { text: r[2] })))));
-      rich($("lab-note"), `곡선은 후보 풀 ${SUR.n_train}개 소자의 DEVSIM 결과로 학습한 가우시안 과정 근사입니다. 시험 소자 ${SUR.n_test}개에서 V_{th} 오차 중앙값은 300 K ${fx(SUR.validation["300"].vth_mV_median, 1)} mV, 423 K ${fx(SUR.validation["423"].vth_mV_median, 1)} mV입니다. 점은 설계 공간에서 가장 가까운 실제 소자(${nn.id})의 DEVSIM 전류입니다.`);
+      rich($("lab-note"), `(a) 실선 300 K, 점선 423 K. 곡선은 후보 풀 ${SUR.n_train}개 소자의 DEVSIM 결과로 학습한 가우시안 과정 근사이고, 점은 설계값이 가장 가까운 실제 소자 ${nn.id}의 DEVSIM 값이다. 시험 소자 ${SUR.n_test}개에서 V_{th} 오차 중앙값은 ${fx(SUR.validation["300"].vth_mV_median, 1)} mV(300 K), ${fx(SUR.validation["423"].vth_mV_median, 1)} mV(423 K). (b) 왼쪽 반쪽 셀만 계산하고 오른쪽은 대칭으로 그렸다.`);
     }
     for (const b of document.querySelectorAll("[data-curve]")) {
       b.addEventListener("click", () => {
@@ -836,12 +862,12 @@
     const b = C.design.bounds;
     const t = $("vars-table");
     t.classList.add("left");
-    t.append(h("thead", {}, h("tr", {}, ["변수", "의미", "범위", "설계 중심", "역할"].map((c) => h("th", { text: c })))));
+    t.append(h("thead", {}, h("tr", {}, ["변수", "범위", "설계 중심"].map((c) => h("th", { text: c })))));
     const rows = [
-      ["W_{JFET}", "JFET 폭(전체 폭)", `${fx(2.4 * b.wjfet_scale.low, 2)}–${fx(2.4 * b.wjfet_scale.high, 2)} µm`, "2.40 µm", "추정 대상"],
-      ["N_{pw}", "P-well 최대 도핑", `${fx(b.npwell_scale.low, 1)}–${fx(b.npwell_scale.high, 1)}×10^{17} cm^{-3}`, "1.0×10^{17} cm^{-3}", "추정 대상"],
-      ["Q_{it,eff}", "유효 계면전하", `${fx(b.qit_eff_cm2.low / 1e12, 1)} ~ ${fx(b.qit_eff_cm2.high / 1e12, 1)}×10^{12} cm^{-2}`, `${fx(-1, 1)}×10^{12} cm^{-2}`, "추정 대상"],
-      ["s_{μ}", "채널 이동도 배율", `${fx(b.mu_channel_scale.low, 1)}–${fx(b.mu_channel_scale.high, 1)}`, "1.0", "교란 변수(추정 안 함)"]];
+      ["JFET 폭 W_{JFET}", `${fx(2.4 * b.wjfet_scale.low, 2)}–${fx(2.4 * b.wjfet_scale.high, 2)} µm`, "2.40 µm"],
+      ["P-well 최대 도핑 N_{pw}", `${fx(b.npwell_scale.low, 1)}–${fx(b.npwell_scale.high, 1)}×10^{17} cm^{-3}`, "1.0×10^{17} cm^{-3}"],
+      ["유효 계면전하 Q_{it,eff}", `${fx(b.qit_eff_cm2.low / 1e12, 1)} ~ ${fx(b.qit_eff_cm2.high / 1e12, 1)}×10^{12} cm^{-2}`, `${fx(-1, 1)}×10^{12} cm^{-2}`],
+      ["채널 이동도 배율 s_{μ} (교란 변수)", `${fx(b.mu_channel_scale.low, 1)}–${fx(b.mu_channel_scale.high, 1)}`, "1.0"]];
     t.append(h("tbody", {}, rows.map((r) => h("tr", {}, r.map((c) => h("td", { rich: c }))))));
 
     // DOE scatter
@@ -912,8 +938,7 @@
       h("li", {}, h("span", { class: "static" }, h("span", { class: "sw rect", style: "background:var(--c423)" }), "423 K")));
     const ctlBox = h("div", { class: "controls" });
     const tableBox = h("div");
-    host.append(ctlBox, legend, tableBox,
-      h("p", { class: "note", rich: "막대 길이는 특징마다 같은 축입니다. |Q_{it,eff}|의 +20 %는 Q_{it,eff} = −1.2×10^{12} cm^{-2}입니다." }));
+    host.append(ctlBox, legend, tableBox);
     let one = "wjfet", narrow = null;
     seg(ctlBox, "변수", pars, one, (v) => { one = v; drawSens(true); });
     function drawSens(force) {
@@ -974,7 +999,7 @@
       h("button", { type: "button", class: "btn small", onclick: () => { const ids = C.design.points[shared.dev.set].id; pickDevice(shared.dev.set, ids[Math.floor(Math.random() * ids.length)], "iv"); } }, "무작위"));
     seg(ctl, "곡선", [["t", "전달"], ["tl", "전달(선형)"], ["o", "출력"]], curve, (v) => { curve = v; draw(); });
     const varBox = h("label", { class: "ctl-label", style: "display:inline-flex;gap:6px;align-items:center" },
-      h("input", { type: "checkbox", onchange: (e) => { showVar = e.target.checked; draw(); } }), "423 K 물리 변형 겹쳐 보기(시험 소자)");
+      h("input", { type: "checkbox", onchange: (e) => { showVar = e.target.checked; draw(); } }), "423 K 물리 가정 4가지 겹쳐 보기");
     ctl.append(varBox);
     function draw() {
       fillSel();
@@ -998,11 +1023,11 @@
         else series.push({ key, label, color, dash, pts: ivData.vgs.map((x, i) => [x, r.t[i]]) });
       };
       add("300", "300 K", "var(--c300)", rec["300"]);
-      add("423", "423 K", "var(--c423)", rec["423"]);
-      if (showVar && shared.dev.set === "test") for (const v of Object.keys(VAR_LABEL)) add(v, `423 K, ${VAR_LABEL[v]}`, VAR_COLOR[v], ivData.variants423[v][id], v.startsWith("gamma") ? "6 4" : "2 3");
+      add("423", "423 K", "var(--c423)", rec["423"], "6 4");
+      if (showVar && shared.dev.set === "test") for (const v of Object.keys(VAR_LABEL)) add(v, `423 K, ${VAR_LABEL[v]}`, VAR_COLOR[v], ivData.variants423[v][id], "2 3");
       const o = curve === "o" ? { x: { domain: [0, 5], ticks: [0, 1, 2, 3, 4, 5], label: "V_{DS} (V), V_{GS} = 18 V", tip: (v) => `V_{DS} = ${fx(v, 1)} V` }, y: { label: "I_{D} (mA/cm)", tip: (v) => fx(v, 1) + " mA/cm" }, tipTol: 0.03 }
         : curve === "tl" ? { x: { domain: [0, 20], ticks: [0, 5, 10, 15, 20], label: "V_{GS} (V), V_{DS} = 0.1 V", tip: (v) => `V_{GS} = ${fx(v, 2)} V` }, y: { label: "I_{D} (mA/cm)", tip: (v) => fx(v, 2) + " mA/cm" }, tipTol: 0.13 }
-        : { x: { domain: [0, 20], ticks: [0, 5, 10, 15, 20], label: "V_{GS} (V), V_{DS} = 0.1 V", tip: (v) => `V_{GS} = ${fx(v, 2)} V` }, y: { domain: [-12, -1], ticks: [-12, -10, -8, -6, -4, -2], fmt: (v) => `10^{${v}}`, label: "I_{D} (A/cm)", tip: (v) => sci(Math.pow(10, v)) + " A/cm" }, tipTol: 0.13 };
+        : { x: { domain: [0, 10], ticks: [0, 2, 4, 6, 8, 10], label: "V_{GS} (V), V_{DS} = 0.1 V", tip: (v) => `V_{GS} = ${fx(v, 2)} V` }, y: { domain: [-12, -1], ticks: [-12, -10, -8, -6, -4, -2], fmt: (v) => `10^{${v}}`, label: "I_{D} (A/cm)", tip: (v) => sci(Math.pow(10, v)) + " A/cm" }, tipTol: 0.13 };
       if (!o.y.domain) { o.y.domain = null; o.y.ticks = null; o.y.fmt = null; }
       chart.set(Object.assign({ series, legendItems: null }, o));
       tbl.refresh();
@@ -1087,10 +1112,11 @@
       tb.append(h("thead", {}, h("tr", {}, h("th", { text: "정규화 오차" }), TGT.map((v) => h("th", { rich: SYM[v] })), h("th", { text: "평균" }))));
       tb.append(h("tbody", {}, SETS.map(([S, lab, col]) => h("tr", {}, h("td", {}, h("span", { class: "key", style: `border-top-color:${col}` }), lab.replace(/ \(.*\)$/, "")),
         errs[S].map((e) => h("td", { text: fx(e, 3) })), h("td", { text: fx((errs[S][0] + errs[S][1] + errs[S][2]) / 3, 3) })))));
-      body.append(tb, h("p", { class: "note", rich: draw_ === 0 ? "논문 실현: 논문 결과와 같은 고정 잡음입니다." : `다른 잡음 실현 ${draw_}: 학습·시험 특징 모두 새 잡음으로 다시 계산했습니다.` }));
+      body.append(tb);
+      if (draw_) body.append(h("p", { class: "note", text: `잡음 실현 ${draw_}: 학습·시험 특징에 새 잡음을 더해 다시 추정한 값.` }));
     }
     function stripChart(host, v, truthX, pts) {
-      const w = Math.max(260, host.clientWidth || body.clientWidth || 600), H = 76;
+      const w = Math.max(260, host.clientWidth || body.clientWidth || 600), H = 80;
       const svg = sv("svg", { viewBox: `0 0 ${w} ${H}`, width: w, height: H, role: "img", "aria-label": `${NAME[v]} 추정값` });
       host.append(svg);
       const [a, b] = physDomain(v), m = { l: 10, r: 14 };
@@ -1098,15 +1124,16 @@
       const g = sv("g", { class: "chart" }, svg);
       const tk = ticks(a, b, 4);
       for (const t of tk) {
-        sv("line", { x1: x(t), x2: x(t), y1: 6, y2: H - 20, stroke: "var(--grid)" }, g);
-        sv("text", { x: x(t), y: H - 4, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11 }, g).textContent = fx(t, decimalsFor(tk));
+        sv("line", { x1: x(t), x2: x(t), y1: 6, y2: H - 22, stroke: "var(--grid)" }, g);
+        sv("line", { x1: x(t), x2: x(t), y1: H - 22, y2: H - 17, stroke: "var(--frame)" }, g);
+        sv("text", { x: x(t), y: H - 3, "text-anchor": "middle", fill: "var(--ink-2)", "font-size": 12.5 }, g).textContent = fx(t, decimalsFor(tk));
       }
-      sv("line", { x1: m.l, x2: w - m.r, y1: H - 20, y2: H - 20, stroke: "var(--axis)" }, g);
-      sv("line", { x1: x(truthX), x2: x(truthX), y1: 2, y2: H - 20, stroke: "var(--ink)", "stroke-width": 2 }, g);
+      sv("line", { x1: m.l, x2: w - m.r, y1: H - 22, y2: H - 22, stroke: "var(--frame)" }, g);
+      sv("line", { x1: x(truthX), x2: x(truthX), y1: 2, y2: H - 22, stroke: "var(--ink)", "stroke-width": 2 }, g);
       pts.forEach((p) => {
         const cy = 14 + p.row * 14;
-        sv("line", { x1: x(truthX), x2: x(p.x), y1: cy, y2: cy, stroke: p.col, "stroke-width": 1.2, opacity: 0.6 }, g);
-        sv("circle", { cx: x(Math.max(a, Math.min(b, p.x))), cy, r: 5, fill: p.col, stroke: "var(--surface)", "stroke-width": 2 }, g);
+        sv("line", { x1: x(truthX), x2: x(p.x), y1: cy, y2: cy, stroke: p.col, "stroke-width": 1.5 }, g);
+        sv("circle", { cx: x(Math.max(a, Math.min(b, p.x))), cy, r: 5, fill: p.col, stroke: "var(--surface)", "stroke-width": 1 }, g);
       });
     }
     new ResizeObserver(() => { if (E) render(); }).observe(body);
@@ -1147,8 +1174,8 @@
     // series resistance
     const SR = C.rq1.series;
     new Bars("series-chart", { cats: ["S1", "S1×2", "S2"], y: { label: "정규화 평균 오차" },
-      series: [{ key: "plain", label: "계산한 그대로", color: "var(--axis)", vals: ["S1", "S1x2", "S2"].map((s) => SR.plain[s]) },
-        { key: "r", label: "직렬저항 추가", color: "var(--p-b)", vals: ["S1", "S1x2", "S2"].map((s) => SR.series_r[s]) }],
+      series: [{ key: "plain", label: "계산한 그대로", color: "#a8b1ba", vals: ["S1", "S1x2", "S2"].map((s) => SR.plain[s]) },
+        { key: "r", label: "직렬저항 추가", color: "var(--t-nominal)", vals: ["S1", "S1x2", "S2"].map((s) => SR.series_r[s]) }],
       aria: "직렬저항이 더해진 시험 소자의 오차", height: (w) => Math.round(Math.max(220, Math.min(300, w * 0.66))) });
     tableToggle("fig-series", () => ({ cols: ["특징 세트", "계산한 그대로", "직렬저항 추가"], rows: ["S1", "S1x2", "S2"].map((s) => [s.replace("x2", "×2"), fx(SR.plain[s], 3), fx(SR.series_r[s], 3)]) }));
 
@@ -1165,7 +1192,7 @@
 
   // =========================================================================================== 4. selection
   const POL = { random: ["무작위", "var(--p-rand)", "2 4"], sobol: ["Sobol", "var(--p-sobol)"], uncertainty: ["불확실도", "var(--p-unc)"],
-    top20_random: ["D: 상위 20개 중 무작위", "var(--p-d)"], A0: ["LLM A0 (첫 실행)", "var(--p-a0)"], A: ["LLM A (재실행)", "var(--p-a)"],
+    top20_random: ["D: 상위 20개 중 무작위", "var(--p-d)"], A0: ["LLM A0 (첫 실행)", "var(--p-a0)", "6 3"], A: ["LLM A (재실행)", "var(--p-a)"],
     B: ["LLM B (변수 이름 지움)", "var(--p-b)"], C: ["LLM C (정보 섞음)", "var(--p-c)"] };
   function initSelect() {
     const SEL = C.selection;
@@ -1194,14 +1221,11 @@
       return { cols: ["소자 수", ...ks.map((k) => POL[k][0] + " (평균 ± 표준편차)")], rows: n.map((nn, i) => [nn, ...ks.map((k) => `${fx(curvesFor(k).mean[i], 4)} ± ${fx(curvesFor(k).sd[i], 4)}`)]) };
     });
     draw();
-    const note = h("p", { class: "note", text: "LLM 정책과 D는 기준 잡음에서만 실행했습니다." });
-    $("curves-chart").after(note);
 
     // forest
     const lab = { "U-random": "불확실도 − 무작위", "sobol-random": "Sobol − 무작위", "U-sobol": "불확실도 − Sobol", "D-U": "D − 불확실도",
       "A0-U": "LLM A0 − 불확실도", "A-U": "LLM A − 불확실도", "B-U": "LLM B − 불확실도", "C-U": "LLM C − 불확실도" };
-    const colorOf = (k) => (POL[k] ? POL[k][1] : "var(--ink)");
-    new Forest("diff-chart", { rows: SEL.diffs.map((d) => ({ label: lab[d.key], delta: d.delta * 1e3, lo: d.lo * 1e3, hi: d.hi * 1e3, wins: d.wins, n: d.n, color: colorOf(d.a) })),
+    new Forest("diff-chart", { rows: SEL.diffs.map((d) => ({ label: lab[d.key], delta: d.delta * 1e3, lo: d.lo * 1e3, hi: d.hi * 1e3, wins: d.wins, n: d.n, color: "var(--ink)" })),
       band: SEL.sesoi * 1e3, xlabel: "최종 오차 차이 (×10^{-3}), 95 % 구간, 앞 정책이 낮은 시드 수", aria: "마지막 라운드 오차 차이" });
     tableToggle("fig-diff", () => ({ cols: ["비교", "차이 (×10^{-3})", "95 % 구간", "앞 정책이 낮은 시드"], rows: SEL.diffs.map((d) => [lab[d.key], sgn(d.delta * 1e3, 2), `[${sgn(d.lo * 1e3, 2)}, ${sgn(d.hi * 1e3, 2)}]`, `${d.wins}/${d.n}`]) }));
 
@@ -1238,7 +1262,7 @@
       const shown = rankOf(r.cands, (c) => c.unc);
       const truth = r.true ? rankOf(r.cands, (c) => r.true[c.id][0]) : shown;
       const groups = [
-        { key: "pool", label: "나머지 후보 풀", color: "var(--grid)", r: 2.4, toggle: false, pts: base.map((id) => ({ id, x: P(id, 0), y: P(id, 1) })) },
+        { key: "pool", label: "나머지 후보 풀", color: "#d0d7de", r: 2.4, toggle: false, pts: base.map((id) => ({ id, x: P(id, 0), y: P(id, 1) })) },
         { key: "train", label: `이미 고른 소자 ${train.length}개` + (r.missing ? ` (대체 규칙으로 고른 ${r.missing}개는 기록 없음)` : ""), color: "var(--axis)", r: 3, toggle: false,
           pts: train.map((id) => ({ id, x: P(id, 0), y: P(id, 1) })) },
         { key: "cand", label: "LLM에게 보인 후보", color: "var(--ink)", hollow: true, r: 4.5, toggle: false, pts: r.cands.filter((c) => !sel.has(c.id)).map((c) => ({ id: c.id, x: P(c.id, 0), y: P(c.id, 1) })) }];
@@ -1263,10 +1287,10 @@
         h("dt", { text: "LLM에게 알린 최악 변수" }), h("dd", { rich: SYM[r.worst] + (C_ && r.true_worst ? ` (실제 ${SYM[r.true_worst]})` : "") }));
       if (sel.size) kv.append(h("dt", { text: "불확실도 상위 10개와 겹침" }), h("dd", { text: C_ && r.true ? `보인 값 기준 ${overlap(shown)}/10, 실제 값 기준 ${overlap(truth)}/10` : `${overlap(shown)}/10` }));
       kv.append(h("dt", { text: "응답 검증" }), h("dd", { text: r.status === "accepted" ? "통과" : `거절(${r.reject || "형식 오류"}), 대체 규칙(불확실도 정책)으로 10개 선택` }),
-        h("dt", { text: "토큰, 지연" }), h("dd", { text: `입력 ${r.tin.toLocaleString("ko-KR")}, 출력 ${r.tout.toLocaleString("ko-KR")}, ${fx(r.latency, 1)} s` }));
+        h("dt", { text: "토큰, 지연" }), h("dd", { text: `입력 ${r.tin.toLocaleString("ko-KR")}, 출력 ${r.tout.toLocaleString("ko-KR")}, ${fx(r.latency, 1)}\u00a0s` }));
       info.append(kv);
-      if (r.reasons && r.reasons.length) info.append(h("div", { class: "ctl-label", text: "LLM이 고른 사유 코드" }), h("ul", { class: "chips" }, r.reasons.map((c) => h("li", { text: c }))));
-      if (r.rationale) info.append(h("div", { class: "ctl-label", text: "LLM 응답의 근거 문장(원문)" }), h("blockquote", { class: "rationale", lang: "en", text: r.rationale }));
+      if (r.reasons && r.reasons.length) info.append(h("p", { class: "sub-head", text: "LLM이 고른 사유 코드" }), h("ul", { class: "chips" }, r.reasons.map((c) => h("li", { text: c }))));
+      if (r.rationale) info.append(h("p", { class: "sub-head", text: "LLM 응답의 근거 문장(원문)" }), h("blockquote", { class: "rationale", lang: "en", text: r.rationale }));
       tab.refresh();
     }
     const tab = tableToggle("fig-llm", () => {
@@ -1284,8 +1308,8 @@
       body.textContent = "";
       const grid = h("div", { class: "llm-grid" });
       const a = h("div"), b = h("div");
-      valHead = h("div", { class: "ctl-label", text: "LLM에게 보인 후보 정보" });
-      grid.append(h("div", {}, h("div", { class: "ctl-label", text: "공정 변수 공간에서 후보 위치" }), a), h("div", {}, valHead, b));
+      valHead = h("p", { class: "sub-head", text: "LLM에게 보인 후보 정보" });
+      grid.append(h("div", {}, h("p", { class: "sub-head", text: "공정 변수 공간에서 후보 위치" }), a), h("div", {}, valHead, b));
       info = h("div");
       const prompt = h("details", { class: "code" }, h("summary", {}, "LLM에 준 시스템 프롬프트", h("span", { text: "src/sicsim/llm.py" })),
         h("div", { class: "code-list" }, h("pre", { class: "src prompt", lang: "en", text: d.system_prompt })));
@@ -1297,7 +1321,7 @@
     render();
   }
 
-  // =========================================================================================== code panels, links, nav, theme
+  // =========================================================================================== code panels, links
   function initCode() {
     for (const det of document.querySelectorAll("details.code[data-section]")) {
       det.addEventListener("toggle", () => {
@@ -1318,7 +1342,7 @@
         }).catch(() => { list.textContent = "코드를 불러오지 못했습니다."; });
       });
       const n = { design: 2, data: 3, estimate: 4, select: 3 }[det.dataset.section];
-      det.querySelector("summary span").textContent = `함수 ${n}개, GitHub의 같은 커밋으로 연결`;
+      det.querySelector("summary span").textContent = `함수 ${n}개`;
     }
   }
   function initLinks() {
@@ -1326,45 +1350,9 @@
     for (const a of document.querySelectorAll("[data-href]")) { a.href = map[a.dataset.href]; a.target = "_blank"; a.rel = "noopener"; }
     const st = $("stamp");
     st.append("이 페이지의 데이터는 ", h("a", { href: `${REPO}/blob/main/scripts/make_site.py`, target: "_blank", rel: "noopener" }, "scripts/make_site.py"),
-      `가 커밋 `, h("a", { href: `${REPO}/tree/${COMMIT}`, target: "_blank", rel: "noopener" }, C.meta.short), `(${C.meta.date})의 결과 파일에서 만들었습니다.`);
+      `가 커밋 `, h("a", { href: `${REPO}/tree/${COMMIT}`, target: "_blank", rel: "noopener" }, C.meta.short), `(${C.meta.date})의 결과 파일에서 만들었다.`);
   }
-  function initNav() {
-    const links = [...document.querySelectorAll(".rail a")];
-    const secs = links.map((a) => document.querySelector(a.getAttribute("href")));
-    if (!("IntersectionObserver" in window)) return;
-    const vis = new Map();
-    const io = new IntersectionObserver((es) => {
-      for (const e of es) vis.set(e.target, e.intersectionRatio);
-      let best = null, br = 0;
-      for (const s of secs) { const r = vis.get(s) || 0; if (r > br) { br = r; best = s; } }
-      links.forEach((a, i) => {
-        const on = secs[i] === best;
-        if (on && a.getAttribute("aria-current") !== "true" && innerWidth < 1100) {
-          const ol = a.closest("ol");
-          ol.scrollTo({ left: Math.max(0, a.offsetLeft - 16), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-        }
-        a.setAttribute("aria-current", String(on));
-      });
-    }, { threshold: [0, 0.1, 0.25, 0.5] });
-    secs.forEach((s) => s && io.observe(s));
-  }
-  function initTheme() {
-    const b = $("theme");
-    const sun = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-    const moon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
-    const isDark = () => (document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches);
-    const paint = () => { b.innerHTML = isDark() ? sun : moon; b.setAttribute("aria-label", isDark() ? "밝은 화면으로 전환" : "어두운 화면으로 전환"); };
-    b.addEventListener("click", () => {
-      const next = isDark() ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
-      try { localStorage.setItem("theme", next); } catch (e) { /* storage may be unavailable */ }
-      paint();
-    });
-    paint();
-  }
-
   function init() {
-    initTheme();
     initLinks();
     figActions();
     initLab();
@@ -1373,7 +1361,6 @@
     initEstimate();
     initSelect();
     initCode();
-    initNav();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

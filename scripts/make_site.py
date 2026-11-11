@@ -2,11 +2,10 @@
 No DEVSIM runs and no API calls. Two things are fitted here, both from committed data only:
   - the GP inverse model of the paper (sicsim.analysis, same frozen noise realisation) -> per-device estimates,
     plus four further noise realisations for the page's 'draw the noise again' control;
-  - a GP surrogate of the DEVSIM I-V curves over the four process variables (512 pool devices) for the sliders
+  - a GP surrogate of the DEVSIM I-V curves over the four process variables (pool devices with complete curves) for the sliders
     at the top of the page. It is a visual aid only and is not used for any result.
   python scripts/make_site.py                     -> site/data/*.js  (about 2 min on one core)
   python scripts/make_site.py --only core llm     -> selected files only
-  python scripts/make_site.py --fonts DIR         also subset the page fonts from the IBM Plex Sans KR / Mono .woff2 in DIR
 Every data file sets one property of window.SITE, so the page also opens from file:// without a web server."""
 from __future__ import annotations
 
@@ -569,56 +568,6 @@ def code() -> dict:
     return dict(items=items)
 
 
-# ------------------------------------------------------------------------------------------------ fonts
-def fonts(src: Path):
-    """Subset IBM Plex Sans KR (400, 600) and IBM Plex Mono (400) to the characters the page uses, renamed as
-    required by the SIL OFL (Reserved Font Name 'Plex'): 'Site Sans' / 'Site Mono'."""
-    from fontTools import subset
-    from fontTools.ttLib import TTFont
-    site = ROOT / "site"
-    text = ""
-    for p in [site / "index.html", *sorted((site / "assets").glob("*.js")), *sorted((site / "data").glob("*.js"))]:
-        text += p.read_text(encoding="utf-8")
-    hangul = sorted({ch for ch in text if "가" <= ch <= "힣" or "ㄱ" <= ch <= "ㆎ"})
-    basic = [chr(c) for c in range(0x20, 0x7F)] + [chr(c) for c in range(0xA0, 0x180)]
-    extra = list("–—‘’“”•…‰′″‹›€™←↑→↓↔⇄∂∆∇∈∑−∓∗√∝∞∧∨∩∪∫≈≠≡≤≥⊂⊃⋅·×÷±µΩαβγδεθλμπρσφωΔΣΦΨΩ¹²³⁰⁴⁵⁶⁷⁸⁹⁺⁻₀₁₂₃₄₅₆₇₈₉ℓ°")
-    chars = "".join(sorted(set(basic + extra + hangul)))
-    dst = site / "assets" / "fonts"
-    dst.mkdir(parents=True, exist_ok=True)
-    jobs = [("IBMPlexSansKR-Regular.woff2", "site-sans-400.woff2", "Site Sans", chars),
-            ("IBMPlexSansKR-SemiBold.woff2", "site-sans-600.woff2", "Site Sans", chars),
-            ("IBMPlexMono-Regular.woff2", "site-mono-400.woff2", "Site Mono", "".join(chr(c) for c in range(0x20, 0x7F)) + "−×±µ·…")]
-    for srcname, dstname, family, cs in jobs:
-        f = next(src.rglob(srcname))
-        font = TTFont(f)
-        opts = subset.Options()
-        opts.flavor = "woff2"
-        opts.layout_features = ["*"]
-        opts.name_IDs = ["*"]
-        opts.notdef_outline = True
-        sub = subset.Subsetter(opts)
-        sub.populate(text=cs)
-        sub.subset(font)
-        weight = "SemiBold" if "SemiBold" in srcname else "Regular"
-        for rec in font["name"].names:
-            if rec.nameID in (1, 16):
-                rec.string = family
-            elif rec.nameID in (4,):
-                rec.string = f"{family} {weight}"
-            elif rec.nameID in (6,):
-                rec.string = f"{family.replace(' ', '')}-{weight}"
-            elif rec.nameID == 3:
-                rec.string = f"{family.replace(' ', '')}-{weight};subset"
-        font.flavor = "woff2"
-        font.save(dst / dstname)
-    lic = next(src.rglob("LICENSE.txt")).read_text(encoding="utf-8")
-    (dst / "OFL.txt").write_text(
-        "Site Sans: subset of IBM Plex Sans KR; Site Mono: subset of IBM Plex Mono (renamed under SIL OFL 1.1, "
-        "Reserved Font Name 'Plex').\n\n" + lic, encoding="utf-8")
-    (dst / "chars.txt").write_text("".join(hangul) + "\n", encoding="utf-8")
-    print(f"fonts: {len(hangul)} Hangul syllables -> {', '.join(p.name for p in sorted(dst.glob('*.woff2')))}")
-
-
 # ------------------------------------------------------------------------------------------------ main
 PARTS = ["core", "surrogate", "iv", "estimates", "llm", "code"]
 
@@ -626,7 +575,6 @@ PARTS = ["core", "surrogate", "iv", "estimates", "llm", "code"]
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", nargs="*", choices=PARTS)
-    ap.add_argument("--fonts", type=Path, help="directory with the IBM Plex Sans KR / Mono .woff2 files")
     a = ap.parse_args()
     todo = a.only if a.only is not None else PARTS
     if "core" in todo:
@@ -654,8 +602,6 @@ def main():
     if "code" in todo:
         p = write_js("code", code())
         print(p.name, f"{p.stat().st_size / 1024:.0f} KB")
-    if a.fonts:
-        fonts(a.fonts)
 
 
 if __name__ == "__main__":

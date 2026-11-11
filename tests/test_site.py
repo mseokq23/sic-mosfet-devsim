@@ -1,5 +1,5 @@
 """The results page (site/, GitHub Pages) is built from the committed result files by scripts/make_site.py:
-its data files match a rebuild, every file it links exists, and the subset fonts cover its Hangul text.
+its data files match a rebuild and every file it links exists.
 No DEVSIM, no API calls; the two fitted parts (surrogate.js, estimates.js) are checked by their stored diagnostics."""
 import html
 import json
@@ -101,14 +101,3 @@ def test_linked_files_exist():
         assert (SITE / "data" / f"{name}.js").exists(), name
     for el in set(re.findall(r'\$\("([\w-]+)"\)', app)):
         assert f'id="{el}"' in page, el
-
-
-def test_fonts_cover_page_text():
-    text = (SITE / "index.html").read_text(encoding="utf-8")
-    text += "".join(p.read_text(encoding="utf-8") for p in sorted((SITE / "assets").glob("*.js")))
-    text += "".join(p.read_text(encoding="utf-8") for p in sorted((SITE / "data").glob("*.js")))
-    used = {ch for ch in text if "가" <= ch <= "힣"}
-    covered = set((SITE / "assets" / "fonts" / "chars.txt").read_text(encoding="utf-8").strip())
-    assert used <= covered, "".join(sorted(used - covered))
-    for f in ("site-sans-400.woff2", "site-sans-600.woff2", "site-mono-400.woff2", "OFL.txt"):
-        assert (SITE / "assets" / "fonts" / f).stat().st_size > 1000, f
